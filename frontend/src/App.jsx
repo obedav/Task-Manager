@@ -17,6 +17,74 @@ import { DailyCheckInModal, ProgressTracker } from './components/ProgressTracker
 import './index.css'
 import './App.css'
 
+// Enhanced Toast Notification System
+const ToastContainer = ({ toasts, removeToast }) => {
+  if (toasts.length === 0) return null
+
+  return (
+    <div 
+      className="fixed top-4 right-4 z-50 space-y-2"
+      role="region"
+      aria-label="Notifications"
+      aria-live="polite"
+    >
+      {toasts.map((toast) => (
+        <div
+          key={toast.id}
+          className={`max-w-sm p-4 rounded-lg shadow-lg border transform transition-all duration-300 ${
+            toast.type === 'success' 
+              ? 'bg-green-900/90 border-green-500 text-green-100' 
+              : toast.type === 'error'
+              ? 'bg-red-900/90 border-red-500 text-red-100'
+              : 'bg-blue-900/90 border-blue-500 text-blue-100'
+          }`}
+          role="alert"
+          aria-live="assertive"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <div className="flex-1">
+                <p className="font-medium">{toast.title}</p>
+                {toast.message && (
+                  <p className="text-sm opacity-90">{toast.message}</p>
+                )}
+              </div>
+            </div>
+            <button
+              onClick={() => removeToast(toast.id)}
+              className="ml-3 text-current opacity-70 hover:opacity-100"
+              aria-label="Close notification"
+            >
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// Enhanced Loading Overlay Component (renamed to avoid conflict)
+const AppLoadingOverlay = ({ isVisible, message = "Loading..." }) => {
+  if (!isVisible) return null
+
+  return (
+    <div 
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-40"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Loading"
+    >
+      <div className="bg-slate-800 rounded-xl p-6 flex items-center space-x-4">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-500"></div>
+        <span className="text-white font-medium">{message}</span>
+      </div>
+    </div>
+  )
+}
+
 const AppContent = () => {
   const { user, isAuthenticated, loading: authLoading, login, logout } = useAuth()
   const [currentPage, setCurrentPage] = useState('dashboard')
@@ -29,6 +97,41 @@ const AppContent = () => {
   const [checkInModal, setCheckInModal] = useState({ isOpen: false, task: null })
   const [analytics, setAnalytics] = useState(null)
   const [progressLoading, setProgressLoading] = useState(false)
+  
+  // Enhanced UX state
+  const [toasts, setToasts] = useState([])
+  const [actionLoading, setActionLoading] = useState({
+    createTask: false,
+    updateTask: false,
+    deleteTask: false,
+    updateProgress: false,
+    logTime: false,
+    dailyCheckIn: false
+  })
+
+  // Toast management
+  const addToast = (toast) => {
+    const id = Date.now() + Math.random()
+    const newToast = { id, ...toast }
+    setToasts(prev => [...prev, newToast])
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+      removeToast(id)
+    }, 5000)
+  }
+
+  const removeToast = (id) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id))
+  }
+
+  // Enhanced loading state management
+  const setActionLoadingState = (action, isLoading) => {
+    setActionLoading(prev => ({
+      ...prev,
+      [action]: isLoading
+    }))
+  }
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -37,16 +140,54 @@ const AppContent = () => {
     }
   }, [isAuthenticated])
 
+  // Keyboard navigation support
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      // Escape key to close modals
+      if (e.key === 'Escape') {
+        if (showTaskModal) {
+          setShowTaskModal(false)
+        }
+        if (checkInModal.isOpen) {
+          setCheckInModal({ isOpen: false, task: null })
+        }
+      }
+      
+      // Ctrl+N to create new task
+      if (e.ctrlKey && e.key === 'n') {
+        e.preventDefault()
+        if (isAuthenticated) {
+          setShowTaskModal(true)
+        }
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyPress)
+    return () => document.removeEventListener('keydown', handleKeyPress)
+  }, [showTaskModal, checkInModal.isOpen, isAuthenticated])
+
   const loadTasks = async () => {
     try {
       setLoading(true)
       setError(null)
       const tasksData = await taskService.getAllTasks()
-      // Extract the tasks array from the API response
       setTasks(tasksData?.tasks || [])
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log('✅ Tasks loaded successfully')
+      }
     } catch (error) {
-      setError(parseError(error))
-      console.error('Failed to load tasks:', error)
+      const errorMessage = parseError(error)
+      setError(errorMessage)
+      addToast({
+        type: 'error',
+        title: 'Failed to load tasks',
+        message: errorMessage
+      })
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to load tasks:', error)
+      }
     } finally {
       setLoading(false)
     }
@@ -57,21 +198,45 @@ const AppContent = () => {
       setProgressLoading(true)
       const analyticsData = await taskService.getAnalytics()
       setAnalytics(analyticsData?.analytics || null)
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log('✅ Analytics loaded')
+      }
     } catch (error) {
-      console.error('Failed to load analytics:', error)
-      // Don't show error for analytics, just log it
+      // Analytics failures are non-critical - just log them
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Analytics failed (non-critical):', error)
+      }
     } finally {
       setProgressLoading(false)
     }
   }
 
   const refreshData = async () => {
-    await Promise.all([loadTasks(), loadAnalytics()])
+    try {
+      await Promise.all([loadTasks(), loadAnalytics()])
+      addToast({
+        type: 'success',
+        title: 'Data refreshed',
+        message: 'All data has been updated'
+      })
+    } catch (error) {
+      addToast({
+        type: 'error',
+        title: 'Refresh failed',
+        message: 'Could not refresh all data'
+      })
+    }
   }
 
   const handleLogin = async (credentials) => {
     try {
       await login(credentials)
+      addToast({
+        type: 'success',
+        title: 'Welcome back!',
+        message: 'You have successfully logged in'
+      })
     } catch (error) {
       throw error
     }
@@ -82,6 +247,11 @@ const AppContent = () => {
       const result = await authService.register(userData)
       if (result.success) {
         await login({ email: userData.email, password: userData.password })
+        addToast({
+          type: 'success',
+          title: 'Welcome to TaskFlow!',
+          message: 'Your account has been created successfully'
+        })
       }
     } catch (error) {
       throw error
@@ -94,87 +264,186 @@ const AppContent = () => {
       setTasks([])
       setAnalytics(null)
       setCurrentPage('dashboard')
+      addToast({
+        type: 'success',
+        title: 'Logged out',
+        message: 'You have been successfully logged out'
+      })
     } catch (error) {
-      console.error('Logout failed:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Logout failed:', error)
+      }
     }
   }
 
   const handleAddTask = async (taskData) => {
     try {
+      setActionLoadingState('createTask', true)
+      
+      // Create a completely clean object with only primitive values
+      const cleanTaskData = {
+        title: String(taskData.title || '').trim(),
+        description: String(taskData.description || '').trim(),
+        priority: String(taskData.priority || 'medium'),
+        dueDate: taskData.dueDate ? String(taskData.dueDate) : null,
+        category: String(taskData.category || '').trim(),
+        estimatedHours: taskData.estimatedHours ? Number(taskData.estimatedHours) : null
+      }
+      
       // Add default progress tracking fields
       const enhancedTaskData = {
-        ...taskData,
+        ...cleanTaskData,
         progress: 0,
         timeEntries: [],
         dailyUpdates: [],
         progressHistory: []
       }
 
+      // Double-check the data is serializable
+      try {
+        JSON.stringify(enhancedTaskData)
+      } catch (serializationError) {
+        console.error('Data serialization failed:', serializationError)
+        addToast({
+          type: 'error',
+          title: 'Data Error',
+          message: 'Invalid data format. Please try again.'
+        })
+        return
+      }
+
+      console.log('Clean task data being sent:', enhancedTaskData)
+
       const result = await taskService.createTask(enhancedTaskData)
-      // Extract the task from the API response
       const newTask = result?.task || result
       setTasks(prev => [newTask, ...prev])
       setShowTaskModal(false)
       
+      addToast({
+        type: 'success',
+        title: 'Task created',
+        message: `"${cleanTaskData.title}" has been added to your tasks`
+      })
+      
       // Refresh analytics
-      await loadAnalytics()
+      loadAnalytics()
     } catch (error) {
-      setError(parseError(error))
+      const errorMessage = parseError(error)
+      setError(errorMessage)
+      addToast({
+        type: 'error',
+        title: 'Failed to create task',
+        message: errorMessage
+      })
+      console.error('handleAddTask error:', error)
       throw error
+    } finally {
+      setActionLoadingState('createTask', false)
     }
   }
 
   const handleEditTask = async (taskId, taskData) => {
     try {
+      setActionLoadingState('updateTask', true)
+      
       const result = await taskService.updateTask(taskId, taskData)
-      // Extract the task from the API response
       const updatedTask = result?.task || result
       setTasks(prev => prev.map(task => 
         (task.id || task._id) === taskId ? updatedTask : task
       ))
       
-      // Refresh analytics
-      await loadAnalytics()
+      addToast({
+        type: 'success',
+        title: 'Task updated',
+        message: 'Your changes have been saved'
+      })
+      
+      loadAnalytics()
     } catch (error) {
-      setError(parseError(error))
+      const errorMessage = parseError(error)
+      setError(errorMessage)
+      addToast({
+        type: 'error',
+        title: 'Failed to update task',
+        message: errorMessage
+      })
       throw error
+    } finally {
+      setActionLoadingState('updateTask', false)
     }
   }
 
   const handleDeleteTask = async (taskId) => {
     try {
+      setActionLoadingState('deleteTask', true)
+      
+      const taskToDelete = tasks.find(t => (t.id || t._id) === taskId)
       await taskService.deleteTask(taskId)
       setTasks(prev => prev.filter(task => (task.id || task._id) !== taskId))
       
-      // Refresh analytics
-      await loadAnalytics()
+      addToast({
+        type: 'success',
+        title: 'Task deleted',
+        message: `"${taskToDelete?.title || 'Task'}" has been removed`
+      })
+      
+      loadAnalytics()
     } catch (error) {
-      setError(parseError(error))
+      const errorMessage = parseError(error)
+      setError(errorMessage)
+      addToast({
+        type: 'error',
+        title: 'Failed to delete task',
+        message: errorMessage
+      })
       throw error
+    } finally {
+      setActionLoadingState('deleteTask', false)
     }
   }
 
   const handleStatusChange = async (taskId, newStatus) => {
     try {
+      setActionLoadingState('updateTask', true)
+      
       const result = await taskService.updateTaskStatus(taskId, newStatus)
-      // Extract the task from the API response
       const updatedTask = result?.task || result
       setTasks(prev => prev.map(task => 
         (task.id || task._id) === taskId ? updatedTask : task
       ))
       
-      // Refresh analytics
-      await loadAnalytics()
+      const statusMessages = {
+        'pending': 'Task marked as pending',
+        'in-progress': 'Task marked as in progress',
+        'completed': 'Task completed! 🎉'
+      }
+      
+      addToast({
+        type: newStatus === 'completed' ? 'success' : 'info',
+        title: 'Status updated',
+        message: statusMessages[newStatus] || 'Task status updated'
+      })
+      
+      loadAnalytics()
     } catch (error) {
-      setError(parseError(error))
+      const errorMessage = parseError(error)
+      setError(errorMessage)
+      addToast({
+        type: 'error',
+        title: 'Failed to update status',
+        message: errorMessage
+      })
       throw error
+    } finally {
+      setActionLoadingState('updateTask', false)
     }
   }
 
-  // NEW PROGRESS TRACKING HANDLERS
+  // NEW PROGRESS TRACKING HANDLERS with enhanced UX
   const handleProgressUpdate = async (taskId, progress, note = '') => {
     try {
-      setProgressLoading(true)
+      setActionLoadingState('updateProgress', true)
+      
       const result = await taskService.updateProgress(taskId, progress, note)
       const updatedTask = result?.task || result
       
@@ -182,18 +451,31 @@ const AppContent = () => {
         (task.id || task._id) === taskId ? updatedTask : task
       ))
       
-      await loadAnalytics()
+      addToast({
+        type: 'success',
+        title: 'Progress updated',
+        message: `Progress set to ${progress}%`
+      })
+      
+      loadAnalytics()
     } catch (error) {
-      setError(parseError(error))
+      const errorMessage = parseError(error)
+      setError(errorMessage)
+      addToast({
+        type: 'error',
+        title: 'Failed to update progress',
+        message: errorMessage
+      })
       throw error
     } finally {
-      setProgressLoading(false)
+      setActionLoadingState('updateProgress', false)
     }
   }
 
   const handleTimeLog = async (taskId, timeData) => {
     try {
-      setProgressLoading(true)
+      setActionLoadingState('logTime', true)
+      
       const result = await taskService.addTimeEntry(taskId, timeData.hours, timeData.description)
       const updatedTask = result?.task || result
       
@@ -201,12 +483,24 @@ const AppContent = () => {
         (task.id || task._id) === taskId ? updatedTask : task
       ))
       
-      await loadAnalytics()
+      addToast({
+        type: 'success',
+        title: 'Time logged',
+        message: `${timeData.hours} hours recorded`
+      })
+      
+      loadAnalytics()
     } catch (error) {
-      setError(parseError(error))
+      const errorMessage = parseError(error)
+      setError(errorMessage)
+      addToast({
+        type: 'error',
+        title: 'Failed to log time',
+        message: errorMessage
+      })
       throw error
     } finally {
-      setProgressLoading(false)
+      setActionLoadingState('logTime', false)
     }
   }
 
@@ -216,7 +510,8 @@ const AppContent = () => {
 
   const handleCheckInSubmit = async (checkInData) => {
     try {
-      setProgressLoading(true)
+      setActionLoadingState('dailyCheckIn', true)
+      
       const taskId = checkInModal.task?.id || checkInModal.task?._id
       const result = await taskService.addDailyUpdate(taskId, checkInData)
       const updatedTask = result?.task || result
@@ -226,12 +521,24 @@ const AppContent = () => {
       ))
       
       setCheckInModal({ isOpen: false, task: null })
-      await loadAnalytics()
+      
+      addToast({
+        type: 'success',
+        title: 'Check-in saved',
+        message: 'Your daily update has been recorded'
+      })
+      
+      loadAnalytics()
     } catch (error) {
-      setError(parseError(error))
-      console.error('Error submitting daily check-in:', error)
+      const errorMessage = parseError(error)
+      setError(errorMessage)
+      addToast({
+        type: 'error',
+        title: 'Failed to save check-in',
+        message: errorMessage
+      })
     } finally {
-      setProgressLoading(false)
+      setActionLoadingState('dailyCheckIn', false)
     }
   }
 
@@ -254,7 +561,7 @@ const AppContent = () => {
   if (authLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-        <div className="text-center">
+        <div className="text-center" role="status" aria-label="Loading application">
           <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-500 mx-auto mb-4"></div>
           <h2 className="text-xl font-semibold text-white mb-2">Loading TaskFlow</h2>
           <p className="text-gray-400">Initializing your workspace...</p>
@@ -265,40 +572,45 @@ const AppContent = () => {
 
   if (!isAuthenticated) {
     return (
-      <Login 
-        onLogin={handleLogin}
-        onRegister={handleRegister}
-        loading={loading}
-        error={error}
-      />
+      <>
+        <Login 
+          onLogin={handleLogin}
+          onRegister={handleRegister}
+          loading={loading}
+          error={error}
+        />
+        <ToastContainer toasts={toasts} removeToast={removeToast} />
+      </>
     )
   }
 
   const renderCurrentPage = () => {
+    const commonProps = {
+      tasks,
+      onProgressUpdate: handleProgressUpdate,
+      onTimeLog: handleTimeLog,
+      onDailyCheckIn: handleDailyCheckIn,
+      progressLoading: Object.values(actionLoading).some(Boolean),
+      actionLoading
+    }
+
     switch (currentPage) {
       case 'tasks':
         return (
           <Tasks
-            tasks={tasks}
-            onAddTask={handleAddTask}
+            {...commonProps}
+            onAddTask={openTaskModal}  // Changed from handleAddTask to openTaskModal
             onEditTask={handleEditTask}
             onDeleteTask={handleDeleteTask}
             onStatusChange={handleStatusChange}
-            onProgressUpdate={handleProgressUpdate}
-            onTimeLog={handleTimeLog}
-            onDailyCheckIn={handleDailyCheckIn}
             loading={loading}
-            progressLoading={progressLoading}
           />
         )
       case 'progress':
         return (
           <ProgressTracker
-            tasks={tasks}
+            {...commonProps}
             analytics={analytics}
-            onProgressUpdate={handleProgressUpdate}
-            onTimeLog={handleTimeLog}
-            onDailyCheckIn={handleDailyCheckIn}
             onRefresh={refreshData}
             loading={progressLoading}
           />
@@ -307,15 +619,11 @@ const AppContent = () => {
       default:
         return (
           <Dashboard
-            tasks={tasks}
+            {...commonProps}
             analytics={analytics}
             user={user}
             onAddTask={openTaskModal}
             onNavigateToTasks={navigateToTasks}
-            onProgressUpdate={handleProgressUpdate}
-            onTimeLog={handleTimeLog}
-            onDailyCheckIn={handleDailyCheckIn}
-            progressLoading={progressLoading}
           />
         )
     }
@@ -329,36 +637,43 @@ const AppContent = () => {
         onLogout={handleLogout}
       />
 
-      <nav className="bg-slate-800/40 backdrop-blur-sm border-b border-slate-700/50">
+      <nav 
+        className="bg-slate-800/40 backdrop-blur-sm border-b border-slate-700/50"
+        role="navigation"
+        aria-label="Main navigation"
+      >
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex space-x-8">
             <button
               onClick={navigateToDashboard}
-              className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors ${
+              className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-slate-800 ${
                 currentPage === 'dashboard'
                   ? 'border-purple-500 text-purple-300'
                   : 'border-transparent text-gray-400 hover:text-white hover:border-gray-300'
               }`}
+              aria-current={currentPage === 'dashboard' ? 'page' : undefined}
             >
               Dashboard
             </button>
             <button
               onClick={navigateToTasks}
-              className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors ${
+              className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-slate-800 ${
                 currentPage === 'tasks'
                   ? 'border-purple-500 text-purple-300'
                   : 'border-transparent text-gray-400 hover:text-white hover:border-gray-300'
               }`}
+              aria-current={currentPage === 'tasks' ? 'page' : undefined}
             >
               Tasks
             </button>
             <button
               onClick={navigateToProgress}
-              className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors ${
+              className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-slate-800 ${
                 currentPage === 'progress'
                   ? 'border-purple-500 text-purple-300'
                   : 'border-transparent text-gray-400 hover:text-white hover:border-gray-300'
               }`}
+              aria-current={currentPage === 'progress' ? 'page' : undefined}
             >
               Progress Analytics
             </button>
@@ -366,44 +681,25 @@ const AppContent = () => {
         </div>
       </nav>
 
-      {error && (
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4">
-            <p className="text-red-400 text-sm">{error}</p>
-            <button
-              onClick={() => setError(null)}
-              className="mt-2 text-red-300 hover:text-red-200 text-xs underline"
-            >
-              Dismiss
-            </button>
-          </div>
-        </div>
-      )}
-
-      {progressLoading && (
-        <div className="max-w-7xl mx-auto px-6 py-2">
-          <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-3">
-            <div className="flex items-center space-x-3">
-              <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-purple-500"></div>
-              <p className="text-purple-400 text-sm">Updating progress...</p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <main>
+      <main role="main">
         {renderCurrentPage()}
       </main>
 
       {/* Enhanced Task Creation Modal */}
       {showTaskModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-title"
+        >
           <div className="bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between p-6 border-b border-slate-700">
-              <h2 className="text-xl font-bold text-white">Create New Task</h2>
+              <h2 id="modal-title" className="text-xl font-bold text-white">Create New Task</h2>
               <button
                 onClick={() => setShowTaskModal(false)}
-                className="p-2 text-gray-400 hover:text-white rounded-lg hover:bg-slate-700 transition-colors"
+                className="p-2 text-gray-400 hover:text-white rounded-lg hover:bg-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500"
+                aria-label="Close dialog"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -414,37 +710,57 @@ const AppContent = () => {
             <form 
               onSubmit={(e) => {
                 e.preventDefault()
+                
+                console.log('🔍 Form submission starting...')
+                
+                // Use FormData but extract values safely
                 const formData = new FormData(e.target)
-                const taskData = {
-                  title: formData.get('title'),
-                  description: formData.get('description'),
-                  priority: formData.get('priority'),
-                  dueDate: formData.get('dueDate') || null,
-                  category: formData.get('category'),
-                  estimatedHours: formData.get('estimatedHours') ? parseFloat(formData.get('estimatedHours')) : null
+                
+                // Debug: Log all form data entries
+                console.log('FormData entries:')
+                for (let [key, value] of formData.entries()) {
+                  console.log(`${key}:`, value)
                 }
+                
+                const taskData = {
+                  title: (formData.get('title') || '').toString().trim() || 'Default Test Title', // Temporary fallback
+                  description: (formData.get('description') || '').toString().trim(),
+                  priority: (formData.get('priority') || 'medium').toString(),
+                  dueDate: formData.get('dueDate') ? formData.get('dueDate').toString() : null,
+                  category: (formData.get('category') || '').toString().trim(),
+                  estimatedHours: formData.get('estimatedHours') ? parseFloat(formData.get('estimatedHours').toString()) : null
+                }
+                
+                // Debug: Log the processed task data
+                console.log('Processed task data:', taskData)
+                
+                console.log('✅ Calling handleAddTask with:', taskData)
                 handleAddTask(taskData)
               }}
               className="p-6 space-y-6"
             >
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="task-title" className="block text-sm font-medium text-gray-300 mb-2">
                   Title *
                 </label>
                 <input
+                  id="task-title"
                   type="text"
                   name="title"
                   required
                   placeholder="Enter task title..."
                   className="w-full bg-slate-700 border border-slate-600 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  aria-describedby="title-help"
                 />
+                <p id="title-help" className="text-xs text-gray-400 mt-1">Give your task a clear, descriptive name</p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="task-description" className="block text-sm font-medium text-gray-300 mb-2">
                   Description
                 </label>
                 <textarea
+                  id="task-description"
                   name="description"
                   rows={3}
                   placeholder="Add task description..."
@@ -454,10 +770,11 @@ const AppContent = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label htmlFor="task-priority" className="block text-sm font-medium text-gray-300 mb-2">
                     Priority
                   </label>
                   <select
+                    id="task-priority"
                     name="priority"
                     className="w-full bg-slate-700 border border-slate-600 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                   >
@@ -468,10 +785,11 @@ const AppContent = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label htmlFor="task-category" className="block text-sm font-medium text-gray-300 mb-2">
                     Category
                   </label>
                   <input
+                    id="task-category"
                     type="text"
                     name="category"
                     placeholder="e.g., Work, Personal..."
@@ -482,10 +800,11 @@ const AppContent = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label htmlFor="task-due-date" className="block text-sm font-medium text-gray-300 mb-2">
                     Due Date
                   </label>
                   <input
+                    id="task-due-date"
                     type="datetime-local"
                     name="dueDate"
                     className="w-full bg-slate-700 border border-slate-600 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
@@ -493,10 +812,11 @@ const AppContent = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label htmlFor="task-estimated-hours" className="block text-sm font-medium text-gray-300 mb-2">
                     Estimated Hours
                   </label>
                   <input
+                    id="task-estimated-hours"
                     type="number"
                     step="0.5"
                     min="0"
@@ -511,16 +831,24 @@ const AppContent = () => {
                 <button
                   type="button"
                   onClick={() => setShowTaskModal(false)}
-                  className="flex-1 bg-slate-700 hover:bg-slate-600 text-white py-3 px-4 rounded-xl transition-colors"
+                  className="flex-1 bg-slate-700 hover:bg-slate-600 text-white py-3 px-4 rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500"
+                  disabled={actionLoading.createTask}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  disabled={loading}
-                  className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:from-slate-600 disabled:to-slate-600 text-white py-3 px-4 rounded-xl transition-all transform hover:scale-105 disabled:transform-none"
+                  disabled={actionLoading.createTask}
+                  className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:from-slate-600 disabled:to-slate-600 text-white py-3 px-4 rounded-xl transition-all transform hover:scale-105 disabled:transform-none focus:outline-none focus:ring-2 focus:ring-purple-500 flex items-center justify-center space-x-2"
                 >
-                  {loading ? 'Creating...' : 'Create Task'}
+                  {actionLoading.createTask ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></div>
+                      <span>Creating...</span>
+                    </>
+                  ) : (
+                    <span>Create Task</span>
+                  )}
                 </button>
               </div>
             </form>
@@ -534,7 +862,17 @@ const AppContent = () => {
         onClose={() => setCheckInModal({ isOpen: false, task: null })}
         task={checkInModal.task}
         onSubmit={handleCheckInSubmit}
+        loading={actionLoading.dailyCheckIn}
       />
+
+      {/* Loading Overlay - using renamed component */}
+      <AppLoadingOverlay 
+        isVisible={Object.values(actionLoading).some(Boolean)} 
+        message="Processing your request..."
+      />
+
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
     </div>
   )
 }
