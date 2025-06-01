@@ -1,21 +1,42 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 import { AuthProvider } from './context/AuthContext'
 import { useAuth } from './hooks/useAuth'
+import { usePWA } from './hooks/usePWA'
 import Header from './components/Header'
 import TaskList from './components/TaskList'
-import Dashboard from './pages/Dashboard'
 import Login from './pages/Login'
-import Tasks from './pages/Task'
 import taskService from './services/taskService'
 import authService from './services/authService'
 import { parseError } from './utils/helpers'
 import { TASK_STATUS } from './utils/constants'
 
 // Import progress tracking components
-import { DailyCheckInModal, ProgressTracker } from './components/ProgressTracker'
+import { DailyCheckInModal } from './components/ProgressTracker'
+
+// Import PWA components
+import { 
+  InstallAppButton, 
+  NotificationButton, 
+  OnlineStatus, 
+  UpdateBanner, 
+  OfflineTasksIndicator,
+  PWAInstallPrompt 
+} from './components/PWAComponents'
+
+// Lazy load heavy components for better performance
+const Dashboard = lazy(() => import('./pages/Dashboard'))
+const Tasks = lazy(() => import('./pages/Task'))
+const ProgressTracker = lazy(() => import('./components/ProgressTracker'))
 
 import './index.css'
 import './App.css'
+
+// Create optimized loading component
+const OptimizedLoadingSpinner = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-purple-500"></div>
+  </div>
+)
 
 // Enhanced Toast Notification System
 const ToastContainer = ({ toasts, removeToast }) => {
@@ -87,11 +108,20 @@ const AppLoadingOverlay = ({ isVisible, message = "Loading..." }) => {
 
 const AppContent = () => {
   const { user, isAuthenticated, loading: authLoading, login, logout } = useAuth()
+  const { 
+    isOnline, 
+    createOfflineTask, 
+    hasOfflineTasks,
+    canInstall,
+    updateAvailable 
+  } = usePWA()
+  
   const [currentPage, setCurrentPage] = useState('dashboard')
   const [tasks, setTasks] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [showTaskModal, setShowTaskModal] = useState(false)
+  const [showInstallPrompt, setShowInstallPrompt] = useState(false)
   
   // Progress tracking state
   const [checkInModal, setCheckInModal] = useState({ isOpen: false, task: null })
@@ -132,6 +162,29 @@ const AppContent = () => {
       [action]: isLoading
     }))
   }
+
+  // PWA event listeners
+  useEffect(() => {
+    const handleNewTaskShortcut = () => {
+      if (isAuthenticated) {
+        setShowTaskModal(true)
+      }
+    }
+
+    // Show install prompt after some time if installable
+    const installPromptTimer = setTimeout(() => {
+      if (canInstall && !localStorage.getItem('install-prompt-dismissed')) {
+        setShowInstallPrompt(true)
+      }
+    }, 30000) // Show after 30 seconds
+
+    window.addEventListener('pwa-new-task', handleNewTaskShortcut)
+
+    return () => {
+      window.removeEventListener('pwa-new-task', handleNewTaskShortcut)
+      clearTimeout(installPromptTimer)
+    }
+  }, [isAuthenticated, canInstall])
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -314,19 +367,34 @@ const AppContent = () => {
 
       console.log('Clean task data being sent:', enhancedTaskData)
 
-      const result = await taskService.createTask(enhancedTaskData)
-      const newTask = result?.task || result
+      let result
+      let newTask
+
+      // Handle offline task creation
+      if (!isOnline) {
+        newTask = await createOfflineTask(enhancedTaskData)
+        addToast({
+          type: 'info',
+          title: 'Task created offline',
+          message: `"${cleanTaskData.title}" will sync when you're back online`
+        })
+      } else {
+        result = await taskService.createTask(enhancedTaskData)
+        newTask = result?.task || result
+        addToast({
+          type: 'success',
+          title: 'Task created',
+          message: `"${cleanTaskData.title}" has been added to your tasks`
+        })
+      }
+
       setTasks(prev => [newTask, ...prev])
       setShowTaskModal(false)
       
-      addToast({
-        type: 'success',
-        title: 'Task created',
-        message: `"${cleanTaskData.title}" has been added to your tasks`
-      })
-      
-      // Refresh analytics
-      loadAnalytics()
+      // Refresh analytics only if online
+      if (isOnline) {
+        loadAnalytics()
+      }
     } catch (error) {
       const errorMessage = parseError(error)
       setError(errorMessage)
@@ -558,6 +626,58 @@ const AppContent = () => {
     setCurrentPage('progress')
   }
 
+  // Updated renderCurrentPage function with lazy loading and Suspense
+  const renderCurrentPage = () => {
+    const commonProps = {
+      tasks,
+      onProgressUpdate: handleProgressUpdate,
+      onTimeLog: handleTimeLog,
+      onDailyCheckIn: handleDailyCheckIn,
+      progressLoading: Object.values(actionLoading).some(Boolean),
+      actionLoading
+    }
+
+    return (
+      <Suspense fallback={<OptimizedLoadingSpinner />}>
+        {(() => {
+          switch (currentPage) {
+            case 'tasks':
+              return (
+                <Tasks
+                  {...commonProps}
+                  onAddTask={openTaskModal}
+                  onEditTask={handleEditTask}
+                  onDeleteTask={handleDeleteTask}
+                  onStatusChange={handleStatusChange}
+                  loading={loading}
+                />
+              )
+            case 'progress':
+              return (
+                <ProgressTracker
+                  {...commonProps}
+                  analytics={analytics}
+                  onRefresh={refreshData}
+                  loading={progressLoading}
+                />
+              )
+            case 'dashboard':
+            default:
+              return (
+                <Dashboard
+                  {...commonProps}
+                  analytics={analytics}
+                  user={user}
+                  onAddTask={openTaskModal}
+                  onNavigateToTasks={navigateToTasks}
+                />
+              )
+          }
+        })()}
+      </Suspense>
+    )
+  }
+
   if (authLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
@@ -584,53 +704,11 @@ const AppContent = () => {
     )
   }
 
-  const renderCurrentPage = () => {
-    const commonProps = {
-      tasks,
-      onProgressUpdate: handleProgressUpdate,
-      onTimeLog: handleTimeLog,
-      onDailyCheckIn: handleDailyCheckIn,
-      progressLoading: Object.values(actionLoading).some(Boolean),
-      actionLoading
-    }
-
-    switch (currentPage) {
-      case 'tasks':
-        return (
-          <Tasks
-            {...commonProps}
-            onAddTask={openTaskModal}  // Changed from handleAddTask to openTaskModal
-            onEditTask={handleEditTask}
-            onDeleteTask={handleDeleteTask}
-            onStatusChange={handleStatusChange}
-            loading={loading}
-          />
-        )
-      case 'progress':
-        return (
-          <ProgressTracker
-            {...commonProps}
-            analytics={analytics}
-            onRefresh={refreshData}
-            loading={progressLoading}
-          />
-        )
-      case 'dashboard':
-      default:
-        return (
-          <Dashboard
-            {...commonProps}
-            analytics={analytics}
-            user={user}
-            onAddTask={openTaskModal}
-            onNavigateToTasks={navigateToTasks}
-          />
-        )
-    }
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      {/* PWA Update Banner */}
+      <UpdateBanner />
+      
       <Header
         onAddTask={openTaskModal}
         user={user}
@@ -643,40 +721,54 @@ const AppContent = () => {
         aria-label="Main navigation"
       >
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex space-x-8">
-            <button
-              onClick={navigateToDashboard}
-              className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-slate-800 ${
-                currentPage === 'dashboard'
-                  ? 'border-purple-500 text-purple-300'
-                  : 'border-transparent text-gray-400 hover:text-white hover:border-gray-300'
-              }`}
-              aria-current={currentPage === 'dashboard' ? 'page' : undefined}
-            >
-              Dashboard
-            </button>
-            <button
-              onClick={navigateToTasks}
-              className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-slate-800 ${
-                currentPage === 'tasks'
-                  ? 'border-purple-500 text-purple-300'
-                  : 'border-transparent text-gray-400 hover:text-white hover:border-gray-300'
-              }`}
-              aria-current={currentPage === 'tasks' ? 'page' : undefined}
-            >
-              Tasks
-            </button>
-            <button
-              onClick={navigateToProgress}
-              className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-slate-800 ${
-                currentPage === 'progress'
-                  ? 'border-purple-500 text-purple-300'
-                  : 'border-transparent text-gray-400 hover:text-white hover:border-gray-300'
-              }`}
-              aria-current={currentPage === 'progress' ? 'page' : undefined}
-            >
-              Progress Analytics
-            </button>
+          <div className="flex items-center justify-between">
+            <div className="flex space-x-8">
+              <button
+                onClick={navigateToDashboard}
+                className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-slate-800 ${
+                  currentPage === 'dashboard'
+                    ? 'border-purple-500 text-purple-300'
+                    : 'border-transparent text-gray-400 hover:text-white hover:border-gray-300'
+                }`}
+                aria-current={currentPage === 'dashboard' ? 'page' : undefined}
+              >
+                Dashboard
+              </button>
+              <button
+                onClick={navigateToTasks}
+                className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-slate-800 ${
+                  currentPage === 'tasks'
+                    ? 'border-purple-500 text-purple-300'
+                    : 'border-transparent text-gray-400 hover:text-white hover:border-gray-300'
+                }`}
+                aria-current={currentPage === 'tasks' ? 'page' : undefined}
+              >
+                Tasks
+              </button>
+              <button
+                onClick={navigateToProgress}
+                className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-slate-800 ${
+                  currentPage === 'progress'
+                    ? 'border-purple-500 text-purple-300'
+                    : 'border-transparent text-gray-400 hover:text-white hover:border-gray-300'
+                }`}
+                aria-current={currentPage === 'progress' ? 'page' : undefined}
+              >
+                Progress Analytics
+              </button>
+            </div>
+            
+            {/* PWA Status Indicators */}
+            <div className="flex items-center space-x-4">
+              <OnlineStatus />
+              {!isOnline && hasOfflineTasks && (
+                <span className="text-xs text-yellow-400">
+                  Offline tasks pending
+                </span>
+              )}
+              <InstallAppButton className="hidden sm:flex" />
+              <NotificationButton className="hidden sm:flex" />
+            </div>
           </div>
         </div>
       </nav>
@@ -870,6 +962,18 @@ const AppContent = () => {
         isVisible={Object.values(actionLoading).some(Boolean)} 
         message="Processing your request..."
       />
+
+      {/* PWA Install Prompt */}
+      <PWAInstallPrompt 
+        isOpen={showInstallPrompt} 
+        onClose={() => {
+          setShowInstallPrompt(false)
+          localStorage.setItem('install-prompt-dismissed', 'true')
+        }} 
+      />
+
+      {/* Offline Tasks Indicator */}
+      <OfflineTasksIndicator />
 
       {/* Toast Notifications */}
       <ToastContainer toasts={toasts} removeToast={removeToast} />
