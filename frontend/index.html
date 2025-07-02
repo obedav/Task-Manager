@@ -25,8 +25,6 @@
     <meta name="apple-mobile-web-app-title" content="TaskFlow" />
     
     <!-- Performance Optimizations -->
-    <link rel="preconnect" href="http://localhost:5000" crossorigin>
-    <link rel="dns-prefetch" href="http://localhost:5000">
     <link rel="modulepreload" href="/src/main.jsx">
     
     <!-- Apple Touch Icons -->
@@ -62,7 +60,6 @@
     <!-- Security Headers -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' http://localhost:5000 ws://localhost:5173;" />
     
     <title>TaskFlow - Task Management & Progress Tracking</title>
     
@@ -205,12 +202,266 @@
           transition-duration: 0.01ms !important;
         }
       }
+
+      /* Environment indicator for development */
+      .env-indicator {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background: rgba(255, 193, 7, 0.9);
+        color: #000;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: bold;
+        z-index: 10001;
+        display: none;
+      }
+      
+      .env-development .env-indicator {
+        display: block;
+      }
+      
+      .env-staging .env-indicator {
+        display: block;
+        background: rgba(255, 87, 34, 0.9);
+        color: white;
+      }
     </style>
   </head>
   <body>
+    <!-- NUCLEAR CONSOLE FIX - CRITICAL: ADD THIS FIRST BEFORE ANY OTHER SCRIPTS -->
+    <script>
+      (function() {
+        'use strict';
+        
+        // Store the original console methods immediately
+        const originalConsole = {
+          log: console.log,
+          error: console.error,
+          warn: console.warn,
+          info: console.info,
+          debug: console.debug,
+          trace: console.trace,
+          group: console.group,
+          groupEnd: console.groupEnd,
+          table: console.table,
+          time: console.time,
+          timeEnd: console.timeEnd
+        };
+
+        // Safe argument processor
+        function processSafeArgs(...args) {
+          return args.map(arg => {
+            try {
+              if (arg === null) return 'null';
+              if (arg === undefined) return 'undefined';
+              if (typeof arg === 'string') return arg;
+              if (typeof arg === 'number') return arg;
+              if (typeof arg === 'boolean') return arg;
+              if (typeof arg === 'function') return `[Function: ${arg.name || 'anonymous'}]`;
+              if (arg instanceof Error) return `${arg.name}: ${arg.message}`;
+              if (arg instanceof Date) return arg.toISOString();
+              
+              // For objects, safely stringify
+              if (typeof arg === 'object') {
+                try {
+                  // Handle circular references and complex objects
+                  const seen = new WeakSet();
+                  const safeObj = JSON.stringify(arg, (key, value) => {
+                    if (typeof value === 'object' && value !== null) {
+                      if (seen.has(value)) return '[Circular]';
+                      seen.add(value);
+                      
+                      // Limit object depth
+                      if (key && typeof key === 'string' && key.length > 0) {
+                        return '[Object]';
+                      }
+                    }
+                    return value;
+                  });
+                  return safeObj;
+                } catch (e) {
+                  return '[Unserializable Object]';
+                }
+              }
+              
+              return String(arg);
+            } catch (e) {
+              return '[Safe Conversion Failed]';
+            }
+          });
+        }
+
+        // Create completely safe console methods
+        const safeConsole = {
+          log: function(...args) {
+            try {
+              const safeArgs = processSafeArgs(...args);
+              originalConsole.log.apply(console, safeArgs);
+            } catch (e) {
+              originalConsole.log('[Console Log Error]');
+            }
+          },
+          
+          error: function(...args) {
+            try {
+              const safeArgs = processSafeArgs(...args);
+              originalConsole.error.apply(console, safeArgs);
+            } catch (e) {
+              originalConsole.error('[Console Error]');
+            }
+          },
+          
+          warn: function(...args) {
+            try {
+              const safeArgs = processSafeArgs(...args);
+              originalConsole.warn.apply(console, safeArgs);
+            } catch (e) {
+              originalConsole.warn('[Console Warning]');
+            }
+          },
+          
+          info: function(...args) {
+            try {
+              const safeArgs = processSafeArgs(...args);
+              originalConsole.info.apply(console, safeArgs);
+            } catch (e) {
+              originalConsole.info('[Console Info]');
+            }
+          },
+          
+          debug: function(...args) {
+            try {
+              const safeArgs = processSafeArgs(...args);
+              originalConsole.debug.apply(console, safeArgs);
+            } catch (e) {
+              originalConsole.debug('[Console Debug]');
+            }
+          },
+          
+          trace: function(...args) {
+            try {
+              const safeArgs = processSafeArgs(...args);
+              originalConsole.trace.apply(console, safeArgs);
+            } catch (e) {
+              originalConsole.trace('[Console Trace]');
+            }
+          },
+          
+          group: originalConsole.group,
+          groupEnd: originalConsole.groupEnd,
+          table: function(data) {
+            try {
+              if (typeof data === 'object' && data !== null) {
+                originalConsole.table('[Table Data - See Raw]');
+                originalConsole.log(processSafeArgs(data)[0]);
+              } else {
+                originalConsole.table(data);
+              }
+            } catch (e) {
+              originalConsole.log('[Console Table Error]');
+            }
+          },
+          time: originalConsole.time,
+          timeEnd: originalConsole.timeEnd
+        };
+
+        // Nuclear override - completely replace console methods
+        function nuclearConsoleOverride() {
+          try {
+            Object.defineProperty(window, 'console', {
+              value: safeConsole,
+              writable: false,
+              configurable: true
+            });
+            
+            // Also override on global object
+            if (typeof global !== 'undefined') {
+              global.console = safeConsole;
+            }
+            
+            // Override specific methods individually
+            Object.keys(safeConsole).forEach(method => {
+              try {
+                Object.defineProperty(console, method, {
+                  value: safeConsole[method],
+                  writable: false,
+                  configurable: true
+                });
+              } catch (e) {
+                // Ignore individual method override errors
+              }
+            });
+            
+          } catch (e) {
+            // Fallback - just replace the methods directly
+            console.log = safeConsole.log;
+            console.error = safeConsole.error;
+            console.warn = safeConsole.warn;
+            console.info = safeConsole.info;
+            console.debug = safeConsole.debug;
+            console.trace = safeConsole.trace;
+            console.table = safeConsole.table;
+          }
+        }
+
+        // Apply immediately
+        nuclearConsoleOverride();
+        
+        // Apply on DOM ready
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', nuclearConsoleOverride);
+        } else {
+          nuclearConsoleOverride();
+        }
+        
+        // Apply periodically to counter any overrides
+        setInterval(function() {
+          if (console.log.toString().includes('overrideMethod') || 
+              console.error.toString().includes('overrideMethod')) {
+            nuclearConsoleOverride();
+          }
+        }, 1000);
+        
+        // Apply on window load
+        window.addEventListener('load', nuclearConsoleOverride);
+        
+        // Disable React DevTools console interception
+        if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
+          try {
+            window.__REACT_DEVTOOLS_GLOBAL_HOOK__.onCommitFiberRoot = null;
+            window.__REACT_DEVTOOLS_GLOBAL_HOOK__.onCommitFiberUnmount = null;
+            window.__REACT_DEVTOOLS_GLOBAL_HOOK__.supportsFiber = false;
+          } catch (e) {
+            // Ignore errors
+          }
+        }
+        
+        // Prevent future React DevTools hooks
+        Object.defineProperty(window, '__REACT_DEVTOOLS_GLOBAL_HOOK__', {
+          value: {
+            onCommitFiberRoot: function() {},
+            onCommitFiberUnmount: function() {},
+            supportsFiber: false,
+            inject: function() { return -1; }
+          },
+          writable: false,
+          configurable: false
+        });
+        
+        console.log('🛡️ Nuclear console protection activated');
+      })();
+    </script>
+
     <!-- Skip Links for Accessibility -->
     <a href="#main-content" class="skip-links">Skip to main content</a>
     <a href="#navigation" class="skip-links">Skip to navigation</a>
+    
+    <!-- Environment indicator -->
+    <div class="env-indicator" id="env-indicator">
+      <!-- Will be populated by JavaScript -->
+    </div>
     
     <noscript>
       <div style="
@@ -251,8 +502,29 @@
     
     <script type="module" src="/src/main.jsx"></script>
     
-    <!-- Optimized PWA Installation Script -->
+    <!-- COMPLETE PWA INSTALLATION SCRIPT -->
     <script>
+      // Safe environment detection using import.meta.env through dynamic import
+      let appConfig = {
+        environment: 'development',
+        isProduction: false,
+        apiUrl: 'http://localhost:5000/api',
+        version: '1.0.0',
+        buildTime: new Date().toISOString()
+      };
+
+      // Try to get config from the React app when it loads
+      const getConfigFromApp = () => {
+        try {
+          // These will be set by the main.jsx when it loads
+          if (window.__APP_CONFIG__) {
+            appConfig = { ...appConfig, ...window.__APP_CONFIG__ };
+          }
+        } catch (e) {
+          console.warn('Could not load app config:', e.message);
+        }
+      };
+
       // Performance monitoring
       const perfStart = performance.now();
       
@@ -272,51 +544,149 @@
           loader.style.transition = 'opacity 0.5s ease-out';
           
           setTimeout(() => {
-            loader.remove();
+            if (loader.parentNode) {
+              loader.remove();
+            }
             
-            // Log performance
-            const loadTime = performance.now() - perfStart;
-            console.log(`🚀 TaskFlow loaded in ${Math.round(loadTime)}ms`);
+            // Log performance (only in development)
+            if (!appConfig.isProduction) {
+              const loadTime = performance.now() - perfStart;
+              console.log(`🚀 TaskFlow loaded in ${Math.round(loadTime)}ms`);
+            }
           }, 500);
+        }
+      };
+
+      // Set environment indicator safely
+      const setEnvironmentIndicator = () => {
+        try {
+          getConfigFromApp();
+          
+          if (!appConfig.isProduction) {
+            document.documentElement.classList.add(`env-${appConfig.environment}`);
+            const indicator = document.getElementById('env-indicator');
+            if (indicator) {
+              indicator.textContent = appConfig.environment.toUpperCase();
+            }
+          }
+        } catch (e) {
+          console.warn('Could not set environment indicator:', e.message);
+        }
+      };
+      
+      // Safe performance monitoring links
+      const addPerformanceLinks = () => {
+        try {
+          if (appConfig.apiUrl && appConfig.apiUrl !== 'undefined') {
+            // Dynamically add preconnect and dns-prefetch
+            const preconnect = document.createElement('link');
+            preconnect.rel = 'preconnect';
+            preconnect.href = appConfig.apiUrl;
+            preconnect.crossOrigin = 'anonymous';
+            document.head.appendChild(preconnect);
+
+            const dnsPrefetch = document.createElement('link');
+            dnsPrefetch.rel = 'dns-prefetch';
+            dnsPrefetch.href = appConfig.apiUrl;
+            document.head.appendChild(dnsPrefetch);
+          }
+        } catch (e) {
+          console.warn('Could not add performance links:', e.message);
         }
       };
       
       // Remove loader when content is ready
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
-          setTimeout(removeLoader, 1000);
+          setTimeout(() => {
+            setEnvironmentIndicator();
+            addPerformanceLinks();
+            removeLoader();
+          }, 1000);
         });
       } else {
-        setTimeout(removeLoader, 1000);
+        setTimeout(() => {
+          setEnvironmentIndicator();
+          addPerformanceLinks();
+          removeLoader();
+        }, 1000);
       }
       
-      // Service Worker registration
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
-            .then((registration) => {
-              console.log('🔧 Service Worker registered:', registration);
-            })
-            .catch((error) => {
-              console.log('❌ Service Worker registration failed:', error);
-            });
-        });
-      }
+      // Service Worker registration with better error handling
+      const registerServiceWorker = () => {
+        if ('serviceWorker' in navigator && appConfig.isProduction) {
+          window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+              .then((registration) => {
+                if (!appConfig.isProduction) {
+                  console.log('🔧 Service Worker registered:', registration);
+                }
+                
+                // Handle updates
+                registration.addEventListener('updatefound', () => {
+                  const newWorker = registration.installing;
+                  if (newWorker) {
+                    newWorker.addEventListener('statechange', () => {
+                      if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                        // New version available
+                        window.dispatchEvent(new CustomEvent('sw-update-available'));
+                      }
+                    });
+                  }
+                });
+              })
+              .catch((error) => {
+                if (!appConfig.isProduction) {
+                  console.log('❌ Service Worker registration failed:', error);
+                }
+              });
+          });
+        }
+      };
       
       // PWA install prompt handling
       let deferredPrompt;
       window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
-        console.log('💾 PWA install prompt available');
+        
+        if (!appConfig.isProduction) {
+          console.log('💾 PWA install prompt available');
+        }
         
         // Dispatch custom event for React app
-        window.dispatchEvent(new CustomEvent('pwa-installable'));
+        window.dispatchEvent(new CustomEvent('pwa-installable', {
+          detail: { prompt: deferredPrompt }
+        }));
       });
+      
+      // PWA install function for React app
+      window.showInstallPrompt = async () => {
+        if (deferredPrompt) {
+          try {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            
+            if (!appConfig.isProduction) {
+              console.log(`PWA install ${outcome}`);
+            }
+            
+            window.dispatchEvent(new CustomEvent('pwa-install-result', {
+              detail: { outcome }
+            }));
+            
+            deferredPrompt = null;
+          } catch (e) {
+            console.warn('PWA install prompt failed:', e.message);
+          }
+        }
+      };
       
       // Track PWA usage analytics
       if (window.matchMedia('(display-mode: standalone)').matches) {
-        console.log('📱 Running as installed PWA');
+        if (!appConfig.isProduction) {
+          console.log('📱 Running as installed PWA');
+        }
         document.documentElement.classList.add('pwa-standalone');
       }
       
@@ -326,36 +696,74 @@
       
       if (isIOS) {
         document.documentElement.classList.add('ios-device');
-        if (!isInStandaloneMode) {
+        if (!isInStandaloneMode && !appConfig.isProduction) {
           console.log('📱 iOS device detected - PWA installable');
         }
       }
       
-      // Error handling for better UX
+      // Enhanced error handling for better UX
       window.addEventListener('error', (event) => {
-        console.error('🚨 JavaScript error:', event.error);
-        // Could send to analytics service
+        try {
+          const errorInfo = {
+            message: event.error?.message || event.message || 'Unknown error',
+            filename: event.filename || 'Unknown file',
+            lineno: event.lineno || 0,
+            timestamp: new Date().toISOString()
+          };
+
+          if (!appConfig.isProduction) {
+            console.error('🚨 JavaScript error:', errorInfo);
+          }
+          
+          // Report critical errors in production
+          if (appConfig.isProduction && window.reportError) {
+            window.reportError(errorInfo);
+          }
+        } catch (e) {
+          // Fallback error handling
+          console.error('Error in error handler:', e.message);
+        }
       });
       
       // Network status monitoring
-      window.addEventListener('online', () => {
-        console.log('🌐 Back online');
-        document.documentElement.classList.remove('offline');
-        document.documentElement.classList.add('online');
-      });
+      const updateNetworkStatus = (online) => {
+        try {
+          document.documentElement.classList.toggle('offline', !online);
+          document.documentElement.classList.toggle('online', online);
+          
+          // Dispatch event for React app
+          window.dispatchEvent(new CustomEvent('network-change', {
+            detail: { online }
+          }));
+          
+          if (!appConfig.isProduction) {
+            console.log(online ? '🌐 Back online' : '📱 Gone offline');
+          }
+        } catch (e) {
+          console.warn('Error updating network status:', e.message);
+        }
+      };
       
-      window.addEventListener('offline', () => {
-        console.log('📱 Gone offline');
-        document.documentElement.classList.remove('online');
-        document.documentElement.classList.add('offline');
-      });
+      window.addEventListener('online', () => updateNetworkStatus(true));
+      window.addEventListener('offline', () => updateNetworkStatus(false));
       
       // Initial network status
-      if (navigator.onLine) {
-        document.documentElement.classList.add('online');
-      } else {
-        document.documentElement.classList.add('offline');
-      }
+      updateNetworkStatus(navigator.onLine);
+      
+      // Initialize all features
+      setTimeout(() => {
+        try {
+          getConfigFromApp();
+          registerServiceWorker();
+          
+          // Global app info for debugging (development only)
+          if (!appConfig.isProduction) {
+            window.TaskFlowDebug = appConfig;
+          }
+        } catch (e) {
+          console.warn('Error initializing app features:', e.message);
+        }
+      }, 2000);
     </script>
   </body>
 </html>

@@ -1,7 +1,7 @@
 {
   "name": "TaskFlow - Task Management & Progress Tracking",
   "short_name": "TaskFlow",
-  "description": "Manage and track your tasks with progress monitoring and analytics",
+  "description": "Manage and track your tasks with progress monitoring and analytics. Professional productivity tool for individuals and teams.",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
@@ -11,54 +11,55 @@
   "lang": "en",
   "dir": "ltr",
   "scope": "/",
+  "id": "taskflow-app",
   "icons": [
     {
       "src": "/icons/icon-72x72.png",
       "sizes": "72x72",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
       "src": "/icons/icon-96x96.png",
       "sizes": "96x96",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
       "src": "/icons/icon-128x128.png",
       "sizes": "128x128",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
       "src": "/icons/icon-144x144.png",
       "sizes": "144x144",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
       "src": "/icons/icon-152x152.png",
       "sizes": "152x152",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
       "src": "/icons/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
       "src": "/icons/icon-384x384.png",
       "sizes": "384x384",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
       "src": "/icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
       "src": "/icons/maskable-icon.png",
@@ -73,14 +74,52 @@
       "short_name": "New Task",
       "description": "Create a new task quickly",
       "url": "/?action=new-task",
-      "icons": [{ "src": "/icons/shortcut-new-task.png", "sizes": "192x192" }]
+      "icons": [
+        { 
+          "src": "/icons/shortcut-new-task.png", 
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     },
     {
       "name": "Today's Tasks",
       "short_name": "Today",
       "description": "View tasks due today",
       "url": "/tasks?filter=today",
-      "icons": [{ "src": "/icons/shortcut-today.png", "sizes": "192x192" }]
+      "icons": [
+        { 
+          "src": "/icons/shortcut-today.png", 
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "View your progress dashboard",
+      "url": "/dashboard",
+      "icons": [
+        { 
+          "src": "/icons/shortcut-dashboard.png", 
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Analytics",
+      "short_name": "Analytics",
+      "description": "View detailed analytics and reports",
+      "url": "/analytics",
+      "icons": [
+        { 
+          "src": "/icons/shortcut-analytics.png", 
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     }
   ],
   "screenshots": [
@@ -88,25 +127,29 @@
       "src": "/screenshots/desktop-dashboard.png",
       "sizes": "1280x800",
       "type": "image/png",
-      "form_factor": "wide"
+      "form_factor": "wide",
+      "label": "Dashboard view showing task overview and analytics"
     },
     {
       "src": "/screenshots/desktop-tasks.png",
       "sizes": "1280x800",
       "type": "image/png",
-      "form_factor": "wide"
+      "form_factor": "wide",
+      "label": "Task management interface with progress tracking"
     },
     {
       "src": "/screenshots/mobile-dashboard.png",
       "sizes": "750x1334",
       "type": "image/png",
-      "form_factor": "narrow"
+      "form_factor": "narrow",
+      "label": "Mobile dashboard with responsive design"
     },
     {
       "src": "/screenshots/mobile-tasks.png",
       "sizes": "750x1334",
       "type": "image/png",
-      "form_factor": "narrow"
+      "form_factor": "narrow",
+      "label": "Mobile task list with touch-friendly interface"
     }
   ],
   "prefer_related_applications": false,
@@ -118,5 +161,30 @@
   },
   "edge_side_panel": {
     "preferred_width": 400
+  },
+  "file_handlers": [
+    {
+      "action": "/import",
+      "accept": {
+        "text/csv": [".csv"],
+        "application/json": [".json"]
+      }
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+taskflow",
+      "url": "/task?id=%s"
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
   }
 }

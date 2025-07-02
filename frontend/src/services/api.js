@@ -1,25 +1,95 @@
+// services/api.js - Production Ready API Service with Object Conversion Fixes
 class ApiService {
   constructor() {
-    this.baseURL = 'http://localhost:5000/api'
+    // Use environment variables with fallback to existing URL
+    this.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+    this.isProduction = import.meta.env.VITE_ENVIRONMENT === 'production'
+    this.isDevelopment = import.meta.env.DEV
     this.timeout = 30000 // 30 seconds
+    
+    this.log('API Service initialized', {
+      baseURL: this.baseURL,
+      environment: import.meta.env.VITE_ENVIRONMENT,
+      isProduction: this.isProduction
+    })
   }
 
-  // Get authentication token
+  // Safe stringify helper to prevent object conversion errors
+  safeStringify(obj, fallback = 'Unable to serialize') {
+    try {
+      if (obj === null || obj === undefined) return 'null'
+      if (typeof obj === 'string') return obj
+      if (typeof obj === 'number' || typeof obj === 'boolean') return String(obj)
+      return JSON.stringify(obj, (key, value) => {
+        // Handle circular references and complex objects
+        if (typeof value === 'object' && value !== null) {
+          if (value.constructor?.name && !['Object', 'Array'].includes(value.constructor.name)) {
+            return `[${value.constructor.name}]`
+          }
+        }
+        return value
+      }, 2)
+    } catch (e) {
+      return fallback
+    }
+  }
+
+  // Safe argument processing for logging
+  processSafeArgs(...args) {
+    return args.map(arg => {
+      if (typeof arg === 'object' && arg !== null) {
+        return this.safeStringify(arg)
+      }
+      return arg
+    })
+  }
+
+  // Fixed logging methods
+  log(...args) {
+    if (this.isDevelopment) {
+      const safeArgs = this.processSafeArgs(...args)
+      console.log('🌐 [ApiService]', ...safeArgs)
+    }
+  }
+
+  error(...args) {
+    const safeArgs = this.processSafeArgs(...args)
+    console.error('❌ [ApiService]', ...safeArgs)
+  }
+
+  warn(...args) {
+    if (this.isDevelopment) {
+      const safeArgs = this.processSafeArgs(...args)
+      console.warn('⚠️ [ApiService]', ...safeArgs)
+    }
+  }
+
+  // Enhanced token management with production security
   getToken() {
+    if (this.isProduction) {
+      // In production, we'll rely on httpOnly cookies for security
+      // But still support localStorage for backward compatibility
+      return localStorage.getItem('taskflow_auth_token')
+    }
     return localStorage.getItem('taskflow_auth_token')
   }
 
-  // Get refresh token
   getRefreshToken() {
     return localStorage.getItem('taskflow_refresh_token')
   }
 
-  // Get default headers
+  // Enhanced headers with security
   getHeaders(isFormData = false) {
     const headers = {}
     
     if (!isFormData) {
       headers['Content-Type'] = 'application/json'
+    }
+    
+    // Add security headers in production
+    if (this.isProduction) {
+      headers['X-Requested-With'] = 'XMLHttpRequest'
+      headers['X-Content-Type-Options'] = 'nosniff'
     }
     
     const token = this.getToken()
@@ -30,33 +100,52 @@ class ApiService {
     return headers
   }
 
-  // Handle response
+  // Enhanced response handling with better error messages
   async handleResponse(response) {
     const contentType = response.headers.get('content-type')
     let data = {}
     
-    // Try to parse JSON response
-    if (contentType && contentType.includes('application/json')) {
-      try {
+    try {
+      if (contentType && contentType.includes('application/json')) {
         data = await response.json()
-      } catch (e) {
-        data = { message: 'Invalid JSON response' }
+      } else {
+        const textResponse = await response.text()
+        data = { message: textResponse || response.statusText }
       }
-    } else {
-      data = { message: await response.text() || response.statusText }
+    } catch (parseError) {
+      this.error('Failed to parse response:', parseError.message)
+      data = { message: 'Invalid response format from server' }
     }
 
     if (!response.ok) {
-      const error = new Error(data.message || `HTTP ${response.status}: ${response.statusText}`)
+      let errorMessage = data?.message || `HTTP ${response.status}: ${response.statusText}`
+      
+      // User-friendly error messages
+      if (response.status === 401) {
+        errorMessage = 'Your session has expired. Please log in again.'
+      } else if (response.status === 403) {
+        errorMessage = 'You don\'t have permission to perform this action.'
+      } else if (response.status === 404) {
+        errorMessage = 'The requested resource was not found.'
+      } else if (response.status === 500) {
+        errorMessage = this.isProduction 
+          ? 'Something went wrong on our end. Please try again later.'
+          : data?.message || 'Internal server error'
+      } else if (response.status >= 500) {
+        errorMessage = 'Server is temporarily unavailable. Please try again later.'
+      }
+      
+      const error = new Error(errorMessage)
       error.status = response.status
-      error.data = data
+      error.data = this.safeStringify(data) // Use safe stringify
+      error.originalMessage = data?.message || 'Unknown error'
       throw error
     }
 
     return data
   }
 
-  // Create request with timeout
+  // Enhanced timeout handling
   async requestWithTimeout(url, options) {
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), this.timeout)
@@ -64,27 +153,33 @@ class ApiService {
     try {
       const response = await fetch(url, {
         ...options,
-        signal: controller.signal
+        signal: controller.signal,
+        credentials: this.isProduction ? 'include' : 'same-origin' // Include cookies in production
       })
       clearTimeout(timeoutId)
       return response
     } catch (error) {
       clearTimeout(timeoutId)
       if (error.name === 'AbortError') {
-        throw new Error('Request timeout')
+        throw new Error('Request timed out. Please check your connection and try again.')
+      }
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        const serverUrl = this.baseURL.replace('/api', '')
+        throw new Error(`Unable to connect to server. Please check if the backend is running on ${serverUrl}`)
       }
       throw error
     }
   }
 
-  // Check if endpoint is auth-related (don't retry these)
+  // Check if endpoint is auth-related
   isAuthEndpoint(endpoint) {
     return endpoint.includes('/auth/login') || 
            endpoint.includes('/auth/register') || 
-           endpoint.includes('/auth/refresh')
+           endpoint.includes('/auth/refresh') ||
+           endpoint.includes('/auth/logout')
   }
 
-  // Generic request method
+  // Enhanced request method with better error handling and logging
   async request(endpoint, options = {}) {
     const url = `${this.baseURL}${endpoint}`
     const config = {
@@ -93,43 +188,47 @@ class ApiService {
     }
 
     try {
-      console.log(`🌐 API Request: ${options.method || 'GET'} ${url}`)
+      this.log(`${options.method || 'GET'} ${endpoint}`)
       const response = await this.requestWithTimeout(url, config)
       const data = await this.handleResponse(response)
-      console.log(`✅ API Response:`, data)
+      this.log(`✅ ${options.method || 'GET'} ${endpoint} - Success`)
       return data
     } catch (error) {
-      console.error(`❌ API Error:`, error)
+      this.error(`${options.method || 'GET'} ${endpoint} - Failed:`, error.message)
       
+      // Enhanced network error handling
       if (error.name === 'TypeError' && error.message.includes('fetch')) {
-        throw new Error('Network error: Unable to connect to server. Make sure your backend is running on http://localhost:5000')
+        const friendlyError = new Error('Network error: Please check your internet connection and try again.')
+        friendlyError.originalError = error
+        throw friendlyError
       }
       
       // Handle 401 errors (token expired) - but NOT for auth endpoints
       if (error.status === 401 && !this.isAuthEndpoint(endpoint)) {
         const refreshToken = this.getRefreshToken()
-        if (refreshToken && this.getToken()) { // Only retry if we have both tokens
+        if (refreshToken && this.getToken()) {
           try {
-            console.log('🔄 Token expired, attempting refresh...')
+            this.log('🔄 Token expired, attempting refresh...')
             await this.refreshAuthToken()
+            
             // Retry the original request with new token
             const retryConfig = {
               ...config,
               headers: this.getHeaders(options.isFormData)
             }
-            console.log('🔄 Retrying original request with new token...')
+            this.log('🔄 Retrying original request with new token...')
             const retryResponse = await this.requestWithTimeout(url, retryConfig)
-            return await this.handleResponse(retryResponse)
+            const retryData = await this.handleResponse(retryResponse)
+            this.log(`✅ ${options.method || 'GET'} ${endpoint} - Success after retry`)
+            return retryData
           } catch (refreshError) {
-            console.error('❌ Token refresh failed:', refreshError)
-            // Refresh failed, redirect to login
+            this.error('Token refresh failed:', refreshError.message)
             this.handleAuthFailure()
-            throw new Error('Authentication failed. Please log in again.')
+            throw new Error('Your session has expired. Please log in again.')
           }
         } else {
-          // No refresh token or no access token, just handle auth failure
           this.handleAuthFailure()
-          throw new Error('Authentication required. Please log in.')
+          throw new Error('Please log in to continue.')
         }
       }
       
@@ -137,63 +236,92 @@ class ApiService {
     }
   }
 
-  // Handle authentication failure
+  // Enhanced auth failure handling
   handleAuthFailure() {
+    this.log('Handling authentication failure')
+    
+    // Clear all auth data
     localStorage.removeItem('taskflow_auth_token')
     localStorage.removeItem('taskflow_refresh_token')
     localStorage.removeItem('taskflow_user_data')
     
     // Dispatch custom event for auth failure
-    window.dispatchEvent(new CustomEvent('auth:failure'))
+    window.dispatchEvent(new CustomEvent('auth:failure', {
+      detail: { 
+        message: 'Authentication failed',
+        timestamp: new Date().toISOString()
+      }
+    }))
   }
 
-  // Refresh authentication token
+  // Enhanced token refresh with better error handling
   async refreshAuthToken() {
     const refreshToken = this.getRefreshToken()
     if (!refreshToken) {
       throw new Error('No refresh token available')
     }
 
-    const response = await fetch(`${this.baseURL}/auth/refresh`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ refreshToken })
-    })
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), this.timeout)
 
-    if (!response.ok) {
-      throw new Error('Token refresh failed')
-    }
+    try {
+      const response = await fetch(`${this.baseURL}/auth/refresh`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(this.isProduction && {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-Content-Type-Options': 'nosniff'
+          })
+        },
+        credentials: this.isProduction ? 'include' : 'same-origin',
+        body: JSON.stringify({ refreshToken }),
+        signal: controller.signal
+      })
 
-    const data = await response.json()
-    
-    if (data.token) {
-      localStorage.setItem('taskflow_auth_token', data.token)
-      if (data.refreshToken) {
-        localStorage.setItem('taskflow_refresh_token', data.refreshToken)
+      clearTimeout(timeoutId)
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.message || 'Failed to refresh authentication token')
       }
-      console.log('✅ Token refreshed successfully')
-    }
 
-    return data
+      const data = await response.json()
+      
+      if (data.token) {
+        localStorage.setItem('taskflow_auth_token', data.token)
+        if (data.refreshToken) {
+          localStorage.setItem('taskflow_refresh_token', data.refreshToken)
+        }
+        this.log('✅ Token refreshed successfully')
+      } else {
+        throw new Error('Invalid refresh response')
+      }
+
+      return data
+    } catch (error) {
+      clearTimeout(timeoutId)
+      if (error.name === 'AbortError') {
+        throw new Error('Token refresh timed out')
+      }
+      throw error
+    }
   }
 
-  // GET request
+  // HTTP Methods (unchanged but with enhanced logging)
   async get(endpoint) {
     return this.request(endpoint, { method: 'GET' })
   }
 
-  // GET request with query parameters
   async getWithQuery(endpoint, params = {}) {
     const queryString = new URLSearchParams()
     
     Object.entries(params).forEach(([key, value]) => {
       if (value !== null && value !== undefined && value !== '') {
         if (Array.isArray(value)) {
-          value.forEach(v => queryString.append(key, v))
+          value.forEach(v => queryString.append(key, String(v))) // Ensure string conversion
         } else {
-          queryString.append(key, value)
+          queryString.append(key, String(value)) // Ensure string conversion
         }
       }
     })
@@ -202,7 +330,6 @@ class ApiService {
     return this.request(fullEndpoint, { method: 'GET' })
   }
 
-  // POST request
   async post(endpoint, data) {
     return this.request(endpoint, {
       method: 'POST',
@@ -210,7 +337,6 @@ class ApiService {
     })
   }
 
-  // PUT request
   async put(endpoint, data) {
     return this.request(endpoint, {
       method: 'PUT',
@@ -218,7 +344,6 @@ class ApiService {
     })
   }
 
-  // PATCH request
   async patch(endpoint, data) {
     return this.request(endpoint, {
       method: 'PATCH',
@@ -226,12 +351,10 @@ class ApiService {
     })
   }
 
-  // DELETE request
   async delete(endpoint) {
     return this.request(endpoint, { method: 'DELETE' })
   }
 
-  // Upload file (FormData)
   async upload(endpoint, formData) {
     return this.request(endpoint, {
       method: 'POST',
@@ -240,37 +363,72 @@ class ApiService {
     })
   }
 
-  // Health check
+  // Enhanced health check
   async healthCheck() {
     try {
       const response = await this.get('/health')
-      return response
+      return {
+        ...response,
+        status: 'healthy',
+        timestamp: new Date().toISOString()
+      }
     } catch (error) {
       return {
         status: 'error',
-        message: error.message,
-        timestamp: new Date().toISOString()
+        message: this.isProduction 
+          ? 'Service temporarily unavailable'
+          : error.message,
+        timestamp: new Date().toISOString(),
+        details: this.isDevelopment ? error.message : undefined
       }
     }
   }
 
-  // Test connection to backend
+  // Enhanced connection test
   async testConnection() {
     try {
-      const response = await fetch(`${this.baseURL.replace('/api', '')}`)
-      const data = await response.json()
-      console.log('🚀 Backend connection successful:', data)
-      return { success: true, data }
+      const baseUrl = this.baseURL.replace('/api', '')
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 5000) // Shorter timeout for connection test
+
+      const response = await fetch(baseUrl, {
+        method: 'GET',
+        signal: controller.signal,
+        credentials: this.isProduction ? 'include' : 'same-origin'
+      })
+      
+      clearTimeout(timeoutId)
+      
+      let data = { message: 'Server is running' }
+      try {
+        data = await response.json()
+      } catch (e) {
+        // Server might not return JSON for root endpoint
+      }
+      
+      this.log('🚀 Backend connection successful')
+      return { 
+        success: true, 
+        data,
+        status: 'connected',
+        baseURL: this.baseURL
+      }
     } catch (error) {
-      console.error('❌ Backend connection failed:', error)
+      const errorMessage = this.isProduction
+        ? 'Unable to connect to server. Please try again later.'
+        : `Cannot connect to backend server at ${this.baseURL.replace('/api', '')}. Make sure it's running.`
+      
+      this.error('Backend connection failed:', error.message)
       return { 
         success: false, 
-        error: 'Cannot connect to backend server. Make sure it\'s running on http://localhost:5000' 
+        error: errorMessage,
+        details: this.isDevelopment ? error.message : undefined,
+        baseURL: this.baseURL
       }
     }
   }
 
-  // Utility method to check if user is authenticated
+  // Enhanced authentication check
   isAuthenticated() {
     const token = this.getToken()
     if (!token) return false
@@ -278,39 +436,115 @@ class ApiService {
     try {
       const payload = JSON.parse(atob(token.split('.')[1]))
       const now = Date.now() / 1000
-      return payload.exp > now
+      const isValid = payload.exp > now
+      
+      if (!isValid) {
+        this.log('Token has expired')
+      }
+      
+      return isValid
     } catch (error) {
+      this.warn('Invalid token format:', error.message)
       return false
     }
   }
 
-  // Set base URL (useful for environment switching)
+  // Environment-aware base URL setting
   setBaseURL(url) {
+    this.log('Changing base URL from', this.baseURL, 'to', url)
     this.baseURL = url
   }
 
-  // Get current base URL
   getBaseURL() {
     return this.baseURL
   }
 
-  // Clear all tokens and user data
+  // Enhanced auth clearing
   clearAuth() {
+    this.log('Clearing authentication data')
     localStorage.removeItem('taskflow_auth_token')
     localStorage.removeItem('taskflow_refresh_token')
     localStorage.removeItem('taskflow_user_data')
+    
+    // In production, also call logout endpoint to clear httpOnly cookies
+    if (this.isProduction) {
+      this.post('/auth/logout', {}).catch(() => {
+        // Ignore errors when clearing auth
+      })
+    }
+  }
+
+  // Get current user info from token
+  getCurrentUser() {
+    const token = this.getToken()
+    if (!token) return null
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]))
+      return {
+        id: payload.id || payload.userId,
+        email: payload.email,
+        name: payload.name,
+        exp: payload.exp
+      }
+    } catch (error) {
+      this.warn('Cannot parse user from token:', error.message)
+      return null
+    }
+  }
+
+  // Fixed error reporting
+  reportError(error, context = {}) {
+    const errorData = {
+      message: error?.message || 'Unknown error',
+      stack: error?.stack || 'No stack trace',
+      context: this.safeStringify(context),
+      timestamp: new Date().toISOString(),
+      url: window.location.href,
+      userAgent: navigator.userAgent
+    }
+
+    if (this.isProduction) {
+      console.error('API Error:', this.safeStringify(errorData))
+      // In production, you might want to send errors to a service like Sentry
+    } else {
+      console.error('API Error:', errorData)
+    }
   }
 }
 
 // Create and export singleton instance
 const apiService = new ApiService()
 
-// Handle global auth failures
-window.addEventListener('auth:failure', () => {
-  console.warn('Authentication failed - user needs to log in again')
+// Enhanced global auth failure handling
+window.addEventListener('auth:failure', (event) => {
+  const message = event.detail?.message || 'Authentication failed'
+  console.warn(`🔐 ${message} - User needs to log in again`)
+  
+  // In production, you might want to show a user-friendly notification
+  if (apiService.isProduction) {
+    // Could dispatch to a global notification system
+    window.dispatchEvent(new CustomEvent('notification:show', {
+      detail: {
+        type: 'warning',
+        message: 'Your session has expired. Please log in again.',
+        persistent: true
+      }
+    }))
+  }
 })
 
-// Test backend connection on startup
-apiService.testConnection()
+// Test backend connection on startup (only in development)
+if (apiService.isDevelopment) {
+  apiService.testConnection().then(result => {
+    if (result.success) {
+      console.log('✅ Backend connection established')
+    } else {
+      console.warn('⚠️ Backend connection failed:', result.error)
+    }
+  }).catch(error => {
+    console.error('❌ Connection test failed:', error.message)
+  })
+}
 
 export default apiService
