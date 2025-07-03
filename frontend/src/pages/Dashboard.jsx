@@ -1,14 +1,14 @@
-// pages/Dashboard.jsx - Production Ready with Error Boundaries and Performance Optimization (CORRECTED)
+// pages/Dashboard.jsx - 
 import React, { useState, useEffect, useCallback, useMemo, lazy, Suspense } from 'react'
 import { Calendar, Clock, TrendingUp, Target, CheckCircle, AlertCircle, Plus, ArrowRight, BarChart3, Timer, AlertTriangle, Wifi, WifiOff } from 'lucide-react'
 import taskService from '../services/taskService'
 
 // Lazy load heavy components for better performance
 const DailyCheckInModal = lazy(() => 
-  import('../components/ProgressTracker').then(module => ({ default: module.DailyCheckInModal }))
+  import('../components/SafeProgressTracker').then(module => ({ default: module.DailyCheckInModal }))
 )
 const ProgressBar = lazy(() => 
-  import('../components/ProgressTracker').then(module => ({ default: module.ProgressBar }))
+  import('../components/SafeProgressTracker').then(module => ({ default: module.ProgressBar }))
 )
 
 // Error Boundary Component
@@ -25,9 +25,9 @@ class DashboardErrorBoundary extends React.Component {
   componentDidCatch(error, errorInfo) {
     console.error('Dashboard Error:', error, errorInfo)
     
-    // Report error in production
+   
     if (import.meta.env.VITE_ENVIRONMENT === 'production') {
-      // Could send to error tracking service
+     
       console.error('Dashboard crashed:', {
         error: error.message,
         stack: error.stack,

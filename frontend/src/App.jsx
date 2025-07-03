@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from 'react'
+import { useState, useEffect } from 'react'
 import { AuthProvider } from './context/AuthContext'
 import { useAuth } from './hooks/useAuth'
 import { usePWA } from './hooks/usePWA'
@@ -10,8 +10,190 @@ import authService from './services/authService'
 import { parseError } from './utils/helpers'
 import { TASK_STATUS } from './utils/constants'
 
-// Import progress tracking components
-import { DailyCheckInModal } from './components/ProgressTracker'
+// FIXED: Use regular imports instead of lazy loading
+import Dashboard from './pages/Dashboard'
+import Tasks from './pages/Task'
+
+// For progress tracker, create a simple fallback component to avoid import issues
+const ProgressTracker = ({ tasks = [], analytics, onRefresh, loading = false }) => {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 p-6">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-white mb-4">Progress Analytics</h1>
+          <p className="text-gray-400 mb-8">Track your daily progress and performance</p>
+          
+          {/* Simple stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+            <div className="bg-slate-800/50 backdrop-blur-sm p-4 rounded-lg border border-slate-700/50">
+              <div className="text-3xl font-bold text-white">{tasks.length}</div>
+              <div className="text-gray-400 text-sm">Total Tasks</div>
+            </div>
+            <div className="bg-slate-800/50 backdrop-blur-sm p-4 rounded-lg border border-slate-700/50">
+              <div className="text-3xl font-bold text-green-400">
+                {tasks.filter(t => t.status === 'completed' || t.progress === 100).length}
+              </div>
+              <div className="text-gray-400 text-sm">Completed</div>
+            </div>
+            <div className="bg-slate-800/50 backdrop-blur-sm p-4 rounded-lg border border-slate-700/50">
+              <div className="text-3xl font-bold text-purple-400">
+                {tasks.filter(t => t.status === 'in-progress' || (t.progress > 0 && t.progress < 100)).length}
+              </div>
+              <div className="text-gray-400 text-sm">In Progress</div>
+            </div>
+            <div className="bg-slate-800/50 backdrop-blur-sm p-4 rounded-lg border border-slate-700/50">
+              <div className="text-3xl font-bold text-blue-400">
+                {tasks.reduce((sum, task) => sum + (task.totalHours || 0), 0).toFixed(1)}h
+              </div>
+              <div className="text-gray-400 text-sm">Total Time</div>
+            </div>
+          </div>
+
+          {/* Task list */}
+          <div className="bg-slate-800/50 backdrop-blur-sm p-6 rounded-lg border border-slate-700/50">
+            <h2 className="text-lg font-semibold text-white mb-4">All Tasks</h2>
+            {tasks.length > 0 ? (
+              <div className="space-y-3">
+                {tasks.map((task) => (
+                  <div key={task._id || task.id} className="p-3 bg-slate-700/30 rounded-lg text-left">
+                    <div className="flex items-center justify-between">
+                      <span className="text-white font-medium">{task.title}</span>
+                      <span className="text-purple-400">{task.progress || 0}%</span>
+                    </div>
+                    <div className="w-full bg-slate-700 rounded-full h-2 mt-2">
+                      <div 
+                        className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-500"
+                        style={{ width: `${task.progress || 0}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-400">No tasks available</p>
+            )}
+          </div>
+
+          {loading && (
+            <div className="mt-4 flex items-center justify-center">
+              <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-purple-500"></div>
+              <span className="ml-2 text-gray-400">Loading...</span>
+            </div>
+          )}
+          
+          <button
+            onClick={onRefresh}
+            className="mt-6 bg-purple-500 hover:bg-purple-600 text-white px-6 py-2 rounded-lg transition-colors"
+          >
+            Refresh Data
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Simple Daily Check-in Modal component to avoid import issues
+const DailyCheckInModal = ({ isOpen, onClose, task, onSubmit, loading = false }) => {
+  const [progress, setProgress] = useState(0)
+  const [accomplishments, setAccomplishments] = useState('')
+
+  useEffect(() => {
+    if (task && isOpen) {
+      setProgress(Number(task?.progress) || 0)
+      setAccomplishments('')
+    }
+  }, [task, isOpen])
+
+  const handleSubmit = async () => {
+    if (!accomplishments.trim()) return
+
+    try {
+      const checkInData = {
+        taskId: task?.id || task?._id,
+        progress: progress,
+        accomplishments: accomplishments.trim(),
+        date: new Date().toISOString()
+      }
+
+      await onSubmit(checkInData)
+      onClose()
+    } catch (error) {
+      console.error('Daily check-in submission error:', error)
+    }
+  }
+
+  if (!isOpen) return null
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="bg-slate-800 rounded-lg shadow-xl max-w-md w-full">
+        <div className="flex items-center justify-between p-6 border-b border-slate-700">
+          <h2 className="text-xl font-bold text-white">Daily Check-in</h2>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-slate-700 transition-colors"
+          >
+            ×
+          </button>
+        </div>
+
+        <div className="p-6 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Update Progress: {progress}%
+            </label>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={progress}
+              onChange={(e) => setProgress(Number(e.target.value))}
+              className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              What did you accomplish? *
+            </label>
+            <textarea
+              value={accomplishments}
+              onChange={(e) => setAccomplishments(e.target.value)}
+              placeholder="Describe what you worked on..."
+              rows={3}
+              className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+              required
+            />
+          </div>
+        </div>
+
+        <div className="flex justify-end space-x-3 p-6 border-t border-slate-700">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSubmit}
+            disabled={loading || !accomplishments.trim()}
+            className="bg-purple-500 hover:bg-purple-600 disabled:bg-purple-700 text-white py-2 px-6 rounded-lg transition-colors flex items-center space-x-2"
+          >
+            {loading ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-white"></div>
+                <span>Saving...</span>
+              </>
+            ) : (
+              <span>Save Check-in</span>
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 // Import PWA components
 import { 
@@ -22,11 +204,6 @@ import {
   OfflineTasksIndicator,
   PWAInstallPrompt 
 } from './components/PWAComponents'
-
-// Lazy load heavy components for better performance
-const Dashboard = lazy(() => import('./pages/Dashboard'))
-const Tasks = lazy(() => import('./pages/Task'))
-const ProgressTracker = lazy(() => import('./components/ProgressTracker'))
 
 import './index.css'
 import './App.css'
@@ -87,7 +264,7 @@ const ToastContainer = ({ toasts, removeToast }) => {
   )
 }
 
-// Enhanced Loading Overlay Component (renamed to avoid conflict)
+// Enhanced Loading Overlay Component
 const AppLoadingOverlay = ({ isVisible, message = "Loading..." }) => {
   if (!isVisible) return null
 
@@ -333,7 +510,6 @@ const AppContent = () => {
     try {
       setActionLoadingState('createTask', true)
       
-      // Create a completely clean object with only primitive values
       const cleanTaskData = {
         title: String(taskData.title || '').trim(),
         description: String(taskData.description || '').trim(),
@@ -343,7 +519,6 @@ const AppContent = () => {
         estimatedHours: taskData.estimatedHours ? Number(taskData.estimatedHours) : null
       }
       
-      // Add default progress tracking fields
       const enhancedTaskData = {
         ...cleanTaskData,
         progress: 0,
@@ -352,25 +527,9 @@ const AppContent = () => {
         progressHistory: []
       }
 
-      // Double-check the data is serializable
-      try {
-        JSON.stringify(enhancedTaskData)
-      } catch (serializationError) {
-        console.error('Data serialization failed:', serializationError)
-        addToast({
-          type: 'error',
-          title: 'Data Error',
-          message: 'Invalid data format. Please try again.'
-        })
-        return
-      }
-
-      console.log('Clean task data being sent:', enhancedTaskData)
-
       let result
       let newTask
 
-      // Handle offline task creation
       if (!isOnline) {
         newTask = await createOfflineTask(enhancedTaskData)
         addToast({
@@ -391,7 +550,6 @@ const AppContent = () => {
       setTasks(prev => [newTask, ...prev])
       setShowTaskModal(false)
       
-      // Refresh analytics only if online
       if (isOnline) {
         loadAnalytics()
       }
@@ -507,7 +665,6 @@ const AppContent = () => {
     }
   }
 
-  // NEW PROGRESS TRACKING HANDLERS with enhanced UX
   const handleProgressUpdate = async (taskId, progress, note = '') => {
     try {
       setActionLoadingState('updateProgress', true)
@@ -626,7 +783,7 @@ const AppContent = () => {
     setCurrentPage('progress')
   }
 
-  // Updated renderCurrentPage function with lazy loading and Suspense
+  // FIXED: Remove Suspense and lazy loading - use direct rendering
   const renderCurrentPage = () => {
     const commonProps = {
       tasks,
@@ -637,45 +794,39 @@ const AppContent = () => {
       actionLoading
     }
 
-    return (
-      <Suspense fallback={<OptimizedLoadingSpinner />}>
-        {(() => {
-          switch (currentPage) {
-            case 'tasks':
-              return (
-                <Tasks
-                  {...commonProps}
-                  onAddTask={openTaskModal}
-                  onEditTask={handleEditTask}
-                  onDeleteTask={handleDeleteTask}
-                  onStatusChange={handleStatusChange}
-                  loading={loading}
-                />
-              )
-            case 'progress':
-              return (
-                <ProgressTracker
-                  {...commonProps}
-                  analytics={analytics}
-                  onRefresh={refreshData}
-                  loading={progressLoading}
-                />
-              )
-            case 'dashboard':
-            default:
-              return (
-                <Dashboard
-                  {...commonProps}
-                  analytics={analytics}
-                  user={user}
-                  onAddTask={openTaskModal}
-                  onNavigateToTasks={navigateToTasks}
-                />
-              )
-          }
-        })()}
-      </Suspense>
-    )
+    switch (currentPage) {
+      case 'tasks':
+        return (
+          <Tasks
+            {...commonProps}
+            onAddTask={openTaskModal}
+            onEditTask={handleEditTask}
+            onDeleteTask={handleDeleteTask}
+            onStatusChange={handleStatusChange}
+            loading={loading}
+          />
+        )
+      case 'progress':
+        return (
+          <ProgressTracker
+            {...commonProps}
+            analytics={analytics}
+            onRefresh={refreshData}
+            loading={progressLoading}
+          />
+        )
+      case 'dashboard':
+      default:
+        return (
+          <Dashboard
+            {...commonProps}
+            analytics={analytics}
+            user={user}
+            onAddTask={openTaskModal}
+            onNavigateToTasks={navigateToTasks}
+          />
+        )
+    }
   }
 
   if (authLoading) {
@@ -803,19 +954,10 @@ const AppContent = () => {
               onSubmit={(e) => {
                 e.preventDefault()
                 
-                console.log('🔍 Form submission starting...')
-                
-                // Use FormData but extract values safely
                 const formData = new FormData(e.target)
                 
-                // Debug: Log all form data entries
-                console.log('FormData entries:')
-                for (let [key, value] of formData.entries()) {
-                  console.log(`${key}:`, value)
-                }
-                
                 const taskData = {
-                  title: (formData.get('title') || '').toString().trim() || 'Default Test Title', // Temporary fallback
+                  title: (formData.get('title') || '').toString().trim(),
                   description: (formData.get('description') || '').toString().trim(),
                   priority: (formData.get('priority') || 'medium').toString(),
                   dueDate: formData.get('dueDate') ? formData.get('dueDate').toString() : null,
@@ -823,10 +965,6 @@ const AppContent = () => {
                   estimatedHours: formData.get('estimatedHours') ? parseFloat(formData.get('estimatedHours').toString()) : null
                 }
                 
-                // Debug: Log the processed task data
-                console.log('Processed task data:', taskData)
-                
-                console.log('✅ Calling handleAddTask with:', taskData)
                 handleAddTask(taskData)
               }}
               className="p-6 space-y-6"
@@ -948,7 +1086,7 @@ const AppContent = () => {
         </div>
       )}
 
-      {/* Daily Check-in Modal */}
+      {/* Daily Check-in Modal - NO SUSPENSE */}
       <DailyCheckInModal
         isOpen={checkInModal.isOpen}
         onClose={() => setCheckInModal({ isOpen: false, task: null })}
@@ -957,7 +1095,7 @@ const AppContent = () => {
         loading={actionLoading.dailyCheckIn}
       />
 
-      {/* Loading Overlay - using renamed component */}
+      {/* Loading Overlay */}
       <AppLoadingOverlay 
         isVisible={Object.values(actionLoading).some(Boolean)} 
         message="Processing your request..."

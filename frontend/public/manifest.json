@@ -123,20 +123,7 @@
     }
   ],
   "screenshots": [
-    {
-      "src": "/screenshots/desktop-dashboard.png",
-      "sizes": "1280x800",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "Dashboard view showing task overview and analytics"
-    },
-    {
-      "src": "/screenshots/desktop-tasks.png",
-      "sizes": "1280x800",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "Task management interface with progress tracking"
-    },
+    
     {
       "src": "/screenshots/mobile-dashboard.png",
       "sizes": "750x1334",

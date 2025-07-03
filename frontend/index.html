@@ -439,16 +439,7 @@
         }
         
         // Prevent future React DevTools hooks
-        Object.defineProperty(window, '__REACT_DEVTOOLS_GLOBAL_HOOK__', {
-          value: {
-            onCommitFiberRoot: function() {},
-            onCommitFiberUnmount: function() {},
-            supportsFiber: false,
-            inject: function() { return -1; }
-          },
-          writable: false,
-          configurable: false
-        });
+ 
         
         console.log('🛡️ Nuclear console protection activated');
       })();
