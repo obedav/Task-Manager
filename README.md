@@ -1,54 +1,56 @@
-# Task Manager Application
+# 📋 Task Manager Application
 
-A full-stack task management application built with React for the frontend and Node.js/Express with MongoDB for the backend.
+A full-stack **task management** web application built with **React** (frontend) and **Node.js/Express + MongoDB** (backend).
 
-## Features
+This app helps users manage daily tasks, track progress, and gain insights via an analytics dashboard — all in a clean, responsive UI.
 
-- User authentication (registration and login)
-- Task management (create, read, update, delete tasks)
-- Task filtering and sorting
-- Progress tracking with daily check-ins
-- Analytics dashboard
-- Mobile-responsive design
+---
 
-## Tech Stack
+## 🚀 Features
+
+- 🔐 User Authentication (JWT-based login & registration)
+- ✅ Task CRUD (Create, Read, Update, Delete)
+- 📂 Filter & Sort Tasks
+- 📅 Daily Check-in Tracker
+- 📊 Analytics Dashboard
+- 📱 Mobile-Responsive Design
+
+---
+
+![image](https://github.com/user-attachments/assets/4935ad4d-f7e4-49aa-b204-b87403f60f6e)
+
+
+## 🛠️ Tech Stack
 
 ### Frontend
 - React
 - Tailwind CSS
-- Axios for API requests
+- Axios
 
 ### Backend
 - Node.js
-- Express
-- MongoDB with Mongoose
-- JWT for authentication
+- Express.js
+- MongoDB (with Mongoose)
+- JWT (JSON Web Token)
 
-## Getting Started
+---
 
-### Prerequisites
+## 🧑‍💻 Getting Started
+
+### 🔧 Prerequisites
 - Node.js
-- MongoDB or Firebase account
+- MongoDB account (or local MongoDB setup)
 
-### Installation
+### 📦 Installation
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/obedav/Task-Manager.git
+```bash
+# Clone the repo
+git clone https://github.com/obedav/Task-Manager.git
 
-2. Install backend dependencies:
+# Install backend dependencies
 cd Task-Manager/backend
 npm install
 
-3. Install frontend dependencies:
+# Install frontend dependencies
 cd ../frontend
 npm install
-
-4. Set up environment variables:
-Create a .env file in the backend directory
-Add your MongoDB connection string and JWT secret
-
-5. Start the backend server: npm start
-   
-6. Start the frontend development server: npm start
-
