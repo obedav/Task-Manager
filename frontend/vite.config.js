@@ -83,9 +83,11 @@ export default defineConfig(({ mode }) => {
     
     // Define environment variables for JavaScript
     define: {
+      // TODO: Set VITE_API_URL to your production backend before deployment
       'import.meta.env.VITE_API_URL': JSON.stringify(
-        process.env.VITE_API_URL || 'http://localhost:5000/api'
+        process.env.VITE_API_URL || 'https://YOUR_API_DOMAIN_HERE/api'
       ),
+      // TODO: Set VITE_ENVIRONMENT to 'production' before deployment
       'import.meta.env.VITE_ENVIRONMENT': JSON.stringify(
         process.env.VITE_ENVIRONMENT || mode
       ),
@@ -125,3 +127,4 @@ export default defineConfig(({ mode }) => {
     clearScreen: false
   }
 })
+// TODO: Integrate error reporting (e.g., Sentry) before production deployment

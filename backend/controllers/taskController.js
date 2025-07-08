@@ -4,7 +4,8 @@ const jwt = require('jsonwebtoken');
 const router = express.Router();
 
 // JWT Secret (use environment variable in production)
-const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-in-production';
+// TODO: Set JWT_SECRET in environment for production. Do NOT use default in production.
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // In-memory user storage (MUST match authRoutes.js exactly)
 let users = [

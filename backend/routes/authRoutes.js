@@ -5,7 +5,8 @@ const { userStore, debug } = require('../data/store');
 const router = express.Router();
 
 // JWT Secret
-const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-in-production';
+// TODO: Set JWT_SECRET in environment for production. Do NOT use default in production.
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Generate JWT token
 const generateToken = (user) => {

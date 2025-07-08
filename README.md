@@ -54,3 +54,20 @@ npm install
 # Install frontend dependencies
 cd ../frontend
 npm install
+
+```
+
+# Production Deployment Checklist
+
+Before deploying to production, make sure to:
+
+- [ ] Set your real domain in `frontend/index.html` (canonical, OG, manifest, etc.)
+- [ ] Set your real API URL in Vite config and environment variables
+- [ ] Set `VITE_ENVIRONMENT` to 'production' in your environment
+- [ ] Set `JWT_SECRET` and `MONGODB_URI` in your backend environment
+- [ ] Restrict CORS in backend to your frontend domain
+- [ ] Integrate error reporting (e.g., Sentry) in both frontend and backend
+- [ ] Ensure all favicon and icon files exist in `public/`
+- [ ] Use HTTPS for all production traffic
+- [ ] Test PWA install and offline mode
+- [ ] Monitor logs and uptime after deployment

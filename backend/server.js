@@ -144,6 +144,20 @@ app.use((err, req, res, next) => {
   });
 });
 
+if (process.env.NODE_ENV === 'production') {
+  if (!process.env.JWT_SECRET) {
+    console.error('❌ ERROR: JWT_SECRET must be set in production!');
+    process.exit(1);
+  }
+  if (!process.env.MONGODB_URI) {
+    console.error('❌ ERROR: MONGODB_URI must be set in production!');
+    process.exit(1);
+  }
+}
+// TODO: Integrate error reporting (e.g., Sentry) before production deployment
+// TODO: Restrict CORS to your frontend domain before deployment
+// Example: app.use(cors({ origin: 'https://YOUR_FRONTEND_DOMAIN_HERE', credentials: true }));
+
 const PORT = process.env.PORT || 5000;
 
 const server = app.listen(PORT, '0.0.0.0', () => {
