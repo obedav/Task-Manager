@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { Calendar, Clock, Edit3, Trash2, MoreHorizontal, CheckCircle2, Circle, AlertCircle } from 'lucide-react'
+import { useTranslation } from 'react-i18next';
 
 const TaskCard = ({ task, onEdit, onDelete, onStatusChange }) => {
+  const { t } = useTranslation();
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   // Helper function to get the task ID (handles both _id and id formats)
@@ -118,7 +120,7 @@ const TaskCard = ({ task, onEdit, onDelete, onStatusChange }) => {
             task.status === 'in-progress' ? 'bg-blue-500/20 text-blue-300' :
             'bg-gray-500/20 text-gray-300'
           }`}>
-            {task.status.replace('-', ' ')}
+            {t(`taskCard.${task.status}`)}
           </span>
         </div>
 

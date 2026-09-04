@@ -1,0 +1,205 @@
+{
+    "common": {
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "edit": "Edit",
+      "loading": "Loading...",
+      "success": "Success",
+      "error": "Error",
+      "warning": "Warning",
+      "info": "Info",
+      "update": "Update",
+      "create": "Create",
+      "close": "Close"
+    },
+    "navigation": {
+      "dashboard": "Dashboard",
+      "tasks": "Tasks",
+      "calendar": "Calendar",
+      "analytics": "Analytics", 
+      "settings": "Settings",
+      "profile": "Profile"
+    },
+    "Navigation": {
+      "dashboard": "Dashboard",
+      "tasks": "Tasks",
+      "calendar": "Calendar",
+      "analytics": "Analytics",
+      "settings": "Settings",
+      "profile": "Profile"
+    },
+    "dashboard": {
+      "greeting": "Good morning, {{name}}",
+      "todayTasks": "You have",
+      "task": "task",
+      "dueToday": "due today",
+      "clearSchedule": "Your schedule is clear for today",
+      "totalTimeTracked": "Total time tracked",
+      "hours": "hours",
+      "loadingAnalytics": "Loading analytics...",
+      "recentTasks": "Recent Tasks",
+      "viewAll": "View All",
+      "noTasksYet": "No tasks yet",
+      "createFirstTask": "Create your first task",
+      "upcoming": "Upcoming",
+      "noUpcomingTasks": "No upcoming tasks"
+    },
+    "settings": {
+      "title": "Settings",
+      "subtitle": "Manage your account and app preferences",
+      "profile": {
+        "title": "Profile Information",
+        "fullName": "Full Name",
+        "email": "Email Address",
+        "timezone": "Timezone",
+        "language": "Language",
+        "updateProfile": "Update Profile",
+        "updating": "Updating...",
+        "updated": "Profile updated successfully",
+        "updatePhoto": "Update Photo",
+        "languageUpdated": "Language updated successfully",
+        "languageUpdateFailed": "Failed to update language: ",
+        "languageChangedOffline": "Language changed. Backend sync failed but will retry later."
+      },
+      "security": {
+        "title": "Security Settings",
+        "currentPassword": "Current Password",
+        "newPassword": "New Password",
+        "confirmPassword": "Confirm New Password",
+        "changePassword": "Change Password",
+        "changing": "Changing...",
+        "changed": "Password changed successfully"
+      },
+      "notifications": {
+        "title": "Notification Preferences",
+        "taskReminders": "Task Reminders",
+        "dailyDigest": "Daily Digest",
+        "weeklyReport": "Weekly Report",
+        "deadlineAlerts": "Deadline Alerts",
+        "progressUpdates": "Progress Updates",
+        "savePreferences": "Save Preferences",
+        "saving": "Saving...",
+        "saved": "Preferences saved successfully"
+      },
+      "preferences": {
+        "title": "App Preferences",
+        "autoSave": "Auto Save",
+        "showCompletedTasks": "Show Completed Tasks",
+        "weekendWork": "Weekend Work",
+        "defaultTaskPriority": "Default Task Priority",
+        "timeFormat": "Time Format",
+        "workStartTime": "Work Start Time",
+        "workEndTime": "Work End Time",
+        "theme": "Theme"
+      },
+      "tabs": {
+        "profile": "Profile",
+        "security": "Security",
+        "notifications": "Notifications",
+        "preferences": "Preferences",
+        "pwa": "App Settings",
+        "data": "Data Management",
+        "danger": "Danger Zone"
+      },
+      "status": {
+        "online": "Online",
+        "offline": "Offline",
+        "appInstalled": "App Installed",
+        "updateAvailable": "Update Available"
+      }
+    },
+    "tasks": {
+      "title": "Tasks",
+      "addTask": "New Task",
+      "editTask": "Edit Task",
+      "deleteTask": "Delete Task",
+      "markComplete": "Mark Complete",
+      "search": "Search tasks...",
+      "priority": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High"
+      },
+      "status": {
+        "pending": "Pending",
+        "in-progress": "In Progress",
+        "completed": "Completed"
+      }
+    },
+    "auth": {
+      "login": "Sign In",
+      "register": "Sign Up",
+      "logout": "Sign Out",
+      "email": "Email",
+      "password": "Password",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot password?",
+      "dontHaveAccount": "Don't have an account?",
+      "alreadyHaveAccount": "Already have an account?"
+    },
+    "languages": {
+      "en": "English",
+      "fr": "French"
+    },
+    "taskList": {
+      "total": "Total",
+      "completed": "Completed",
+      "inProgress": "In Progress",
+      "pending": "Pending",
+      "overdue": "Overdue",
+      "searchPlaceholder": "Search tasks...",
+      "allStatus": "All Status",
+      "allPriority": "All Priority",
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low",
+      "createdDate": "Created Date",
+      "dueDate": "Due Date",
+      "priority": "Priority",
+      "title": "Title",
+      "ascending": "Ascending",
+      "descending": "Descending",
+      "noTasksFound": "No tasks found",
+      "tryAdjustingFilters": "Try adjusting your filters or search term",
+      "createFirstTask": "Create your first task to get started"
+    },
+    "taskCard": {
+      "completed": "Completed",
+      "in-progress": "In Progress",
+      "pending": "Pending",
+      "overdue": "Overdue",
+      "timeLogged": "Time logged",
+      "lastWorked": "Last worked"
+    },
+    "pwa": {
+      "installApp": "Install App",
+      "notificationsEnabled": "Notifications enabled",
+      "notificationsBlocked": "Notifications blocked",
+      "enableNotifications": "Enable Notifications",
+      "online": "Online",
+      "offline": "Offline",
+      "newVersion": "A new version of TaskFlow is available!",
+      "updateNow": "Update Now",
+      "offlineTasks": "Offline Tasks",
+      "offlineTasksCount": "{{count}} task(s) created offline",
+      "syncNow": "Sync Now",
+      "installTaskFlow": "Install TaskFlow",
+      "installPromptDescription": "Install TaskFlow on your device for quick access, offline support, and a native app experience.",
+      "worksOffline": "Works offline",
+      "pushNotifications": "Push notifications",
+      "homeScreenIcon": "Home screen icon",
+      "maybeLater": "Maybe Later",
+      "install": "Install",
+      "appInstallation": "App Installation",
+      "appInstallationDescription": "Install on home screen",
+      "enabled": "Enabled",
+      "available": "Available",
+      "blocked": "Blocked",
+      "unknown": "Unknown",
+      "pushNotificationsDescription": "Get task reminders",
+      "offlineSupport": "Offline Support",
+      "offlineSupportDescription": "Works without internet",
+      "pwaFeatures": "PWA Features"
+    }
+  }

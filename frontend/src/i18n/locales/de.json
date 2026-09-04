@@ -1,0 +1,144 @@
+{
+    "settings": {
+      "title": "Einstellungen",
+      "subtitle": "Verwalten Sie Ihr Konto und App-Einstellungen",
+      "profile": {
+        "title": "Profilinformationen",
+        "fullName": "Vollständiger Name",
+        "email": "E-Mail-Adresse",
+        "timezone": "Zeitzone",
+        "language": "Sprache",
+        "updateProfile": "Profil aktualisieren",
+        "updating": "Aktualisierung...",
+        "updated": "Profil erfolgreich aktualisiert"
+      },
+      "security": {
+        "title": "Sicherheitseinstellungen",
+        "currentPassword": "Aktuelles Passwort",
+        "newPassword": "Neues Passwort",
+        "confirmPassword": "Neues Passwort bestätigen",
+        "changePassword": "Passwort ändern",
+        "changing": "Änderung..."
+      },
+      "tabs": {
+        "profile": "Profil",
+        "security": "Sicherheit",
+        "notifications": "Benachrichtigungen",
+        "preferences": "Einstellungen",
+        "pwa": "App-Einstellungen",
+        "data": "Datenverwaltung",
+        "danger": "Gefahrenbereich"
+      },
+      "status": {
+        "online": "Online",
+        "offline": "Offline",
+        "appInstalled": "App installiert",
+        "updateAvailable": "Update verfügbar"
+      },
+      "languages": {
+        "en": "Englisch",
+        "fr": "Französisch"
+      }
+    },
+    "dashboard": {
+      "greeting": "Guten Morgen, {{name}}",
+      "todayTasks": "Du hast",
+      "task": "Aufgabe",
+      "dueToday": "für heute",
+      "clearSchedule": "Dein Zeitplan ist heute frei",
+      "totalTimeTracked": "Gesamte aufgezeichnete Zeit",
+      "hours": "Stunden",
+      "loadingAnalytics": "Analysen werden geladen..."
+    },
+    "common": {
+      "success": "Erfolg",
+      "error": "Fehler"
+    },
+    "taskList": {
+      "total": "Total",
+      "completed": "Completed",
+      "inProgress": "In Progress",
+      "pending": "Pending",
+      "overdue": "Overdue",
+      "searchPlaceholder": "Search tasks...",
+      "allStatus": "All Status",
+      "allPriority": "All Priority",
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low",
+      "createdDate": "Created Date",
+      "dueDate": "Due Date",
+      "priority": "Priority",
+      "title": "Title",
+      "ascending": "Ascending",
+      "descending": "Descending",
+      "noTasksFound": "No tasks found",
+      "tryAdjustingFilters": "Try adjusting your filters or search term",
+      "createFirstTask": "Create your first task to get started"
+    },
+    "taskCard": {
+      "completed": "Abgeschlossen",
+      "in-progress": "In Bearbeitung",
+      "pending": "Ausstehend",
+      "overdue": "Überfällig",
+      "timeLogged": "Erfasste Zeit",
+      "lastWorked": "Zuletzt bearbeitet"
+    },
+    "pwa": {
+      "installApp": "App installieren",
+      "notificationsEnabled": "Benachrichtigungen aktiviert",
+      "notificationsBlocked": "Benachrichtigungen blockiert",
+      "enableNotifications": "Benachrichtigungen aktivieren",
+      "online": "Online",
+      "offline": "Offline",
+      "newVersion": "Eine neue Version von TaskFlow ist verfügbar!",
+      "updateNow": "Jetzt aktualisieren",
+      "offlineTasks": "Offline-Aufgaben",
+      "offlineTasksCount": "{{count}} Aufgabe(n) offline erstellt",
+      "syncNow": "Jetzt synchronisieren",
+      "installTaskFlow": "TaskFlow installieren",
+      "installPromptDescription": "Installieren Sie TaskFlow auf Ihrem Gerät für schnellen Zugriff, Offline-Unterstützung und ein natives App-Erlebnis.",
+      "worksOffline": "Funktioniert offline",
+      "pushNotifications": "Push-Benachrichtigungen",
+      "homeScreenIcon": "Startbildschirm-Symbol",
+      "maybeLater": "Vielleicht später",
+      "install": "Installieren",
+      "appInstallation": "App-Installation",
+      "appInstallationDescription": "Auf dem Startbildschirm installieren",
+      "enabled": "Aktiviert",
+      "available": "Verfügbar",
+      "blocked": "Blockiert",
+      "unknown": "Unbekannt",
+      "pushNotificationsDescription": "Erhalten Sie Aufgaben-Erinnerungen",
+      "offlineSupport": "Offline-Unterstützung",
+      "offlineSupportDescription": "Funktioniert ohne Internet",
+      "pwaFeatures": "PWA-Funktionen"
+    },
+    "tasks": {
+      "title": "Aufgaben",
+      "subtitle": "Verwalten und verfolgen Sie Ihre Aufgaben mit Fortschrittsüberwachung",
+      "total": "Gesamtaufgaben",
+      "completed": "Abgeschlossen",
+      "inProgress": "In Bearbeitung",
+      "pending": "Ausstehend",
+      "searchPlaceholder": "Aufgaben suchen...",
+      "filters": "Filter",
+      "noTasksYet": "Noch keine Aufgaben",
+      "createFirstTask": "Erstellen Sie Ihre erste Aufgabe, um zu beginnen",
+      "newTask": "Neue Aufgabe",
+      "manageAndTrack": "Verwalten und verfolgen Sie Ihre Aufgaben mit Fortschrittsüberwachung"
+    },
+    "taskModal": {
+      "createTitle": "Neue Aufgabe erstellen",
+      "title": "Titel",
+      "titlePlaceholder": "Aufgabentitel eingeben...",
+      "description": "Beschreibung",
+      "descriptionPlaceholder": "Aufgabenbeschreibung hinzufügen...",
+      "priority": "Priorität",
+      "category": "Kategorie",
+      "categoryPlaceholder": "z.B. Arbeit, Privat.",
+      "dueDate": "Fälligkeitsdatum",
+      "estimatedHours": "Geschätzte Stunden",
+      "estimatedHoursPlaceholder": "z.B. 5"
+    }
+  }

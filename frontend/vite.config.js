@@ -13,7 +13,7 @@ const htmlEnvReplacer = () => {
         console.log('🔧 Processing HTML environment variables...')
         
         // Get environment variables with safe fallbacks
-        const apiUrl = process.env.VITE_API_URL || 'http://localhost:5000/api'
+        const apiUrl = process.env.VITE_API_URL || 'http://localhost:5001/api/v1'
         const environment = process.env.VITE_ENVIRONMENT || process.env.NODE_ENV || 'development'
         const appVersion = process.env.VITE_APP_VERSION || '1.0.0'
         const buildTime = new Date().toISOString()
@@ -83,18 +83,16 @@ export default defineConfig(({ mode }) => {
     
     // Define environment variables for JavaScript
     define: {
-      // TODO: Set VITE_API_URL to your production backend before deployment
-      'import.meta.env.VITE_API_URL': JSON.stringify(
-        process.env.VITE_API_URL || 'https://YOUR_API_DOMAIN_HERE/api'
-      ),
-      // TODO: Set VITE_ENVIRONMENT to 'production' before deployment
       'import.meta.env.VITE_ENVIRONMENT': JSON.stringify(
         process.env.VITE_ENVIRONMENT || mode
       ),
       'import.meta.env.VITE_APP_VERSION': JSON.stringify(
         process.env.VITE_APP_VERSION || '1.0.0'
       ),
-      'import.meta.env.VITE_BUILD_TIME': JSON.stringify(new Date().toISOString())
+      'import.meta.env.VITE_BUILD_TIME': JSON.stringify(new Date().toISOString()),
+      'import.meta.env.VITE_API_URL': JSON.stringify(
+        process.env.VITE_API_URL || (mode === 'production' ? '/api/v1' : 'http://localhost:5001/api/v1')
+      )
     },
     
     // Path aliases

@@ -228,7 +228,108 @@
   visibility: visible;
 }
 
-/* Mobile optimizations */
+/* Comprehensive Modal Responsiveness */
+
+/* Extra small devices (320px - 480px) */
+@media (max-width: 480px) {
+  .task-modal {
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    border: none !important;
+  }
+  
+  .task-modal .grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+  
+  .task-modal input,
+  .task-modal select,
+  .task-modal textarea,
+  .task-modal button {
+    min-height: 48px !important;
+    font-size: 16px !important; /* Prevents zoom on iOS */
+  }
+  
+  .task-modal label {
+    font-size: 14px !important;
+  }
+}
+
+/* Small devices (481px - 767px) */
+@media (min-width: 481px) and (max-width: 767px) {
+  .task-modal {
+    max-width: 95vw !important;
+    margin: 0.5rem !important;
+  }
+  
+  .task-modal .grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.25rem !important;
+  }
+}
+
+/* Medium devices - Tablets portrait (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .task-modal {
+    max-width: 85vw !important;
+    max-width: min(85vw, 600px) !important;
+  }
+  
+  .task-modal .grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 1.5rem !important;
+  }
+}
+
+/* Large devices - Tablets landscape (1024px - 1199px) */
+@media (min-width: 1024px) and (max-width: 1199px) {
+  .task-modal {
+    max-width: 70vw !important;
+    max-width: min(70vw, 700px) !important;
+  }
+}
+
+/* Extra large devices - Desktop (1200px+) */
+@media (min-width: 1200px) {
+  .task-modal {
+    max-width: 60vw !important;
+    max-width: min(60vw, 800px) !important;
+  }
+}
+
+/* Touch device optimizations */
+@media (pointer: coarse) {
+  .task-modal input,
+  .task-modal select,
+  .task-modal textarea,
+  .task-modal button {
+    min-height: 44px !important;
+  }
+  
+  .task-modal button {
+    padding: 12px 16px !important;
+  }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .task-modal {
+    border-width: 0.5px !important;
+  }
+}
+
+/* Landscape orientation on mobile */
+@media (max-width: 767px) and (orientation: landscape) {
+  .task-modal {
+    max-height: 95vh !important;
+    overflow-y: auto !important;
+  }
+}
+
+/* Legacy mobile support */
 @media (max-width: 768px) {
   .modal-content {
     margin: 1rem;
@@ -238,6 +339,123 @@
   
   .glass-effect {
     backdrop-filter: blur(8px);
+  }
+}
+
+/* Login Screen Mobile Centering */
+.login-container {
+  min-height: 100vh;
+  min-height: 100dvh; /* Dynamic viewport height for mobile */
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative;
+}
+
+.login-card {
+  width: 100% !important;
+  max-width: 28rem !important; /* max-w-md equivalent */
+  margin: 0 auto !important;
+  position: relative;
+  z-index: 10;
+}
+
+.login-footer {
+  width: 100% !important;
+  text-align: center !important;
+  margin-top: 1.5rem !important;
+}
+
+/* Mobile-specific login adjustments */
+@media (max-width: 640px) {
+  .login-container {
+    padding: 1rem !important;
+    min-height: 100vh !important;
+    justify-content: center !important;
+  }
+  
+  .login-card {
+    max-width: 100% !important;
+    padding: 1.5rem !important;
+    margin: 0 auto !important;
+  }
+  
+  .login-footer {
+    margin-top: 1rem !important;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 375px) {
+  .login-container {
+    padding: 0.75rem !important;
+  }
+  
+  .login-card {
+    padding: 1.25rem !important;
+  }
+}
+
+/* Landscape orientation on mobile */
+@media (max-height: 600px) and (orientation: landscape) {
+  .login-container {
+    justify-content: flex-start !important;
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
+  }
+}
+
+/* Dashboard Mobile Centering */
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+  
+  .dashboard-stats-grid {
+    justify-content: center !important;
+    gap: 1rem !important;
+  }
+  
+  .dashboard-stats-card {
+    width: 100% !important;
+    max-width: 200px !important;
+    margin: 0 auto !important;
+  }
+  
+  .dashboard-tabs {
+    width: 100% !important;
+    max-width: 400px !important;
+    margin: 0 auto !important;
+  }
+  
+  .dashboard-content {
+    text-align: center !important;
+  }
+  
+  .dashboard-grid {
+    justify-items: center !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-container {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
+  
+  .dashboard-header {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+  
+  .dashboard-stats-grid {
+    gap: 0.75rem !important;
+  }
+  
+  .dashboard-stats-card {
+    max-width: 160px !important;
   }
 }
 

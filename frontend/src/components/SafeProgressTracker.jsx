@@ -1,6 +1,7 @@
 // Fixed SafeProgressTracker.jsx - Ensuring proper exports
 import React, { useState, useRef, useEffect } from 'react'
 import { Clock, TrendingUp, Calendar, Target, Plus, Edit3, X, ChevronDown, ChevronRight, Timer, BarChart3, PieChart, Activity, CheckCircle, AlertTriangle, Search, Filter } from 'lucide-react'
+import { useTranslation } from 'react-i18next';
 
 // Safe utility functions to prevent object conversion errors
 const safeString = (value, fallback = '') => {
@@ -387,6 +388,7 @@ const ProgressTracker = ({
   loading = false,
   actionLoading = {}
 }) => {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('progress');
   const [checkInModalOpen, setCheckInModalOpen] = useState(false);
@@ -517,25 +519,25 @@ const ProgressTracker = ({
             <div className="text-3xl font-bold text-white" role="img" aria-label={`${stats.totalTasks} total tasks`}>
               {stats.totalTasks}
             </div>
-            <div className="text-gray-400 text-sm">Total Tasks</div>
+            <div className="text-gray-400 text-sm">{t('dashboard.totalTasks')}</div>
           </div>
           <div className="bg-slate-800/50 backdrop-blur-sm p-4 rounded-lg border border-slate-700/50">
             <div className="text-3xl font-bold text-green-400" role="img" aria-label={`${stats.completedTasks} completed tasks`}>
               {stats.completedTasks}
             </div>
-            <div className="text-gray-400 text-sm">Completed</div>
+            <div className="text-gray-400 text-sm">{t('dashboard.completed')}</div>
           </div>
           <div className="bg-slate-800/50 backdrop-blur-sm p-4 rounded-lg border border-slate-700/50">
             <div className="text-3xl font-bold text-purple-400" role="img" aria-label={`${stats.inProgressTasks} in progress tasks`}>
               {stats.inProgressTasks}
             </div>
-            <div className="text-gray-400 text-sm">In Progress</div>
+            <div className="text-gray-400 text-sm">{t('dashboard.inProgress')}</div>
           </div>
           <div className="bg-slate-800/50 backdrop-blur-sm p-4 rounded-lg border border-slate-700/50">
             <div className="text-3xl font-bold text-blue-400" role="img" aria-label={`${stats.totalHours.toFixed(1)} total hours`}>
               {stats.totalHours.toFixed(1)}h
             </div>
-            <div className="text-gray-400 text-sm">Total Time</div>
+            <div className="text-gray-400 text-sm">{t('dashboard.timeTracked')}</div>
           </div>
         </div>
 
@@ -554,7 +556,7 @@ const ProgressTracker = ({
                 aria-describedby="search-help"
               />
               <p id="search-help" className="text-xs text-gray-500 mt-1">
-                Search by task title or description
+                {t('dashboard.searchHelp')}
               </p>
             </div>
             <div className="flex items-center space-x-2">
@@ -565,9 +567,9 @@ const ProgressTracker = ({
                 onChange={(e) => setSortBy(e.target.value)}
                 className="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               >
-                <option value="progress">Sort by Progress</option>
-                <option value="title">Sort by Title</option>
-                <option value="lastWorked">Sort by Last Worked</option>
+                <option value="progress">{t('dashboard.sortByProgress')}</option>
+                <option value="title">{t('dashboard.sortByTitle')}</option>
+                <option value="lastWorked">{t('dashboard.sortByLastWorked')}</option>
               </select>
             </div>
           </div>
@@ -577,14 +579,14 @@ const ProgressTracker = ({
         <div className="bg-slate-800/50 backdrop-blur-sm p-6 rounded-lg border border-slate-700/50 mb-8">
           <h2 className="text-lg font-semibold text-white mb-4 flex items-center">
             <BarChart3 className="w-5 h-5 mr-2" />
-            Average Progress
+            {t('dashboard.progressOverview')}
           </h2>
           <div className="flex items-center space-x-4">
             <div className="flex-1">
               <ProgressBar 
                 progress={stats.averageProgress} 
                 size="large" 
-                ariaLabel={`Average progress across all tasks: ${stats.averageProgress.toFixed(1)}%`}
+                ariaLabel={`${t('dashboard.averageProgressAcrossAllTasks')}: ${stats.averageProgress.toFixed(1)}%`}
               />
             </div>
             <div className="text-2xl font-bold text-white">{stats.averageProgress.toFixed(1)}%</div>
@@ -596,10 +598,10 @@ const ProgressTracker = ({
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-semibold text-white flex items-center">
               <Activity className="w-5 h-5 mr-2" />
-              Task Progress
+              {t('dashboard.taskProgress')}
             </h2>
             <span className="text-sm text-gray-400">
-              Showing {filteredTasks.length} of {safeTasks.length} tasks
+              {t('dashboard.showingTasks', { count: filteredTasks.length, total: safeTasks.length })}
             </span>
           </div>
           
@@ -634,9 +636,9 @@ const ProgressTracker = ({
                           onClick={() => handleCheckInClick(task)}
                           disabled={actionLoading?.dailyCheckIn}
                           className="text-purple-400 hover:text-purple-300 text-sm disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-purple-500 rounded px-2 py-1 transition-colors"
-                          aria-label={`Open daily check-in for ${taskTitle}`}
+                          aria-label={`${t('dashboard.openDailyCheckInFor', { taskTitle: taskTitle })}`}
                         >
-                          Check-in
+                          {t('dashboard.checkIn')}
                         </button>
                       </div>
                     </div>
@@ -644,12 +646,12 @@ const ProgressTracker = ({
                     <div className="space-y-3">
                       <div>
                         <div className="flex items-center justify-between text-sm mb-2">
-                          <span className="text-gray-400">Progress</span>
+                          <span className="text-gray-400">{t('dashboard.progress')}</span>
                           <span className="text-white font-medium">{taskProgress}%</span>
                         </div>
                         <ProgressBar 
                           progress={taskProgress} 
-                          ariaLabel={`${taskTitle} progress: ${taskProgress}%`}
+                          ariaLabel={`${taskTitle} ${t('dashboard.progress')}: ${taskProgress}%`}
                         />
                       </div>
                       
@@ -657,13 +659,13 @@ const ProgressTracker = ({
                         {taskTotalHours > 0 && (
                           <div className="flex items-center space-x-1">
                             <Clock className="w-3 h-3" />
-                            <span>Time logged: {taskTotalHours.toFixed(1)} hours</span>
+                            <span>{t('dashboard.timeLogged')}: {taskTotalHours.toFixed(1)} {t('dashboard.hours')}</span>
                           </div>
                         )}
                         {taskLastWorkedOn && (
                           <div className="flex items-center space-x-1">
                             <Calendar className="w-3 h-3" />
-                            <span>Last worked: {safeFormatDate(taskLastWorkedOn)}</span>
+                            <span>{t('dashboard.lastWorked')}: {safeFormatDate(taskLastWorkedOn)}</span>
                           </div>
                         )}
                       </div>
@@ -681,11 +683,11 @@ const ProgressTracker = ({
           ) : (
             <div className="text-center py-12 text-gray-400">
               <BarChart3 className="w-12 h-12 mx-auto mb-4 opacity-50" aria-hidden="true" />
-              <h3 className="text-lg font-medium mb-2">No tasks found</h3>
+              <h3 className="text-lg font-medium mb-2">{t('dashboard.noTasksFound')}</h3>
               <p className="text-sm">
                 {searchTerm 
-                  ? `No tasks match "${searchTerm}". Try adjusting your search.`
-                  : 'No tasks available. Create some tasks to see progress analytics.'
+                  ? `${t('dashboard.noTasksMatchSearch', { searchTerm: searchTerm })}`
+                  : `${t('dashboard.noTasksAvailable')}. ${t('dashboard.createTasks')}`
                 }
               </p>
             </div>

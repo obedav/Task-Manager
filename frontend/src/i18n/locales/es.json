@@ -1,0 +1,151 @@
+{
+    "navigation": {
+      "dashboard": "Tablero",
+      "tasks": "Tareas",
+      "analytics": "Analíticas",
+      "settings": "Configuración",
+      "profile": "Perfil"
+    },
+    "dashboard": {
+      "greeting": "Buenos días, {{name}}",
+      "todayTasks": "Tienes",
+      "task": "tarea",
+      "dueToday": "para hoy",
+      "clearSchedule": "Tu agenda está libre para hoy",
+      "totalTimeTracked": "Tiempo total registrado",
+      "hours": "horas",
+      "loadingAnalytics": "Cargando análisis..."
+    },
+    "settings": {
+      "title": "Configuración",
+      "subtitle": "Gestiona tu cuenta y preferencias de la aplicación",
+      "profile": {
+        "title": "Información del perfil",
+        "fullName": "Nombre completo",
+        "email": "Dirección de correo",
+        "timezone": "Zona horaria",
+        "language": "Idioma",
+        "updateProfile": "Actualizar perfil",
+        "updating": "Actualizando...",
+        "updated": "Perfil actualizado exitosamente"
+      },
+      "security": {
+        "title": "Configuración de seguridad",
+        "currentPassword": "Contraseña actual",
+        "newPassword": "Nueva contraseña",
+        "confirmPassword": "Confirmar nueva contraseña",
+        "changePassword": "Cambiar contraseña",
+        "changing": "Cambiando..."
+      },
+      "tabs": {
+        "profile": "Perfil",
+        "security": "Seguridad",
+        "notifications": "Notificaciones",
+        "preferences": "Preferencias",
+        "pwa": "Configuración de la app",
+        "data": "Gestión de datos",
+        "danger": "Zona peligrosa"
+      },
+      "status": {
+        "online": "En línea",
+        "offline": "Desconectado",
+        "appInstalled": "App instalada",
+        "updateAvailable": "Actualización disponible"
+      }
+    },
+    "common": {
+      "success": "Éxito",
+      "error": "Error"
+    },
+    "languages": {
+      "en": "Inglés",
+      "fr": "Francés"
+    },
+    "taskList": {
+      "total": "Total",
+      "completed": "Completed",
+      "inProgress": "In Progress",
+      "pending": "Pending",
+      "overdue": "Overdue",
+      "searchPlaceholder": "Search tasks...",
+      "allStatus": "All Status",
+      "allPriority": "All Priority",
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low",
+      "createdDate": "Created Date",
+      "dueDate": "Due Date",
+      "priority": "Priority",
+      "title": "Title",
+      "ascending": "Ascending",
+      "descending": "Descending",
+      "noTasksFound": "No tasks found",
+      "tryAdjustingFilters": "Try adjusting your filters or search term",
+      "createFirstTask": "Create your first task to get started"
+    },
+    "taskCard": {
+      "completed": "Completed",
+      "in-progress": "In Progress",
+      "pending": "Pending",
+      "overdue": "Overdue",
+      "timeLogged": "Time logged",
+      "lastWorked": "Last worked"
+    },
+    "pwa": {
+      "installApp": "Instalar aplicación",
+      "notificationsEnabled": "Notificaciones habilitadas",
+      "notificationsBlocked": "Notificaciones bloqueadas",
+      "enableNotifications": "Habilitar notificaciones",
+      "online": "En línea",
+      "offline": "Desconectado",
+      "newVersion": "¡Una nueva versión de TaskFlow está disponible!",
+      "updateNow": "Actualizar ahora",
+      "offlineTasks": "Tareas sin conexión",
+      "offlineTasksCount": "{{count}} tarea(s) creada(s) sin conexión",
+      "syncNow": "Sincronizar ahora",
+      "installTaskFlow": "Instalar TaskFlow",
+      "installPromptDescription": "Instala TaskFlow en tu dispositivo para acceso rápido, soporte sin conexión y experiencia de aplicación nativa.",
+      "worksOffline": "Funciona sin conexión",
+      "pushNotifications": "Notificaciones push",
+      "homeScreenIcon": "Icono de pantalla de inicio",
+      "maybeLater": "Quizás más tarde",
+      "install": "Instalar",
+      "appInstallation": "Instalación de la aplicación",
+      "appInstallationDescription": "Instalar en la pantalla de inicio",
+      "enabled": "Habilitado",
+      "available": "Disponible",
+      "blocked": "Bloqueado",
+      "unknown": "Desconocido",
+      "pushNotificationsDescription": "Recibe recordatorios de tareas",
+      "offlineSupport": "Soporte sin conexión",
+      "offlineSupportDescription": "Funciona sin internet",
+      "pwaFeatures": "Funciones PWA"
+    },
+    "tasks": {
+      "title": "Tareas",
+      "subtitle": "Gestiona y realiza un seguimiento de tus tareas con el monitoreo de progreso",
+      "total": "Tareas totales",
+      "completed": "Completadas",
+      "inProgress": "En progreso",
+      "pending": "Pendiente",
+      "searchPlaceholder": "Buscar tareas...",
+      "filters": "Filtros",
+      "noTasksYet": "No hay tareas aún",
+      "createFirstTask": "Crea tu primera tarea para comenzar",
+      "newTask": "Nueva tarea",
+      "manageAndTrack": "Gestiona y realiza un seguimiento de tus tareas con el monitoreo de progreso"
+    },
+    "taskModal": {
+      "createTitle": "Crear nueva tarea",
+      "title": "Título",
+      "titlePlaceholder": "Introduce el título de la tarea...",
+      "description": "Descripción",
+      "descriptionPlaceholder": "Agrega una descripción de la tarea...",
+      "priority": "Prioridad",
+      "category": "Categoría",
+      "categoryPlaceholder": "ej., Trabajo, Personal.",
+      "dueDate": "Fecha de vencimiento",
+      "estimatedHours": "Horas estimadas",
+      "estimatedHoursPlaceholder": "ej., 5"
+    }
+  }

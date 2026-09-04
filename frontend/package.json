@@ -4,7 +4,13 @@
   "version": "1.0.0",
   "type": "module",
   "description": "Professional task management with progress tracking and analytics",
-  "keywords": ["task management", "productivity", "progress tracking", "analytics", "react"],
+  "keywords": [
+    "task management",
+    "productivity",
+    "progress tracking",
+    "analytics",
+    "react"
+  ],
   "author": "Your Name",
   "license": "MIT",
   "scripts": {
@@ -27,12 +33,19 @@
     "deploy:staging": "npm run lint && npm run test:run && npm run build:staging && echo '✅ Ready for staging deployment'",
     "deploy:production": "npm run lint && npm run test:run && npm run build:production && echo '✅ Ready for production deployment'",
     "lighthouse": "lhci autorun",
-    "size-check": "npm run build:production && bundlesize"
+    "size-check": "npm run build:production && bundlesize",
+    "prebuild": "npm run clean",
+    "postbuild": "npm run size-check",
+    "start": "vite preview --host --port 4173"
   },
   "dependencies": {
+    "i18next": "^25.3.2",
+    "i18next-browser-languagedetector": "^8.2.0",
     "lucide-react": "^0.511.0",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "react-i18next": "^15.6.0",
+    "react-router-dom": "^7.6.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
@@ -41,7 +54,6 @@
     "@vitejs/plugin-react": "^4.4.1",
     "@vitest/ui": "^1.6.0",
     "autoprefixer": "^10.4.21",
-    "bundlesize": "^0.18.1",
     "eslint": "^9.25.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",
@@ -51,7 +63,7 @@
     "prettier": "^3.2.5",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.3.3",
-    "vite": "^6.3.5",
+    "vite": "^5.2.10",
     "vite-bundle-analyzer": "^0.7.0",
     "vite-plugin-pwa": "^0.19.8",
     "vitest": "^1.6.0",

@@ -27,16 +27,16 @@ const Login = ({ onLogin, onRegister, loading, error }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex flex-col items-center justify-center p-4 sm:p-6 login-container">
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl"></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl"></div>
       </div>
 
-      <div className="relative w-full max-w-md">
-        <div className="bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-8 shadow-2xl">
-          <div className="text-center mb-8">
+      <div className="relative w-full max-w-md mx-auto">
+        <div className="bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-6 sm:p-8 shadow-2xl login-card">
+          <div className="text-center mb-6 sm:mb-8">
             <div className="flex items-center justify-center mb-6">
               <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-500 rounded-2xl flex items-center justify-center">
                 <Sparkles className="w-8 h-8 text-white" />
@@ -123,7 +123,7 @@ const Login = ({ onLogin, onRegister, loading, error }) => {
             </button>
           </form>
 
-          <div className="mt-8 pt-6 border-t border-slate-700/50">
+          <div className="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-slate-700/50">
             <div className="text-center">
               <p className="text-gray-400 mb-4">
                 {isSignUp ? 'Already have an account?' : "Don't have an account?"}
@@ -142,7 +142,7 @@ const Login = ({ onLogin, onRegister, loading, error }) => {
           </div>
         </div>
 
-        <div className="mt-8 text-center">
+        <div className="mt-6 sm:mt-8 text-center login-footer">
           <div className="flex items-center justify-center space-x-4 text-sm text-gray-500">
             <div className="flex items-center space-x-1">
               <div className="w-2 h-2 bg-green-400 rounded-full"></div>

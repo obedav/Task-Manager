@@ -1,192 +1,203 @@
-// server.js
+'use strict';
+
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const compression = require('compression');
+const morgan = require('morgan');
+const cookieParser = require('cookie-parser');
 
 dotenv.config();
 
-const app = express();
+// ── Startup guard ──────────────────────────────────────────────────────────
+if (!process.env.JWT_SECRET) {
+  console.error('FATAL: JWT_SECRET environment variable is not set.');
+  if (process.env.NODE_ENV === 'production') process.exit(1);
+  else console.warn('WARNING: Running without JWT_SECRET. Set it in .env before any real use.');
+}
 
+const app = express();
 
 app.set('trust proxy', 1);
 
-
-app.use(cors({
-  origin: function (origin, callback) {
-    
-    if (!origin) return callback(null, true);
-    
-   
-    if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
-      return callback(null, true);
+// ── Security middleware ────────────────────────────────────────────────────
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc:   ["'self'", "'unsafe-inline'"],
+      scriptSrc:  ["'self'"],
+      imgSrc:     ["'self'", 'data:', 'https:'],
+      connectSrc: ["'self'", 'https:', 'wss:'],
+      fontSrc:    ["'self'", 'https:', 'data:'],
+      objectSrc:  ["'none'"],
+      frameSrc:   ["'none'"],
+      upgradeInsecureRequests: process.env.NODE_ENV === 'production' ? [] : null
     }
-    
-
-    const allowedOrigins = [
-      'http://localhost:3000',
-      'http://localhost:5173',
-      'http://127.0.0.1:3000',
-      'http://127.0.0.1:5173'
-    ];
-    
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-    
-    return callback(new Error('Not allowed by CORS'));
   },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: [
-    'Origin',
-    'X-Requested-With',
-    'Content-Type',
-    'Accept',
-    'Authorization',
-    'Access-Control-Allow-Credentials'
-  ],
-  exposedHeaders: ['Content-Length', 'X-Foo', 'X-Bar'],
-  preflightContinue: false,
-  optionsSuccessStatus: 200
+  crossOriginEmbedderPolicy: false,
+  hsts: { maxAge: 31536000, includeSubDomains: true, preload: true }
 }));
 
-app.options('*', (req, res) => {
-  console.log('Preflight request received for:', req.path);
-  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
-  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS,PATCH');
-  res.header('Access-Control-Allow-Headers', 'Origin,X-Requested-With,Content-Type,Accept,Authorization,Access-Control-Allow-Credentials');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.sendStatus(200);
+// ── Rate limiting ──────────────────────────────────────────────────────────
+const limit = (windowMs, max, message) => rateLimit({
+  windowMs, max,
+  message: { error: message },
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: (req) => req.path === '/api/health'
 });
 
+app.use('/api/', limit(15 * 60 * 1000, process.env.NODE_ENV === 'production' ? 100 : 1000, 'Too many requests'));
+app.use('/api/v1/auth/login',    limit(15 * 60 * 1000, process.env.NODE_ENV === 'production' ? 10 : 100, 'Too many login attempts'));
+app.use('/api/v1/auth/register', limit(60 * 60 * 1000, process.env.NODE_ENV === 'production' ? 5  : 50,  'Too many registration attempts'));
 
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(compression());
 
-
-app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
-  console.log('Headers:', req.headers);
-  if (req.body && Object.keys(req.body).length > 0) {
-    console.log('Request body:', req.body);
+// ── CORS ──────────────────────────────────────────────────────────────────
+const buildAllowedOrigins = () => {
+  const origins = [];
+  if (process.env.NODE_ENV !== 'production') {
+    origins.push(
+      'http://localhost:3000', 'http://localhost:5173', 'http://localhost:5174',
+      'http://127.0.0.1:3000', 'http://127.0.0.1:5173', 'http://127.0.0.1:5174'
+    );
   }
-  next();
-});
+  if (process.env.FRONTEND_URL) origins.push(process.env.FRONTEND_URL);
+  if (process.env.ALLOWED_ORIGINS) {
+    process.env.ALLOWED_ORIGINS.split(',').map((o) => o.trim()).filter(Boolean).forEach((o) => origins.push(o));
+  }
+  return origins;
+};
 
+const allowedOrigins = buildAllowedOrigins();
 
-app.get('/test-cors', (req, res) => {
-  res.json({
-    message: 'CORS is working!',
-    origin: req.headers.origin,
-    timestamp: new Date().toISOString()
-  });
-});
+app.use(cors({
+  origin: (origin, cb) => {
+    if (!origin && process.env.NODE_ENV !== 'production') return cb(null, true);
+    if (!origin) return cb(new Error('Origin required in production'));
+    if (allowedOrigins.includes(origin)) return cb(null, true);
+    cb(new Error(`Origin ${origin} not allowed`));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  maxAge: 86400
+}));
 
+// ── Logging ────────────────────────────────────────────────────────────────
+app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 
+// ── Body parsing ───────────────────────────────────────────────────────────
+// 100 KB is generous for a task manager; 10 MB was a DoS risk
+app.use(express.json({ limit: '100kb', strict: true }));
+app.use(express.urlencoded({ extended: true, limit: '100kb', parameterLimit: 20 }));
+app.use(cookieParser());
+
+// ── Database ───────────────────────────────────────────────────────────────
+const connectDB = require('./config/db');
+
+// ── Routes ─────────────────────────────────────────────────────────────────
 const authRoutes = require('./routes/authRoutes');
 const taskRoutes = require('./routes/taskRoutes');
-
-// Use routes
-app.use('/api/auth', authRoutes);
-app.use('/api/tasks', taskRoutes);
-
-// Basic route
-app.get('/', (req, res) => {
-  res.json({
-    message: 'TaskFlow API is running!',
-    version: '1.0.0',
-    timestamp: new Date().toISOString(),
-    endpoints: {
-      auth: '/api/auth',
-      tasks: '/api/tasks',
-      health: '/api/health',
-      cors_test: '/test-cors'
-    }
-  });
-});
-
+const userRoutes = require('./routes/userRoutes');
 
 app.get('/api/health', (req, res) => {
   res.json({
     success: true,
-    message: 'Server is healthy',
+    status: 'healthy',
+    environment: process.env.NODE_ENV || 'development',
     timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    cors: 'enabled'
+    uptime: Math.floor(process.uptime()),
+    version: process.env.npm_package_version || '2.0.0'
   });
 });
 
+// All API routes under /api/v1/
+app.use('/api/v1/auth',  authRoutes);
+app.use('/api/v1/tasks', taskRoutes);
+app.use('/api/v1/user',  userRoutes);
 
+app.get('/', (req, res) => {
+  res.json({
+    message: 'TaskFlow API v2',
+    version: '2.0.0',
+    endpoints: { health: '/api/health', v1: '/api/v1/' }
+  });
+});
+
+// ── 404 ────────────────────────────────────────────────────────────────────
 app.use('*', (req, res) => {
-  console.log(`404 - Route not found: ${req.method} ${req.originalUrl}`);
-  res.status(404).json({
-    success: false,
-    message: `Route ${req.method} ${req.originalUrl} not found`
-  });
+  res.status(404).json({ success: false, error: 'Not Found', message: `${req.method} ${req.originalUrl} not found` });
 });
 
-// Global error handling middleware
+// ── Global error handler ───────────────────────────────────────────────────
 app.use((err, req, res, next) => {
-  console.error('Global error handler:', err);
-  
-  // CORS errors
-  if (err.message && err.message.includes('CORS')) {
-    return res.status(400).json({
-      success: false,
-      message: 'CORS error: ' + err.message
-    });
+  const isProd = process.env.NODE_ENV === 'production';
+
+  if (err.message?.includes('CORS')) {
+    return res.status(403).json({ success: false, error: 'CORS Error', message: 'Origin not allowed' });
   }
-  
-  res.status(err.statusCode || 500).json({
-    success: false,
-    message: err.message || 'Server Error'
+
+  // Mongoose validation errors
+  if (err.name === 'ValidationError') {
+    const messages = Object.values(err.errors).map((e) => e.message);
+    return res.status(400).json({ success: false, error: 'Validation Error', message: messages.join('. ') });
+  }
+
+  // Mongoose duplicate key
+  if (err.code === 11000) {
+    const field = Object.keys(err.keyValue || {})[0] || 'field';
+    return res.status(409).json({ success: false, error: 'Conflict', message: `${field} already in use` });
+  }
+
+  const status = err.statusCode || err.status || 500;
+  const message = isProd && status === 500 ? 'Internal Server Error' : err.message;
+
+  if (!isProd) console.error(err);
+
+  res.status(status).json({ success: false, error: err.name || 'Error', message });
+});
+
+// ── Server startup ─────────────────────────────────────────────────────────
+const PORT = parseInt(process.env.PORT, 10) || 5001;
+const HOST = process.env.HOST || '0.0.0.0';
+
+const start = async () => {
+  await connectDB();
+
+  const server = app.listen(PORT, HOST, () => {
+    console.log(`TaskFlow API running on http://localhost:${PORT} [${process.env.NODE_ENV || 'development'}]`);
+    console.log(`API base: http://localhost:${PORT}/api/v1`);
   });
+
+  const shutdown = (signal) => {
+    console.log(`${signal} received – shutting down…`);
+    server.close(() => { console.log('Server closed.'); process.exit(0); });
+    setTimeout(() => process.exit(1), 10000);
+  };
+
+  process.on('SIGTERM', () => shutdown('SIGTERM'));
+  process.on('SIGINT',  () => shutdown('SIGINT'));
+
+  return server;
+};
+
+process.on('unhandledRejection', (reason) => {
+  console.error('Unhandled rejection:', reason);
+  if (process.env.NODE_ENV !== 'production') process.exit(1);
 });
 
-if (process.env.NODE_ENV === 'production') {
-  if (!process.env.JWT_SECRET) {
-    console.error('❌ ERROR: JWT_SECRET must be set in production!');
-    process.exit(1);
-  }
-  if (!process.env.MONGODB_URI) {
-    console.error('❌ ERROR: MONGODB_URI must be set in production!');
-    process.exit(1);
-  }
-}
-// TODO: Integrate error reporting (e.g., Sentry) before production deployment
-// TODO: Restrict CORS to your frontend domain before deployment
-// Example: app.use(cors({ origin: 'https://YOUR_FRONTEND_DOMAIN_HERE', credentials: true }));
-
-const PORT = process.env.PORT || 5000;
-
-const server = app.listen(PORT, '0.0.0.0', () => {
-  console.log('🚀 ===================================');
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`🚀 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🚀 Server accessible at:`);
-  console.log(`   - http://localhost:${PORT}`);
-  console.log(`   - http://127.0.0.1:${PORT}`);
-  console.log(`🚀 Frontend URLs supported:`);
-  console.log(`   - http://localhost:3000 (Create React App)`);
-  console.log(`   - http://localhost:5173 (Vite)`);
-  console.log(`🚀 API Health: http://localhost:${PORT}/api/health`);
-  console.log(`🚀 CORS Test: http://localhost:${PORT}/test-cors`);
-  console.log('🚀 ===================================');
-});
-
-
-process.on('unhandledRejection', (err, promise) => {
-  console.log(`Unhandled Rejection: ${err.message}`);
-  server.close(() => {
-    process.exit(1);
-  });
-});
-
-
-process.on('uncaughtException', (err, origin) => {
-  console.log(`Uncaught Exception: ${err.message}`);
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught exception:', err);
   process.exit(1);
 });
+
+// Only bind to a port when run directly (not when required by tests)
+if (require.main === module) {
+  start().catch((err) => { console.error('Startup failed:', err); process.exit(1); });
+}
 
 module.exports = app;

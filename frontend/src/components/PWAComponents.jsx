@@ -2,10 +2,13 @@
 import React from 'react';
 import { Download, Bell, Wifi, WifiOff, RefreshCw, Smartphone } from 'lucide-react';
 import { usePWA } from '../hooks/usePWA';
+import { useTranslation } from 'react-i18next';
 
-// Install App Button Component
+// Always export and use InstallAppButton and PWAInstallPrompt in the main layout/header
+// These components will show the install button/prompt when the app is installable
 export const InstallAppButton = ({ className = '' }) => {
   const { canInstall, installApp, isInstalled } = usePWA();
+  const { t } = useTranslation();
 
   if (isInstalled || !canInstall) {
     return null;
@@ -24,7 +27,7 @@ export const InstallAppButton = ({ className = '' }) => {
       className={`bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white py-2 px-4 rounded-lg transition-all flex items-center space-x-2 ${className}`}
     >
       <Download className="w-4 h-4" />
-      <span>Install App</span>
+      <span>{t('pwa.installApp')}</span>
     </button>
   );
 };
@@ -32,12 +35,13 @@ export const InstallAppButton = ({ className = '' }) => {
 // Notification Permission Button
 export const NotificationButton = ({ className = '' }) => {
   const { notificationPermission, requestNotifications } = usePWA();
+  const { t } = useTranslation();
 
   if (notificationPermission === 'granted') {
     return (
       <div className={`flex items-center space-x-2 text-green-400 ${className}`}>
         <Bell className="w-4 h-4" />
-        <span className="text-sm">Notifications enabled</span>
+        <span className="text-sm">{t('pwa.notificationsEnabled')}</span>
       </div>
     );
   }
@@ -46,7 +50,7 @@ export const NotificationButton = ({ className = '' }) => {
     return (
       <div className={`flex items-center space-x-2 text-red-400 ${className}`}>
         <Bell className="w-4 h-4" />
-        <span className="text-sm">Notifications blocked</span>
+        <span className="text-sm">{t('pwa.notificationsBlocked')}</span>
       </div>
     );
   }
@@ -64,7 +68,7 @@ export const NotificationButton = ({ className = '' }) => {
       className={`bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg transition-colors flex items-center space-x-2 ${className}`}
     >
       <Bell className="w-4 h-4" />
-      <span>Enable Notifications</span>
+      <span>{t('pwa.enableNotifications')}</span>
     </button>
   );
 };
@@ -72,18 +76,19 @@ export const NotificationButton = ({ className = '' }) => {
 // Online/Offline Status Indicator
 export const OnlineStatus = ({ className = '' }) => {
   const { isOnline } = usePWA();
+  const { t } = useTranslation();
 
   return (
     <div className={`flex items-center space-x-2 ${className}`}>
       {isOnline ? (
         <>
           <Wifi className="w-4 h-4 text-green-400" />
-          <span className="text-sm text-green-400">Online</span>
+          <span className="text-sm text-green-400">{t('pwa.online')}</span>
         </>
       ) : (
         <>
           <WifiOff className="w-4 h-4 text-red-400" />
-          <span className="text-sm text-red-400">Offline</span>
+          <span className="text-sm text-red-400">{t('pwa.offline')}</span>
         </>
       )}
     </div>
@@ -93,6 +98,7 @@ export const OnlineStatus = ({ className = '' }) => {
 // Update Available Banner
 export const UpdateBanner = () => {
   const { updateAvailable, updateApp } = usePWA();
+  const { t } = useTranslation();
 
   if (!updateAvailable) {
     return null;
@@ -103,13 +109,13 @@ export const UpdateBanner = () => {
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <RefreshCw className="w-4 h-4" />
-          <span>A new version of TaskFlow is available!</span>
+          <span>{t('pwa.newVersion')}</span>
         </div>
         <button
           onClick={updateApp}
           className="bg-white text-blue-600 px-4 py-1 rounded hover:bg-gray-100 transition-colors"
         >
-          Update Now
+          {t('pwa.updateNow')}
         </button>
       </div>
     </div>
@@ -119,6 +125,7 @@ export const UpdateBanner = () => {
 // Offline Tasks Indicator
 export const OfflineTasksIndicator = () => {
   const { hasOfflineTasks, offlineTasks, syncOfflineTasks, isOnline } = usePWA();
+  const { t } = useTranslation();
 
   if (!hasOfflineTasks) {
     return null;
@@ -135,16 +142,16 @@ export const OfflineTasksIndicator = () => {
       <div className="flex items-start space-x-3">
         <WifiOff className="w-5 h-5 mt-0.5" />
         <div className="flex-1">
-          <h4 className="font-medium">Offline Tasks</h4>
+          <h4 className="font-medium">{t('pwa.offlineTasks')}</h4>
           <p className="text-sm opacity-90">
-            {offlineTasks.length} task{offlineTasks.length !== 1 ? 's' : ''} created offline
+            {offlineTasks.length} {t('pwa.offlineTasksCount', { count: offlineTasks.length })}
           </p>
           {isOnline && (
             <button
               onClick={handleSync}
               className="mt-2 bg-white text-yellow-600 px-3 py-1 rounded text-sm hover:bg-gray-100 transition-colors"
             >
-              Sync Now
+              {t('pwa.syncNow')}
             </button>
           )}
         </div>
@@ -156,6 +163,7 @@ export const OfflineTasksIndicator = () => {
 // PWA Install Prompt (for custom install flow)
 export const PWAInstallPrompt = ({ isOpen, onClose }) => {
   const { installApp, isInstalled } = usePWA();
+  const { t } = useTranslation();
 
   if (!isOpen || isInstalled) {
     return null;
@@ -177,25 +185,25 @@ export const PWAInstallPrompt = ({ isOpen, onClose }) => {
           </div>
           
           <h3 className="text-xl font-bold text-white mb-2">
-            Install TaskFlow
+            {t('pwa.installTaskFlow')}
           </h3>
           
           <p className="text-gray-400 mb-6">
-            Install TaskFlow on your device for quick access, offline support, and a native app experience.
+            {t('pwa.installPromptDescription')}
           </p>
           
           <div className="space-y-3">
             <div className="flex items-center space-x-3 text-sm text-gray-300">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span>Works offline</span>
+              <span>{t('pwa.worksOffline')}</span>
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-300">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span>Push notifications</span>
+              <span>{t('pwa.pushNotifications')}</span>
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-300">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span>Home screen icon</span>
+              <span>{t('pwa.homeScreenIcon')}</span>
             </div>
           </div>
           
@@ -204,13 +212,13 @@ export const PWAInstallPrompt = ({ isOpen, onClose }) => {
               onClick={onClose}
               className="flex-1 bg-slate-700 hover:bg-slate-600 text-white py-3 px-4 rounded-xl transition-colors"
             >
-              Maybe Later
+              {t('pwa.maybeLater')}
             </button>
             <button
               onClick={handleInstall}
               className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white py-3 px-4 rounded-xl transition-all"
             >
-              Install
+              {t('pwa.install')}
             </button>
           </div>
         </div>
@@ -222,50 +230,51 @@ export const PWAInstallPrompt = ({ isOpen, onClose }) => {
 // PWA Features Summary Component (for settings or about page)
 export const PWAFeatures = () => {
   const { isInstalled, notificationPermission, isOnline } = usePWA();
+  const { t } = useTranslation();
 
   const features = [
     {
-      name: 'App Installation',
-      description: 'Install on home screen',
-      status: isInstalled ? 'enabled' : 'available',
+      name: t('pwa.appInstallation'),
+      description: t('pwa.appInstallationDescription'),
+      status: isInstalled ? t('pwa.enabled') : t('pwa.available'),
       icon: Download
     },
     {
-      name: 'Push Notifications',
-      description: 'Get task reminders',
-      status: notificationPermission === 'granted' ? 'enabled' : 
-             notificationPermission === 'denied' ? 'blocked' : 'available',
+      name: t('pwa.pushNotifications'),
+      description: t('pwa.pushNotificationsDescription'),
+      status: notificationPermission === 'granted' ? t('pwa.enabled') : 
+             notificationPermission === 'denied' ? t('pwa.blocked') : t('pwa.available'),
       icon: Bell
     },
     {
-      name: 'Offline Support',
-      description: 'Works without internet',
-      status: 'enabled',
+      name: t('pwa.offlineSupport'),
+      description: t('pwa.offlineSupportDescription'),
+      status: t('pwa.enabled'),
       icon: isOnline ? Wifi : WifiOff
     }
   ];
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'enabled': return 'text-green-400';
-      case 'blocked': return 'text-red-400';
-      case 'available': return 'text-yellow-400';
+      case t('pwa.enabled'): return 'text-green-400';
+      case t('pwa.blocked'): return 'text-red-400';
+      case t('pwa.available'): return 'text-yellow-400';
       default: return 'text-gray-400';
     }
   };
 
   const getStatusText = (status) => {
     switch (status) {
-      case 'enabled': return 'Enabled';
-      case 'blocked': return 'Blocked';
-      case 'available': return 'Available';
-      default: return 'Unknown';
+      case t('pwa.enabled'): return t('pwa.enabled');
+      case t('pwa.blocked'): return t('pwa.blocked');
+      case t('pwa.available'): return t('pwa.available');
+      default: return t('pwa.unknown');
     }
   };
 
   return (
     <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6">
-      <h3 className="text-lg font-semibold text-white mb-4">PWA Features</h3>
+      <h3 className="text-lg font-semibold text-white mb-4">{t('pwa.pwaFeatures')}</h3>
       
       <div className="space-y-4">
         {features.map((feature) => {

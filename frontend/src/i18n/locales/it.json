@@ -1,0 +1,161 @@
+{
+    "common": {
+      "save": "Salva",
+      "cancel": "Annulla",
+      "delete": "Elimina",
+      "edit": "Modifica",
+      "loading": "Caricamento...",
+      "success": "Successo",
+      "error": "Errore",
+      "update": "Aggiorna",
+      "create": "Crea",
+      "close": "Chiudi"
+    },
+    "Navigation": {
+      "dashboard": "Dashboard",
+      "tasks": "Attività",
+      "calendar": "Calendario",
+      "analytics": "Analitiche",
+      "settings": "Impostazioni",
+      "profile": "Profilo"
+    },
+    "dashboard": {
+      "greeting": "Buongiorno, {{name}}",
+      "todayTasks": "Hai",
+      "task": "attività",
+      "dueToday": "per oggi",
+      "clearSchedule": "Il tuo programma è libero per oggi",
+      "totalTimeTracked": "Tempo totale registrato",
+      "hours": "ore",
+      "loadingAnalytics": "Caricamento analisi..."
+    },
+    "settings": {
+      "title": "Impostazioni",
+      "subtitle": "Gestisci il tuo account e le preferenze dell'app",
+      "profile": {
+        "title": "Informazioni del profilo",
+        "fullName": "Nome completo",
+        "email": "Indirizzo email",
+        "timezone": "Fuso orario",
+        "language": "Lingua",
+        "updateProfile": "Aggiorna profilo",
+        "updating": "Aggiornamento...",
+        "updated": "Profilo aggiornato con successo"
+      },
+      "security": {
+        "title": "Impostazioni di sicurezza",
+        "currentPassword": "Password attuale",
+        "newPassword": "Nuova password",
+        "confirmPassword": "Conferma nuova password",
+        "changePassword": "Cambia password",
+        "changing": "Cambio...",
+        "changed": "Password cambiata con successo"
+      },
+      "tabs": {
+        "profile": "Profilo",
+        "security": "Sicurezza",
+        "notifications": "Notifiche",
+        "preferences": "Preferenze",
+        "pwa": "Impostazioni app",
+        "data": "Gestione dati",
+        "danger": "Zona pericolosa"
+      },
+      "status": {
+        "online": "Online",
+        "offline": "Offline",
+        "appInstalled": "App installata",
+        "updateAvailable": "Aggiornamento disponibile"
+      }
+    },
+    "languages": {
+      "en": "Inglese",
+      "fr": "Francese"
+    },
+    "taskList": {
+      "total": "Total",
+      "completed": "Completed",
+      "inProgress": "In Progress",
+      "pending": "Pending",
+      "overdue": "Overdue",
+      "searchPlaceholder": "Search tasks...",
+      "allStatus": "All Status",
+      "allPriority": "All Priority",
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low",
+      "createdDate": "Created Date",
+      "dueDate": "Due Date",
+      "priority": "Priority",
+      "title": "Title",
+      "ascending": "Ascending",
+      "descending": "Descending",
+      "noTasksFound": "No tasks found",
+      "tryAdjustingFilters": "Try adjusting your filters or search term",
+      "createFirstTask": "Create your first task to get started"
+    },
+    "taskCard": {
+      "completed": "Completed",
+      "in-progress": "In Progress",
+      "pending": "Pending",
+      "overdue": "Overdue",
+      "timeLogged": "Time logged",
+      "lastWorked": "Last worked"
+    },
+    "pwa": {
+      "installApp": "Installa app",
+      "notificationsEnabled": "Notifiche abilitate",
+      "notificationsBlocked": "Notifiche bloccate",
+      "enableNotifications": "Abilita notifiche",
+      "online": "Online",
+      "offline": "Offline",
+      "newVersion": "È disponibile una nuova versione di TaskFlow!",
+      "updateNow": "Aggiorna ora",
+      "offlineTasks": "Attività offline",
+      "offlineTasksCount": "{{count}} attività creata offline",
+      "syncNow": "Sincronizza ora",
+      "installTaskFlow": "Installa TaskFlow",
+      "installPromptDescription": "Installa TaskFlow sul tuo dispositivo per accesso rapido, supporto offline e un'esperienza app nativa.",
+      "worksOffline": "Funziona offline",
+      "pushNotifications": "Notifiche push",
+      "homeScreenIcon": "Icona schermata home",
+      "maybeLater": "Forse dopo",
+      "install": "Installa",
+      "appInstallation": "Installazione app",
+      "appInstallationDescription": "Installa sulla schermata home",
+      "enabled": "Abilitato",
+      "available": "Disponibile",
+      "blocked": "Bloccato",
+      "unknown": "Sconosciuto",
+      "pushNotificationsDescription": "Ricevi promemoria attività",
+      "offlineSupport": "Supporto offline",
+      "offlineSupportDescription": "Funziona senza internet",
+      "pwaFeatures": "Funzionalità PWA"
+    },
+    "tasks": {
+      "title": "Attività",
+      "subtitle": "Gestisci e monitora le tue attività con il monitoraggio dei progressi",
+      "total": "Attività totali",
+      "completed": "Completate",
+      "inProgress": "In corso",
+      "pending": "In attesa",
+      "searchPlaceholder": "Cerca attività...",
+      "filters": "Filtri",
+      "noTasksYet": "Nessuna attività ancora",
+      "createFirstTask": "Crea la tua prima attività per iniziare",
+      "newTask": "Nuova attività",
+      "manageAndTrack": "Gestisci e monitora le tue attività con il monitoraggio dei progressi"
+    },
+    "taskModal": {
+      "createTitle": "Crea nuova attività",
+      "title": "Titolo",
+      "titlePlaceholder": "Inserisci il titolo dell'attività...",
+      "description": "Descrizione",
+      "descriptionPlaceholder": "Aggiungi una descrizione dell'attività...",
+      "priority": "Priorità",
+      "category": "Categoria",
+      "categoryPlaceholder": "es., Lavoro, Personale.",
+      "dueDate": "Data di scadenza",
+      "estimatedHours": "Ore stimate",
+      "estimatedHoursPlaceholder": "es., 5"
+    }
+  }

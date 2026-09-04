@@ -56,13 +56,13 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
-  
-  // Handle API requests
-  if (url.pathname.startsWith('/api/')) {
-    event.respondWith(handleAPIRequest(request));
+
+  // Bypass service worker for any non-GET requests or any /api/ requests
+  if (request.method !== 'GET' || url.pathname.startsWith('/api/')) {
+    // Let these requests go directly to the network
     return;
   }
-  
+
   // Handle static assets and navigation
   event.respondWith(handleStaticRequest(request));
 });

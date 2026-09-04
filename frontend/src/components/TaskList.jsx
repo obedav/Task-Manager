@@ -1,8 +1,10 @@
 import { useState, useMemo } from 'react'
 import { Filter, SortAsc, SortDesc, Grid, List, Search } from 'lucide-react'
 import TaskCard from './TaskCard'
+import { useTranslation } from 'react-i18next';
 
 const TaskList = ({ tasks: tasksInput, onEdit, onDelete, onStatusChange, loading }) => {
+  const { t } = useTranslation();
   const [viewMode, setViewMode] = useState('grid')
   const [sortBy, setSortBy] = useState('createdAt')
   const [sortOrder, setSortOrder] = useState('desc')
@@ -81,23 +83,23 @@ const TaskList = ({ tasks: tasksInput, onEdit, onDelete, onStatusChange, loading
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
           <div className="text-center">
             <div className="text-2xl font-bold text-white">{taskStats.total}</div>
-            <div className="text-xs text-gray-400">Total</div>
+            <div className="text-xs text-gray-400">{t('taskList.total')}</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-green-400">{taskStats.completed}</div>
-            <div className="text-xs text-gray-400">Completed</div>
+            <div className="text-xs text-gray-400">{t('taskList.completed')}</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-blue-400">{taskStats.inProgress}</div>
-            <div className="text-xs text-gray-400">In Progress</div>
+            <div className="text-xs text-gray-400">{t('taskList.inProgress')}</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-yellow-400">{taskStats.pending}</div>
-            <div className="text-xs text-gray-400">Pending</div>
+            <div className="text-xs text-gray-400">{t('taskList.pending')}</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-red-400">{taskStats.overdue}</div>
-            <div className="text-xs text-gray-400">Overdue</div>
+            <div className="text-xs text-gray-400">{t('taskList.overdue')}</div>
           </div>
         </div>
 
@@ -106,7 +108,7 @@ const TaskList = ({ tasks: tasksInput, onEdit, onDelete, onStatusChange, loading
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <input
               type="text"
-              placeholder="Search tasks..."
+              placeholder={t('taskList.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full bg-slate-800/50 border border-slate-600 rounded-xl pl-10 pr-4 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
@@ -146,10 +148,10 @@ const TaskList = ({ tasks: tasksInput, onEdit, onDelete, onStatusChange, loading
                 onChange={(e) => setFilterStatus(e.target.value)}
                 className="bg-slate-800/50 border border-slate-600 rounded-lg px-3 py-2 text-white"
               >
-                <option value="all">All Status</option>
-                <option value="pending">Pending</option>
-                <option value="in-progress">In Progress</option>
-                <option value="completed">Completed</option>
+                <option value="all">{t('taskList.allStatus')}</option>
+                <option value="pending">{t('taskList.pending')}</option>
+                <option value="in-progress">{t('taskList.inProgress')}</option>
+                <option value="completed">{t('taskList.completed')}</option>
               </select>
 
               <select
@@ -157,10 +159,10 @@ const TaskList = ({ tasks: tasksInput, onEdit, onDelete, onStatusChange, loading
                 onChange={(e) => setFilterPriority(e.target.value)}
                 className="bg-slate-800/50 border border-slate-600 rounded-lg px-3 py-2 text-white"
               >
-                <option value="all">All Priority</option>
-                <option value="high">High</option>
-                <option value="medium">Medium</option>
-                <option value="low">Low</option>
+                <option value="all">{t('taskList.allPriority')}</option>
+                <option value="high">{t('taskList.high')}</option>
+                <option value="medium">{t('taskList.medium')}</option>
+                <option value="low">{t('taskList.low')}</option>
               </select>
 
               <select
@@ -168,10 +170,10 @@ const TaskList = ({ tasks: tasksInput, onEdit, onDelete, onStatusChange, loading
                 onChange={(e) => setSortBy(e.target.value)}
                 className="bg-slate-800/50 border border-slate-600 rounded-lg px-3 py-2 text-white"
               >
-                <option value="createdAt">Created Date</option>
-                <option value="dueDate">Due Date</option>
-                <option value="priority">Priority</option>
-                <option value="title">Title</option>
+                <option value="createdAt">{t('taskList.createdDate')}</option>
+                <option value="dueDate">{t('taskList.dueDate')}</option>
+                <option value="priority">{t('taskList.priority')}</option>
+                <option value="title">{t('taskList.title')}</option>
               </select>
 
               <button
@@ -179,7 +181,7 @@ const TaskList = ({ tasks: tasksInput, onEdit, onDelete, onStatusChange, loading
                 className="flex items-center justify-center space-x-2 bg-slate-800/50 border border-slate-600 rounded-lg px-3 py-2 text-white hover:bg-slate-700/50 transition-colors"
               >
                 {sortOrder === 'asc' ? <SortAsc className="w-4 h-4" /> : <SortDesc className="w-4 h-4" />}
-                <span>{sortOrder === 'asc' ? 'Ascending' : 'Descending'}</span>
+                <span>{sortOrder === 'asc' ? t('taskList.ascending') : t('taskList.descending')}</span>
               </button>
             </div>
           </div>
@@ -191,11 +193,11 @@ const TaskList = ({ tasks: tasksInput, onEdit, onDelete, onStatusChange, loading
           <div className="w-24 h-24 bg-slate-800/50 rounded-full flex items-center justify-center mx-auto mb-4">
             <Search className="w-8 h-8 text-gray-400" />
           </div>
-          <h3 className="text-xl font-semibold text-white mb-2">No tasks found</h3>
+          <h3 className="text-xl font-semibold text-white mb-2">{t('taskList.noTasksFound')}</h3>
           <p className="text-gray-400">
             {searchTerm || filterStatus !== 'all' || filterPriority !== 'all'
-              ? 'Try adjusting your filters or search term'
-              : 'Create your first task to get started'
+              ? t('taskList.tryAdjustingFilters')
+              : t('taskList.createFirstTask')
             }
           </p>
         </div>

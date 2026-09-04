@@ -227,7 +227,7 @@ class PWAService {
       for (const task of offlineTasks) {
         try {
           // Check if backend is available first
-          const healthCheck = await fetch('/api/tasks', { 
+          const healthCheck = await fetch(`${import.meta.env.VITE_API_URL}/tasks`, { 
             method: 'HEAD',
             timeout: 5000 
           });
@@ -236,7 +236,7 @@ class PWAService {
             throw new Error('Backend not available');
           }
           
-          const response = await fetch('/api/tasks', {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/tasks`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

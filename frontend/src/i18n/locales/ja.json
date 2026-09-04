@@ -1,0 +1,161 @@
+{
+    "common": {
+      "save": "保存",
+      "cancel": "キャンセル",
+      "delete": "削除",
+      "edit": "編集",
+      "loading": "読み込み中...",
+      "success": "成功",
+      "error": "エラー",
+      "update": "更新",
+      "create": "作成",
+      "close": "閉じる"
+    },
+    "Navigation": {
+      "dashboard": "ダッシュボード",
+      "tasks": "タスク",
+      "calendar": "カレンダー",
+      "analytics": "分析",
+      "settings": "設定",
+      "profile": "プロフィール"
+    },
+    "dashboard": {
+      "greeting": "おはようございます、{{name}}さん",
+      "todayTasks": "あなたは",
+      "task": "タスク",
+      "dueToday": "本日まで",
+      "clearSchedule": "今日は予定がありません",
+      "totalTimeTracked": "合計記録時間",
+      "hours": "時間",
+      "loadingAnalytics": "分析を読み込み中..."
+    },
+    "settings": {
+      "title": "設定",
+      "subtitle": "アカウントとアプリの設定を管理",
+      "profile": {
+        "title": "プロフィール情報",
+        "fullName": "氏名",
+        "email": "メールアドレス",
+        "timezone": "タイムゾーン",
+        "language": "言語",
+        "updateProfile": "プロフィールを更新",
+        "updating": "更新中...",
+        "updated": "プロフィールが正常に更新されました"
+      },
+      "security": {
+        "title": "セキュリティ設定",
+        "currentPassword": "現在のパスワード",
+        "newPassword": "新しいパスワード",
+        "confirmPassword": "新しいパスワードの確認",
+        "changePassword": "パスワードを変更",
+        "changing": "変更中...",
+        "changed": "パスワードが正常に変更されました"
+      },
+      "tabs": {
+        "profile": "プロフィール",
+        "security": "セキュリティ",
+        "notifications": "通知",
+        "preferences": "設定",
+        "pwa": "アプリ設定",
+        "data": "データ管理",
+        "danger": "危険ゾーン"
+      },
+      "status": {
+        "online": "オンライン",
+        "offline": "オフライン",
+        "appInstalled": "アプリがインストール済み",
+        "updateAvailable": "アップデート利用可能"
+      }
+    },
+    "languages": {
+      "en": "英語",
+      "fr": "フランス語"
+    },
+    "taskList": {
+      "total": "合計",
+      "completed": "完了",
+      "inProgress": "進行中",
+      "pending": "保留中",
+      "overdue": "期限切れ",
+      "searchPlaceholder": "タスクを検索...",
+      "allStatus": "すべてのステータス",
+      "allPriority": "すべての優先度",
+      "high": "高",
+      "medium": "中",
+      "low": "低",
+      "createdDate": "作成日",
+      "dueDate": "期限日",
+      "priority": "優先度",
+      "title": "タイトル",
+      "ascending": "昇順",
+      "descending": "降順",
+      "noTasksFound": "タスクが見つかりません",
+      "tryAdjustingFilters": "フィルターや検索語句を調整してください",
+      "createFirstTask": "最初のタスクを作成して始めましょう"
+    },
+    "taskCard": {
+      "completed": "完了",
+      "in-progress": "進行中",
+      "pending": "保留中",
+      "overdue": "期限切れ",
+      "timeLogged": "記録された時間",
+      "lastWorked": "最終作業日"
+    },
+    "pwa": {
+      "installApp": "アプリをインストール",
+      "notificationsEnabled": "通知が有効です",
+      "notificationsBlocked": "通知がブロックされています",
+      "enableNotifications": "通知を有効にする",
+      "online": "オンライン",
+      "offline": "オフライン",
+      "newVersion": "TaskFlowの新しいバージョンが利用可能です！",
+      "updateNow": "今すぐ更新",
+      "offlineTasks": "オフラインタスク",
+      "offlineTasksCount": "オフラインで作成されたタスク：{{count}}件",
+      "syncNow": "今すぐ同期",
+      "installTaskFlow": "TaskFlowをインストール",
+      "installPromptDescription": "TaskFlowをデバイスにインストールして、迅速なアクセス、オフラインサポート、ネイティブアプリ体験を得ましょう。",
+      "worksOffline": "オフラインで動作",
+      "pushNotifications": "プッシュ通知",
+      "homeScreenIcon": "ホーム画面アイコン",
+      "maybeLater": "後で",
+      "install": "インストール",
+      "appInstallation": "アプリのインストール",
+      "appInstallationDescription": "ホーム画面にインストール",
+      "enabled": "有効",
+      "available": "利用可能",
+      "blocked": "ブロック済み",
+      "unknown": "不明",
+      "pushNotificationsDescription": "タスクのリマインダーを受け取る",
+      "offlineSupport": "オフラインサポート",
+      "offlineSupportDescription": "インターネットなしで動作",
+      "pwaFeatures": "PWA機能"
+    },
+    "tasks": {
+      "title": "タスク",
+      "subtitle": "進捗管理でタスクを管理・追跡しましょう",
+      "total": "総タスク数",
+      "completed": "完了",
+      "inProgress": "進行中",
+      "pending": "保留中",
+      "searchPlaceholder": "タスクを検索...",
+      "filters": "フィルター",
+      "noTasksYet": "まだタスクがありません",
+      "createFirstTask": "最初のタスクを作成してください",
+      "newTask": "新しいタスク",
+      "manageAndTrack": "進捗管理でタスクを管理・追跡しましょう"
+    },
+    "taskModal": {
+      "createTitle": "新しいタスクを作成",
+      "title": "タイトル",
+      "titlePlaceholder": "タスクのタイトルを入力...",
+      "description": "説明",
+      "descriptionPlaceholder": "タスクの説明を追加...",
+      "priority": "優先度",
+      "category": "カテゴリ",
+      "categoryPlaceholder": "例：仕事、個人用。",
+      "dueDate": "期限日",
+      "estimatedHours": "見積もり時間",
+      "estimatedHoursPlaceholder": "例：5"
+    }
+  }
