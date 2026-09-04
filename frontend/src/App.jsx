@@ -241,10 +241,10 @@ const AppContent = () => {
   // ── Render ────────────────────────────────────────────────────────────────
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg)' }}>
         <div className="text-center" role="status">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-500 mx-auto mb-4" />
-          <p className="text-white font-semibold">Loading TaskFlow…</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 mx-auto mb-4" style={{ borderColor: 'var(--royal)' }} />
+          <p className="font-semibold" style={{ color: 'var(--text)' }}>Loading TaskFlow…</p>
         </div>
       </div>
     )
@@ -274,7 +274,7 @@ const AppContent = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900">
+    <div style={{ background: 'var(--bg)', minHeight: '100vh' }}>
       <UpdateBanner />
 
       <Header onAddTask={() => setShowTaskModal(true)} user={user} onLogout={handleLogout} />

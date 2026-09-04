@@ -27,27 +27,27 @@ const Login = ({ onLogin, onRegister, loading, error }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex flex-col items-center justify-center p-4 sm:p-6 login-container">
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl"></div>
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 login-container" style={{ background: 'var(--bg)' }}>
+      {/* Subtle decorative blobs in brand colors */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-20" style={{ background: '#2451A3' }}></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full blur-3xl opacity-10" style={{ background: '#C9973C' }}></div>
       </div>
 
       <div className="relative w-full max-w-md mx-auto">
-        <div className="bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-6 sm:p-8 shadow-2xl login-card">
+        <div className="rounded-3xl p-6 sm:p-8 shadow-2xl login-card" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
           <div className="text-center mb-6 sm:mb-8">
             <div className="flex items-center justify-center mb-6">
-              <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-500 rounded-2xl flex items-center justify-center">
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #2451A3, #C9973C)' }}>
                 <Sparkles className="w-8 h-8 text-white" />
               </div>
             </div>
-            
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent mb-2">
+
+            <h1 className="text-3xl font-bold mb-2" style={{ color: 'var(--royal)' }}>
               TaskFlow
             </h1>
-            
-            <p className="text-gray-300">
+
+            <p style={{ color: 'var(--text-muted)' }}>
               {isSignUp ? 'Create your account to get started' : 'Welcome back! Sign in to continue'}
             </p>
           </div>
@@ -55,7 +55,7 @@ const Login = ({ onLogin, onRegister, loading, error }) => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {isSignUp && (
               <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5" style={{ color: 'var(--text-muted)' }} />
                 <input
                   type="text"
                   name="name"
@@ -63,13 +63,16 @@ const Login = ({ onLogin, onRegister, loading, error }) => {
                   value={formData.name}
                   onChange={handleChange}
                   required
-                  className="w-full bg-slate-800/50 border border-slate-600 rounded-xl pl-12 pr-4 py-3 text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  className="w-full rounded-xl pl-12 pr-4 py-3 transition-all focus:outline-none"
+                  style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--text)' }}
+                  onFocus={e => { e.target.style.borderColor = '#2451A3'; e.target.style.boxShadow = '0 0 0 3px rgba(36,81,163,0.12)' }}
+                  onBlur={e => { e.target.style.borderColor = 'var(--border)'; e.target.style.boxShadow = 'none' }}
                 />
               </div>
             )}
 
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5" style={{ color: 'var(--text-muted)' }} />
               <input
                 type="email"
                 name="email"
@@ -77,12 +80,15 @@ const Login = ({ onLogin, onRegister, loading, error }) => {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="w-full bg-slate-800/50 border border-slate-600 rounded-xl pl-12 pr-4 py-3 text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                className="w-full rounded-xl pl-12 pr-4 py-3 transition-all focus:outline-none"
+                style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--text)' }}
+                onFocus={e => { e.target.style.borderColor = '#2451A3'; e.target.style.boxShadow = '0 0 0 3px rgba(36,81,163,0.12)' }}
+                onBlur={e => { e.target.style.borderColor = 'var(--border)'; e.target.style.boxShadow = 'none' }}
               />
             </div>
 
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5" style={{ color: 'var(--text-muted)' }} />
               <input
                 type={showPassword ? 'text' : 'password'}
                 name="password"
@@ -90,27 +96,34 @@ const Login = ({ onLogin, onRegister, loading, error }) => {
                 value={formData.password}
                 onChange={handleChange}
                 required
-                className="w-full bg-slate-800/50 border border-slate-600 rounded-xl pl-12 pr-12 py-3 text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                className="w-full rounded-xl pl-12 pr-12 py-3 transition-all focus:outline-none"
+                style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--text)' }}
+                onFocus={e => { e.target.style.borderColor = '#2451A3'; e.target.style.boxShadow = '0 0 0 3px rgba(36,81,163,0.12)' }}
+                onBlur={e => { e.target.style.borderColor = 'var(--border)'; e.target.style.boxShadow = 'none' }}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 transition-colors"
+                style={{ color: 'var(--text-muted)' }}
               >
                 {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
             </div>
 
             {error && (
-              <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-3">
-                <p className="text-red-400 text-sm text-center">{error}</p>
+              <div className="bg-red-50 border border-red-200 rounded-xl p-3">
+                <p className="text-red-600 text-sm text-center">{error}</p>
               </div>
             )}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:from-purple-500/50 disabled:to-pink-500/50 text-white font-semibold py-3 px-6 rounded-xl transition-all transform hover:scale-105 disabled:scale-100 flex items-center justify-center space-x-2"
+              className="w-full text-white font-semibold py-3 px-6 rounded-xl transition-all transform hover:scale-105 disabled:scale-100 flex items-center justify-center space-x-2 disabled:opacity-60"
+              style={{ background: 'var(--royal)' }}
+              onMouseEnter={e => !loading && (e.currentTarget.style.background = 'var(--royal-dark)')}
+              onMouseLeave={e => !loading && (e.currentTarget.style.background = 'var(--royal)')}
             >
               {loading ? (
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
@@ -123,18 +136,21 @@ const Login = ({ onLogin, onRegister, loading, error }) => {
             </button>
           </form>
 
-          <div className="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-slate-700/50">
+          <div className="mt-6 sm:mt-8 pt-4 sm:pt-6" style={{ borderTop: '1px solid var(--border)' }}>
             <div className="text-center">
-              <p className="text-gray-400 mb-4">
+              <p className="mb-4" style={{ color: 'var(--text-muted)' }}>
                 {isSignUp ? 'Already have an account?' : "Don't have an account?"}
               </p>
-              
+
               <button
                 onClick={() => {
                   setIsSignUp(!isSignUp)
                   setFormData({ name: '', email: '', password: '' })
                 }}
-                className="text-purple-400 hover:text-purple-300 font-medium transition-colors"
+                className="font-semibold transition-colors"
+                style={{ color: 'var(--royal)' }}
+                onMouseEnter={e => e.currentTarget.style.color = 'var(--royal-dark)'}
+                onMouseLeave={e => e.currentTarget.style.color = 'var(--royal)'}
               >
                 {isSignUp ? 'Sign In' : 'Create Account'}
               </button>
@@ -143,17 +159,17 @@ const Login = ({ onLogin, onRegister, loading, error }) => {
         </div>
 
         <div className="mt-6 sm:mt-8 text-center login-footer">
-          <div className="flex items-center justify-center space-x-4 text-sm text-gray-500">
+          <div className="flex items-center justify-center space-x-4 text-sm" style={{ color: 'var(--text-muted)' }}>
             <div className="flex items-center space-x-1">
-              <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
               <span>Secure</span>
             </div>
             <div className="flex items-center space-x-1">
-              <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+              <div className="w-2 h-2 rounded-full" style={{ background: 'var(--royal)' }}></div>
               <span>Fast</span>
             </div>
             <div className="flex items-center space-x-1">
-              <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+              <div className="w-2 h-2 rounded-full" style={{ background: 'var(--gold)' }}></div>
               <span>Modern</span>
             </div>
           </div>

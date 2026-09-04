@@ -158,18 +158,19 @@ const DailyCheckInModal = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-slate-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b border-slate-700">
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" style={{ background: 'var(--surface, #FFFFFF)' }}>
+        <div className="flex items-center justify-between p-6" style={{ borderBottom: '1px solid var(--border, #D1D9EC)' }}>
           <div>
-            <h2 className="text-xl font-bold text-white">Daily Check-in</h2>
-            <p className="text-gray-400 text-sm">
+            <h2 className="text-xl font-bold" style={{ color: 'var(--text, #0F1F3D)' }}>Daily Check-in</h2>
+            <p className="text-sm" style={{ color: 'var(--text-muted, #4A5568)' }}>
               {safeString(task?.title, 'Unknown Task')}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-slate-700 transition-colors"
+            className="p-2 rounded-lg transition-colors hover:bg-[#EEF3FB]"
+            style={{ color: 'var(--text-muted, #4A5568)' }}
             aria-label="Close modal"
           >
             <X className="w-5 h-5" />
@@ -179,7 +180,7 @@ const DailyCheckInModal = ({
         <div className="p-6 space-y-6">
           {/* Progress Update */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-3">
+            <label className="block text-sm font-medium mb-3" style={{ color: 'var(--text-muted, #4A5568)' }}>
               Update Progress
             </label>
             <div className="space-y-3">
@@ -189,22 +190,22 @@ const DailyCheckInModal = ({
                 max="100"
                 value={progress}
                 onChange={(e) => setProgress(Number(e.target.value))}
-                className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer slider"
+                className="w-full h-2 rounded-lg appearance-none cursor-pointer"
                 style={{
-                  background: `linear-gradient(to right, rgb(139, 92, 246) 0%, rgb(236, 72, 153) ${progress}%, rgb(55, 65, 81) ${progress}%, rgb(55, 65, 81) 100%)`
+                  background: `linear-gradient(to right, #2451A3 0%, #2451A3 ${progress}%, #D6E4F7 ${progress}%, #D6E4F7 100%)`
                 }}
               />
               <div className="flex justify-between text-sm">
-                <span className="text-gray-400">0%</span>
-                <span className="text-white font-medium">{progress}%</span>
-                <span className="text-gray-400">100%</span>
+                <span style={{ color: 'var(--text-muted, #4A5568)' }}>0%</span>
+                <span className="font-medium" style={{ color: 'var(--royal, #2451A3)' }}>{progress}%</span>
+                <span style={{ color: 'var(--text-muted, #4A5568)' }}>100%</span>
               </div>
             </div>
           </div>
 
           {/* Hours Worked */}
           <div>
-            <label htmlFor="hours-worked" className="block text-sm font-medium text-gray-300 mb-2">
+            <label htmlFor="hours-worked" className="block text-sm font-medium mb-2" style={{ color: 'var(--text-muted, #4A5568)' }}>
               Hours Worked Today (Optional)
             </label>
             <input
@@ -221,18 +222,21 @@ const DailyCheckInModal = ({
                 }
               }}
               placeholder="2.5"
-              className={`w-full bg-slate-700 border rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
-                errors.hoursWorked ? 'border-red-500' : 'border-slate-600'
-              }`}
+              className="w-full rounded-lg px-3 py-2 focus:outline-none transition-all"
+              style={{
+                background: 'var(--surface-2, #EEF3FB)',
+                border: errors.hoursWorked ? '1px solid #ef4444' : '1px solid var(--border, #D1D9EC)',
+                color: 'var(--text, #0F1F3D)'
+              }}
             />
             {errors.hoursWorked && (
-              <p className="text-red-400 text-xs mt-1">{errors.hoursWorked}</p>
+              <p className="text-red-500 text-xs mt-1">{errors.hoursWorked}</p>
             )}
           </div>
 
           {/* Accomplishments */}
           <div>
-            <label htmlFor="accomplishments" className="block text-sm font-medium text-gray-300 mb-2">
+            <label htmlFor="accomplishments" className="block text-sm font-medium mb-2" style={{ color: 'var(--text-muted, #4A5568)' }}>
               What did you accomplish today? *
             </label>
             <textarea
@@ -246,19 +250,22 @@ const DailyCheckInModal = ({
               }}
               placeholder="Describe what you worked on and completed..."
               rows={3}
-              className={`w-full bg-slate-700 border rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none ${
-                errors.accomplishments ? 'border-red-500' : 'border-slate-600'
-              }`}
+              className="w-full rounded-lg px-3 py-2 focus:outline-none resize-none transition-all"
+              style={{
+                background: 'var(--surface-2, #EEF3FB)',
+                border: errors.accomplishments ? '1px solid #ef4444' : '1px solid var(--border, #D1D9EC)',
+                color: 'var(--text, #0F1F3D)'
+              }}
               required
             />
             {errors.accomplishments && (
-              <p className="text-red-400 text-xs mt-1">{errors.accomplishments}</p>
+              <p className="text-red-500 text-xs mt-1">{errors.accomplishments}</p>
             )}
           </div>
 
           {/* Challenges */}
           <div>
-            <label htmlFor="challenges" className="block text-sm font-medium text-gray-300 mb-2">
+            <label htmlFor="challenges" className="block text-sm font-medium mb-2" style={{ color: 'var(--text-muted, #4A5568)' }}>
               Any challenges or blockers? (Optional)
             </label>
             <textarea
@@ -267,13 +274,14 @@ const DailyCheckInModal = ({
               onChange={(e) => setChallenges(e.target.value)}
               placeholder="What obstacles did you encounter?"
               rows={2}
-              className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+              className="w-full rounded-lg px-3 py-2 focus:outline-none resize-none"
+              style={{ background: 'var(--surface-2, #EEF3FB)', border: '1px solid var(--border, #D1D9EC)', color: 'var(--text, #0F1F3D)' }}
             />
           </div>
 
           {/* Next Steps */}
           <div>
-            <label htmlFor="next-steps" className="block text-sm font-medium text-gray-300 mb-2">
+            <label htmlFor="next-steps" className="block text-sm font-medium mb-2" style={{ color: 'var(--text-muted, #4A5568)' }}>
               What's next? (Optional)
             </label>
             <textarea
@@ -282,13 +290,14 @@ const DailyCheckInModal = ({
               onChange={(e) => setNextSteps(e.target.value)}
               placeholder="What will you work on next?"
               rows={2}
-              className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+              className="w-full rounded-lg px-3 py-2 focus:outline-none resize-none"
+              style={{ background: 'var(--surface-2, #EEF3FB)', border: '1px solid var(--border, #D1D9EC)', color: 'var(--text, #0F1F3D)' }}
             />
           </div>
 
           {/* Mood */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-3">
+            <label className="block text-sm font-medium mb-3" style={{ color: 'var(--text-muted, #4A5568)' }}>
               How are you feeling about this task?
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -302,11 +311,12 @@ const DailyCheckInModal = ({
                   key={option.value}
                   type="button"
                   onClick={() => setMood(option.value)}
-                  className={`p-3 rounded-lg border transition-colors text-center ${
+                  className="p-3 rounded-lg transition-colors text-center"
+                  style={
                     mood === option.value
-                      ? 'border-purple-500 bg-purple-500/20 text-white'
-                      : 'border-slate-600 bg-slate-700/50 text-gray-400 hover:text-white hover:bg-slate-700'
-                  }`}
+                      ? { border: '2px solid var(--royal, #2451A3)', background: 'var(--royal-light, #D6E4F7)', color: 'var(--royal, #2451A3)' }
+                      : { border: '1px solid var(--border, #D1D9EC)', background: 'var(--surface-2, #EEF3FB)', color: 'var(--text-muted, #4A5568)' }
+                  }
                 >
                   <div className="text-2xl mb-1">{option.emoji}</div>
                   <div className="text-xs">{option.label}</div>
@@ -316,18 +326,22 @@ const DailyCheckInModal = ({
           </div>
         </div>
 
-        <div className="flex justify-end space-x-3 p-6 border-t border-slate-700">
+        <div className="flex justify-end space-x-3 p-6" style={{ borderTop: '1px solid var(--border, #D1D9EC)' }}>
           <button
             onClick={onClose}
             disabled={loading}
-            className="px-4 py-2 text-gray-400 hover:text-white transition-colors disabled:opacity-50"
+            className="px-4 py-2 transition-colors disabled:opacity-50 rounded-lg"
+            style={{ color: 'var(--text-muted, #4A5568)' }}
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="bg-purple-500 hover:bg-purple-600 disabled:bg-purple-700 disabled:cursor-not-allowed text-white py-2 px-6 rounded-lg transition-colors flex items-center space-x-2"
+            className="text-white py-2 px-6 rounded-lg transition-colors flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
+            style={{ background: 'var(--royal, #2451A3)' }}
+            onMouseEnter={e => !loading && (e.currentTarget.style.background = 'var(--royal-dark, #1B3D7A)')}
+            onMouseLeave={e => !loading && (e.currentTarget.style.background = 'var(--royal, #2451A3)')}
           >
             {loading ? (
               <>
@@ -358,10 +372,10 @@ const ProgressBar = ({ progress, className = "", size = "default", showLabel = t
   const progressValue = Math.min(Math.max(safeNumber(progress, 0), 0), 100);
 
   return (
-    <div className={`w-full bg-slate-700 rounded-full ${sizeClasses[size] || sizeClasses.default} ${className}`}>
-      <div 
-        className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-500"
-        style={{ width: `${progressValue}%`, height: '100%' }}
+    <div className={`w-full rounded-full ${sizeClasses[size] || sizeClasses.default} ${className}`} style={{ background: 'var(--royal-light, #D6E4F7)' }}>
+      <div
+        className="rounded-full transition-all duration-500"
+        style={{ width: `${progressValue}%`, height: '100%', background: progressValue >= 100 ? 'var(--gold, #C9973C)' : 'var(--royal, #2451A3)' }}
         role="progressbar"
         aria-valuenow={progressValue}
         aria-valuemin={0}
@@ -370,7 +384,7 @@ const ProgressBar = ({ progress, className = "", size = "default", showLabel = t
       />
       {showLabel && size === "large" && (
         <div className="flex justify-end mt-1">
-          <span className="text-xs text-gray-400">{progressValue}%</span>
+          <span className="text-xs" style={{ color: 'var(--text-muted, #4A5568)' }}>{progressValue}%</span>
         </div>
       )}
     </div>
@@ -483,28 +497,31 @@ const ProgressTracker = ({
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'transparent' }}>
         <div className="text-center" role="status" aria-label="Loading progress analytics">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-500 mx-auto mb-4"></div>
-          <div className="text-white text-xl">Loading Progress Analytics...</div>
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 mx-auto mb-4" style={{ borderColor: 'var(--royal, #2451A3)' }}></div>
+          <div className="text-xl font-semibold" style={{ color: 'var(--text, #0F1F3D)' }}>Loading Progress Analytics...</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 p-6">
+    <div className="min-h-screen p-6" style={{ background: 'transparent' }}>
       <div className="max-w-7xl mx-auto">
         <header className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-white mb-2">Progress Analytics</h1>
-              <p className="text-gray-400">Track your daily progress and performance</p>
+              <h1 className="text-3xl font-bold mb-2" style={{ color: 'var(--text, #0F1F3D)' }}>Progress Analytics</h1>
+              <p style={{ color: 'var(--text-muted, #4A5568)' }}>Track your daily progress and performance</p>
             </div>
             <button
               onClick={handleRefresh}
               disabled={loading || Object.values(actionLoading || {}).some(Boolean)}
-              className="bg-purple-500 hover:bg-purple-600 disabled:bg-purple-700 disabled:cursor-not-allowed text-white py-2 px-4 rounded-lg transition-colors flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-slate-900"
+              className="text-white py-2 px-4 rounded-lg transition-colors flex items-center space-x-2 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ background: 'var(--royal, #2451A3)' }}
+              onMouseEnter={e => !loading && (e.currentTarget.style.background = 'var(--royal-dark, #1B3D7A)')}
+              onMouseLeave={e => !loading && (e.currentTarget.style.background = 'var(--royal, #2451A3)')}
               aria-describedby="refresh-help"
             >
               <TrendingUp className="w-4 h-4" aria-hidden="true" />
@@ -515,57 +532,59 @@ const ProgressTracker = ({
 
         {/* Enhanced Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-slate-800/50 backdrop-blur-sm p-4 rounded-lg border border-slate-700/50">
-            <div className="text-3xl font-bold text-white" role="img" aria-label={`${stats.totalTasks} total tasks`}>
+          <div className="p-4 rounded-lg shadow-sm" style={{ background: 'var(--surface, #FFFFFF)', border: '1px solid var(--border, #D1D9EC)' }}>
+            <div className="text-3xl font-bold" style={{ color: 'var(--royal, #2451A3)' }} role="img" aria-label={`${stats.totalTasks} total tasks`}>
               {stats.totalTasks}
             </div>
-            <div className="text-gray-400 text-sm">{t('dashboard.totalTasks')}</div>
+            <div className="text-sm mt-1" style={{ color: 'var(--text-muted, #4A5568)' }}>{t('dashboard.totalTasks')}</div>
           </div>
-          <div className="bg-slate-800/50 backdrop-blur-sm p-4 rounded-lg border border-slate-700/50">
-            <div className="text-3xl font-bold text-green-400" role="img" aria-label={`${stats.completedTasks} completed tasks`}>
+          <div className="p-4 rounded-lg shadow-sm" style={{ background: 'var(--surface, #FFFFFF)', border: '1px solid var(--border, #D1D9EC)' }}>
+            <div className="text-3xl font-bold text-green-600" role="img" aria-label={`${stats.completedTasks} completed tasks`}>
               {stats.completedTasks}
             </div>
-            <div className="text-gray-400 text-sm">{t('dashboard.completed')}</div>
+            <div className="text-sm mt-1" style={{ color: 'var(--text-muted, #4A5568)' }}>{t('dashboard.completed')}</div>
           </div>
-          <div className="bg-slate-800/50 backdrop-blur-sm p-4 rounded-lg border border-slate-700/50">
-            <div className="text-3xl font-bold text-purple-400" role="img" aria-label={`${stats.inProgressTasks} in progress tasks`}>
+          <div className="p-4 rounded-lg shadow-sm" style={{ background: 'var(--surface, #FFFFFF)', border: '1px solid var(--border, #D1D9EC)' }}>
+            <div className="text-3xl font-bold" style={{ color: 'var(--royal, #2451A3)' }} role="img" aria-label={`${stats.inProgressTasks} in progress tasks`}>
               {stats.inProgressTasks}
             </div>
-            <div className="text-gray-400 text-sm">{t('dashboard.inProgress')}</div>
+            <div className="text-sm mt-1" style={{ color: 'var(--text-muted, #4A5568)' }}>{t('dashboard.inProgress')}</div>
           </div>
-          <div className="bg-slate-800/50 backdrop-blur-sm p-4 rounded-lg border border-slate-700/50">
-            <div className="text-3xl font-bold text-blue-400" role="img" aria-label={`${stats.totalHours.toFixed(1)} total hours`}>
+          <div className="p-4 rounded-lg shadow-sm" style={{ background: 'var(--gold-light, #F9EDCB)', border: '2px solid var(--gold, #C9973C)' }}>
+            <div className="text-3xl font-bold" style={{ color: 'var(--gold-dark, #9E6E1C)' }} role="img" aria-label={`${stats.totalHours.toFixed(1)} total hours`}>
               {stats.totalHours.toFixed(1)}h
             </div>
-            <div className="text-gray-400 text-sm">{t('dashboard.timeTracked')}</div>
+            <div className="text-sm mt-1" style={{ color: 'var(--text-muted, #4A5568)' }}>{t('dashboard.timeTracked')}</div>
           </div>
         </div>
 
         {/* Search and Filter Controls */}
-        <div className="bg-slate-800/50 backdrop-blur-sm p-4 rounded-lg border border-slate-700/50 mb-8">
+        <div className="p-4 rounded-lg mb-8 shadow-sm" style={{ background: 'var(--surface, #FFFFFF)', border: '1px solid var(--border, #D1D9EC)' }}>
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-muted, #4A5568)' }} />
               <input
                 id="task-search"
                 type="text"
                 placeholder="Search tasks..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-slate-700 border border-slate-600 rounded-lg pl-10 pr-3 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full rounded-lg pl-10 pr-3 py-2 focus:outline-none transition-all"
+                style={{ background: 'var(--surface-2, #EEF3FB)', border: '1px solid var(--border, #D1D9EC)', color: 'var(--text, #0F1F3D)' }}
                 aria-describedby="search-help"
               />
-              <p id="search-help" className="text-xs text-gray-500 mt-1">
+              <p id="search-help" className="text-xs mt-1" style={{ color: 'var(--text-muted, #4A5568)' }}>
                 {t('dashboard.searchHelp')}
               </p>
             </div>
             <div className="flex items-center space-x-2">
-              <Filter className="w-4 h-4 text-gray-400" />
+              <Filter className="w-4 h-4" style={{ color: 'var(--text-muted, #4A5568)' }} />
               <select
                 id="sort-select"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="rounded-lg px-3 py-2 focus:outline-none"
+                style={{ background: 'var(--surface-2, #EEF3FB)', border: '1px solid var(--border, #D1D9EC)', color: 'var(--text, #0F1F3D)' }}
               >
                 <option value="progress">{t('dashboard.sortByProgress')}</option>
                 <option value="title">{t('dashboard.sortByTitle')}</option>
@@ -576,35 +595,35 @@ const ProgressTracker = ({
         </div>
 
         {/* Average Progress */}
-        <div className="bg-slate-800/50 backdrop-blur-sm p-6 rounded-lg border border-slate-700/50 mb-8">
-          <h2 className="text-lg font-semibold text-white mb-4 flex items-center">
-            <BarChart3 className="w-5 h-5 mr-2" />
+        <div className="p-6 rounded-lg mb-8 shadow-sm" style={{ background: 'var(--surface, #FFFFFF)', border: '1px solid var(--border, #D1D9EC)' }}>
+          <h2 className="text-lg font-semibold mb-4 flex items-center" style={{ color: 'var(--text, #0F1F3D)' }}>
+            <BarChart3 className="w-5 h-5 mr-2" style={{ color: 'var(--royal, #2451A3)' }} />
             {t('dashboard.progressOverview')}
           </h2>
           <div className="flex items-center space-x-4">
             <div className="flex-1">
-              <ProgressBar 
-                progress={stats.averageProgress} 
-                size="large" 
+              <ProgressBar
+                progress={stats.averageProgress}
+                size="large"
                 ariaLabel={`${t('dashboard.averageProgressAcrossAllTasks')}: ${stats.averageProgress.toFixed(1)}%`}
               />
             </div>
-            <div className="text-2xl font-bold text-white">{stats.averageProgress.toFixed(1)}%</div>
+            <div className="text-2xl font-bold" style={{ color: 'var(--royal, #2451A3)' }}>{stats.averageProgress.toFixed(1)}%</div>
           </div>
         </div>
 
         {/* Task Progress List */}
-        <div className="bg-slate-800/50 backdrop-blur-sm p-6 rounded-lg border border-slate-700/50">
+        <div className="p-6 rounded-lg shadow-sm" style={{ background: 'var(--surface, #FFFFFF)', border: '1px solid var(--border, #D1D9EC)' }}>
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-white flex items-center">
-              <Activity className="w-5 h-5 mr-2" />
+            <h2 className="text-lg font-semibold flex items-center" style={{ color: 'var(--text, #0F1F3D)' }}>
+              <Activity className="w-5 h-5 mr-2" style={{ color: 'var(--royal, #2451A3)' }} />
               {t('dashboard.taskProgress')}
             </h2>
-            <span className="text-sm text-gray-400">
+            <span className="text-sm" style={{ color: 'var(--text-muted, #4A5568)' }}>
               {t('dashboard.showingTasks', { count: filteredTasks.length, total: safeTasks.length })}
             </span>
           </div>
-          
+
           {filteredTasks.length > 0 ? (
             <div className="space-y-4">
               {filteredTasks.map((task, index) => {
@@ -615,18 +634,22 @@ const ProgressTracker = ({
                 const taskProgress = safeNumber(task?.progress, 0);
                 const taskTotalHours = safeNumber(task?.totalHours, 0);
                 const taskLastWorkedOn = task?.lastWorkedOn;
-                
+
                 return (
-                  <div key={taskId} className="p-4 bg-slate-700/30 rounded-lg hover:bg-slate-700/40 transition-colors">
+                  <div key={taskId} className="p-4 rounded-lg transition-colors" style={{ background: 'var(--surface-2, #EEF3FB)', border: '1px solid var(--border, #D1D9EC)' }}>
                     <div className="flex items-center justify-between mb-3">
-                      <h3 className="font-medium text-white">{taskTitle}</h3>
+                      <h3 className="font-medium" style={{ color: 'var(--text, #0F1F3D)' }}>{taskTitle}</h3>
                       <div className="flex items-center space-x-2">
-                        <span className={`px-2 py-1 rounded-full text-xs ${
-                          taskProgress === 100 ? 'bg-green-500/20 text-green-400' :
-                          taskProgress >= 75 ? 'bg-blue-500/20 text-blue-400' :
-                          taskProgress >= 25 ? 'bg-yellow-500/20 text-yellow-400' :
-                          'bg-red-500/20 text-red-400'
-                        }`}>
+                        <span className="px-2 py-1 rounded-full text-xs font-medium"
+                          style={
+                            taskProgress === 100
+                              ? { background: 'var(--gold-light, #F9EDCB)', color: 'var(--gold-dark, #9E6E1C)' }
+                              : taskProgress >= 75
+                              ? { background: 'var(--royal-light, #D6E4F7)', color: 'var(--royal, #2451A3)' }
+                              : taskProgress >= 25
+                              ? { background: '#FEF9C3', color: '#854D0E' }
+                              : { background: '#FEE2E2', color: '#B91C1C' }
+                          }>
                           {taskProgress === 100 ? 'Complete' :
                            taskProgress >= 75 ? 'Nearly Done' :
                            taskProgress >= 25 ? 'In Progress' :
@@ -635,43 +658,44 @@ const ProgressTracker = ({
                         <button
                           onClick={() => handleCheckInClick(task)}
                           disabled={actionLoading?.dailyCheckIn}
-                          className="text-purple-400 hover:text-purple-300 text-sm disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-purple-500 rounded px-2 py-1 transition-colors"
+                          className="text-sm disabled:opacity-50 focus:outline-none rounded px-2 py-1 transition-colors font-medium"
+                          style={{ color: 'var(--royal, #2451A3)' }}
                           aria-label={`${t('dashboard.openDailyCheckInFor', { taskTitle: taskTitle })}`}
                         >
                           {t('dashboard.checkIn')}
                         </button>
                       </div>
                     </div>
-                    
+
                     <div className="space-y-3">
                       <div>
                         <div className="flex items-center justify-between text-sm mb-2">
-                          <span className="text-gray-400">{t('dashboard.progress')}</span>
-                          <span className="text-white font-medium">{taskProgress}%</span>
+                          <span style={{ color: 'var(--text-muted, #4A5568)' }}>{t('dashboard.progress')}</span>
+                          <span className="font-medium" style={{ color: 'var(--royal, #2451A3)' }}>{taskProgress}%</span>
                         </div>
-                        <ProgressBar 
-                          progress={taskProgress} 
+                        <ProgressBar
+                          progress={taskProgress}
                           ariaLabel={`${taskTitle} ${t('dashboard.progress')}: ${taskProgress}%`}
                         />
                       </div>
-                      
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-gray-400">
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs" style={{ color: 'var(--text-muted, #4A5568)' }}>
                         {taskTotalHours > 0 && (
                           <div className="flex items-center space-x-1">
-                            <Clock className="w-3 h-3" />
+                            <Clock className="w-3 h-3" style={{ color: 'var(--gold-dark, #9E6E1C)' }} />
                             <span>{t('dashboard.timeLogged')}: {taskTotalHours.toFixed(1)} {t('dashboard.hours')}</span>
                           </div>
                         )}
                         {taskLastWorkedOn && (
                           <div className="flex items-center space-x-1">
-                            <Calendar className="w-3 h-3" />
+                            <Calendar className="w-3 h-3" style={{ color: 'var(--royal, #2451A3)' }} />
                             <span>{t('dashboard.lastWorked')}: {safeFormatDate(taskLastWorkedOn)}</span>
                           </div>
                         )}
                       </div>
-                      
+
                       {taskDescription && (
-                        <p className="text-gray-300 text-sm bg-slate-800/30 p-2 rounded">
+                        <p className="text-sm p-2 rounded" style={{ color: 'var(--text-muted, #4A5568)', background: 'var(--surface, #FFFFFF)' }}>
                           {taskDescription}
                         </p>
                       )}
@@ -681,11 +705,11 @@ const ProgressTracker = ({
               })}
             </div>
           ) : (
-            <div className="text-center py-12 text-gray-400">
-              <BarChart3 className="w-12 h-12 mx-auto mb-4 opacity-50" aria-hidden="true" />
-              <h3 className="text-lg font-medium mb-2">{t('dashboard.noTasksFound')}</h3>
+            <div className="text-center py-12" style={{ color: 'var(--text-muted, #4A5568)' }}>
+              <BarChart3 className="w-12 h-12 mx-auto mb-4 opacity-40" style={{ color: 'var(--royal, #2451A3)' }} aria-hidden="true" />
+              <h3 className="text-lg font-medium mb-2" style={{ color: 'var(--text, #0F1F3D)' }}>{t('dashboard.noTasksFound')}</h3>
               <p className="text-sm">
-                {searchTerm 
+                {searchTerm
                   ? `${t('dashboard.noTasksMatchSearch', { searchTerm: searchTerm })}`
                   : `${t('dashboard.noTasksAvailable')}. ${t('dashboard.createTasks')}`
                 }

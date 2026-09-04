@@ -1,4 +1,9 @@
 /* App-specific styles for TaskFlow */
+body {
+  background-color: var(--bg, #F7F4EE);
+  color: var(--text, #0F1F3D);
+}
+
 .App {
   min-height: 100vh;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
@@ -11,23 +16,23 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(30, 41, 59, 0.3);
+  background: var(--surface-2, #EEF3FB);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(168, 85, 247, 0.5);
+  background: var(--royal-light, #D6E4F7);
   border-radius: 4px;
   transition: background 0.3s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(168, 85, 247, 0.7);
+  background: var(--royal, #2451A3);
 }
 
 /* Custom focus styles */
 .focus-visible {
-  outline: 2px solid #a855f7;
+  outline: 2px solid var(--royal, #2451A3);
   outline-offset: 2px;
 }
 
@@ -90,9 +95,9 @@
   }
 }
 
-/* Gradient text animation */
+/* Gradient text animation — updated to brand palette */
 .gradient-text {
-  background: linear-gradient(-45deg, #a855f7, #ec4899, #3b82f6, #10b981);
+  background: linear-gradient(-45deg, #2451A3, #C9973C, #1B3D7A, #9E6E1C);
   background-size: 400% 400%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -131,11 +136,11 @@
   transform: scale(0.98);
 }
 
-/* Glassmorphism effect */
+/* Glassmorphism effect — light glass for off-white theme */
 .glass-effect {
-  background: rgba(30, 41, 59, 0.4);
+  background: rgba(247, 244, 238, 0.85);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border, #D1D9EC);
 }
 
 /* Status indicator animations */
@@ -179,7 +184,7 @@
 
 .form-input:focus {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.15);
+  box-shadow: 0 4px 12px rgba(36, 81, 163, 0.15);
 }
 
 /* Navigation tab indicator */
@@ -195,7 +200,7 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, #a855f7, #ec4899);
+  background: var(--royal, #2451A3);
   border-radius: 1px;
 }
 
@@ -210,7 +215,7 @@
   bottom: 125%;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(30, 41, 59, 0.9);
+  background: var(--royal-dark, #1B3D7A);
   color: white;
   padding: 8px 12px;
   border-radius: 6px;
@@ -473,12 +478,12 @@
 /* High contrast mode support */
 @media (prefers-contrast: high) {
   .glass-effect {
-    background: rgba(0, 0, 0, 0.8);
-    border: 2px solid white;
+    background: #FFFFFF;
+    border: 2px solid var(--royal);
   }
-  
+
   .gradient-text {
-    -webkit-text-fill-color: white;
+    -webkit-text-fill-color: var(--text);
     background: none;
   }
 }
@@ -486,8 +491,8 @@
 /* Print styles */
 @media print {
   .App {
-    background: white !important;
-    color: black !important;
+    background: #FFFFFF !important;
+    color: var(--text, #0F1F3D) !important;
   }
   
   .modal-backdrop,

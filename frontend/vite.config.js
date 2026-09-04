@@ -48,24 +48,31 @@ export default defineConfig(({ mode }) => {
       htmlEnvReplacer()
     ],
     
-    // FIXED: Enhanced server configuration with WebSocket fix
     server: {
       port: 5173,
-      host: true, // Allow external access
+      host: true,
       open: false,
       cors: true,
-      // WebSocket configuration for HMR
-      hmr: {
-        port: 5173,
-        host: 'localhost',
-        // Alternative: use different port if 5173 has conflicts
-        // port: 5174,
-        // clientPort: 5173
-      },
-      // Additional WebSocket options
-      ws: true, // Enable WebSocket
-      // Fallback for WebSocket issues
-      middlewareMode: false
+      hmr: { port: 5173, host: 'localhost' },
+      proxy: {
+        '/api': {
+          target: 'http://localhost:5001',
+          changeOrigin: true,
+          secure: false
+        }
+      }
+    },
+
+    preview: {
+      port: 4173,
+      host: true,
+      proxy: {
+        '/api': {
+          target: 'http://localhost:5001',
+          changeOrigin: true,
+          secure: false
+        }
+      }
     },
     
     build: {

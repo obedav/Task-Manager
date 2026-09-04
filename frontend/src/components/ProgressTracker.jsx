@@ -99,10 +99,10 @@ export const ProgressBar = ({ progress, className = "", size = "default", showLa
   const progressValue = Math.min(Math.max(safeNumber(progress, 0), 0), 100);
 
   return (
-    <div className={`w-full bg-slate-700 rounded-full ${sizeClasses[size] || sizeClasses.default} ${className}`}>
-      <div 
-        className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-500"
-        style={{ width: `${progressValue}%`, height: '100%' }}
+    <div className={`w-full rounded-full ${sizeClasses[size] || sizeClasses.default} ${className}`} style={{ background: 'var(--royal-light)' }}>
+      <div
+        className="rounded-full transition-all duration-500"
+        style={{ width: `${progressValue}%`, height: '100%', background: progressValue >= 100 ? 'var(--gold)' : 'var(--royal)' }}
         role="progressbar"
         aria-valuenow={progressValue}
         aria-valuemin={0}
@@ -148,15 +148,15 @@ export const ProgressSlider = ({ progress, onChange, disabled = false, loading =
   return (
     <div className="space-y-3">
       <div className="flex justify-between items-center">
-        <label htmlFor="progress-slider" className="text-sm font-medium text-gray-300">
+        <label htmlFor="progress-slider" className="text-sm font-medium" style={{ color: 'var(--text-muted)' }}>
           {safeString(label, 'Progress')}
         </label>
         <div className="flex items-center space-x-2">
-          <span className="text-sm font-medium text-white" aria-live="polite">
+          <span className="text-sm font-medium" style={{ color: 'var(--text)' }} aria-live="polite">
             {localProgress}%
           </span>
           {loading && (
-            <div className="animate-spin rounded-full h-3 w-3 border-t border-purple-500"></div>
+            <div className="animate-spin rounded-full h-3 w-3 border-t" style={{ borderColor: 'var(--royal)' }}></div>
           )}
         </div>
       </div>
@@ -175,9 +175,9 @@ export const ProgressSlider = ({ progress, onChange, disabled = false, loading =
           onTouchStart={handleMouseDown}
           onTouchEnd={handleMouseUp}
           disabled={disabled || loading}
-          className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-slate-800"
+          className="w-full h-2 rounded-lg appearance-none cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-offset-2"
           style={{
-            background: `linear-gradient(to right, rgb(139, 92, 246) 0%, rgb(236, 72, 153) ${localProgress}%, rgb(55, 65, 81) ${localProgress}%, rgb(55, 65, 81) 100%)`
+            background: `linear-gradient(to right, #2451A3 0%, #2451A3 ${localProgress}%, #D6E4F7 ${localProgress}%, #D6E4F7 100%)`
           }}
           aria-describedby="progress-help"
         />
@@ -262,7 +262,7 @@ export const TimeEntry = ({ onSubmit, loading = false, taskTitle = "" }) => {
       
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="sm:col-span-1">
-          <label htmlFor="hours-input" className="block text-sm font-medium text-gray-300 mb-1">
+          <label htmlFor="hours-input" className="block text-sm font-medium mb-1" style={{ color: 'var(--text-muted)' }}>
             Hours Worked *
           </label>
           <input
@@ -280,9 +280,12 @@ export const TimeEntry = ({ onSubmit, loading = false, taskTitle = "" }) => {
             }}
             onKeyPress={handleKeyPress}
             placeholder="2.5"
-            className={`w-full bg-slate-700 border rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all ${
-              errors.hours ? 'border-red-500' : 'border-slate-600'
-            }`}
+            className="w-full rounded-lg px-3 py-2 transition-all focus:outline-none"
+            style={{
+              background: 'var(--surface-2)',
+              border: errors.hours ? '1px solid #ef4444' : '1px solid var(--border)',
+              color: 'var(--text)'
+            }}
             aria-describedby={errors.hours ? "hours-error" : "hours-help"}
             aria-invalid={!!errors.hours}
             disabled={loading}
@@ -301,7 +304,7 @@ export const TimeEntry = ({ onSubmit, loading = false, taskTitle = "" }) => {
         </div>
         
         <div className="sm:col-span-2">
-          <label htmlFor="description-input" className="block text-sm font-medium text-gray-300 mb-1">
+          <label htmlFor="description-input" className="block text-sm font-medium mb-1" style={{ color: 'var(--text-muted)' }}>
             Description (Optional)
           </label>
           <div className="flex space-x-2">
@@ -312,14 +315,16 @@ export const TimeEntry = ({ onSubmit, loading = false, taskTitle = "" }) => {
               onChange={(e) => setDescription(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="What did you work on?"
-              className="flex-1 bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+              className="flex-1 rounded-lg px-3 py-2 transition-all focus:outline-none"
+              style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--text)' }}
               disabled={loading}
               maxLength={200}
             />
             <button
               onClick={handleSubmit}
               disabled={loading || !hours}
-              className="bg-purple-500 hover:bg-purple-600 disabled:bg-slate-600 disabled:cursor-not-allowed text-white py-2 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-slate-800 min-w-[100px]"
+              className="text-white py-2 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2 focus:outline-none min-w-[100px] disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ background: loading || !hours ? 'var(--text-muted)' : 'var(--royal)' }}
               aria-describedby="log-time-help"
             >
               {loading ? (
@@ -355,15 +360,15 @@ export const ProgressHistory = ({ progressHistory = [], timeEntries = [], loadin
   if (loading) {
     return (
       <div className="space-y-4">
-        <div className="flex space-x-1 bg-slate-800 rounded-lg p-1">
-          <div className="flex-1 py-2 px-3 bg-slate-600 rounded-md animate-pulse"></div>
-          <div className="flex-1 py-2 px-3 bg-slate-700 rounded-md animate-pulse"></div>
+        <div className="flex space-x-1 rounded-lg p-1" style={{ background: 'var(--surface-2)' }}>
+          <div className="flex-1 py-2 px-3 rounded-md animate-pulse" style={{ background: 'var(--royal-light)' }}></div>
+          <div className="flex-1 py-2 px-3 rounded-md animate-pulse" style={{ background: 'var(--border)' }}></div>
         </div>
         <div className="space-y-3">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="p-3 bg-slate-800/50 rounded-lg animate-pulse">
-              <div className="h-4 bg-slate-600 rounded w-3/4 mb-2"></div>
-              <div className="h-3 bg-slate-700 rounded w-1/2"></div>
+            <div key={i} className="p-3 rounded-lg animate-pulse" style={{ background: 'var(--surface-2)' }}>
+              <div className="h-4 rounded w-3/4 mb-2" style={{ background: 'var(--royal-light)' }}></div>
+              <div className="h-3 rounded w-1/2" style={{ background: 'var(--border)' }}></div>
             </div>
           ))}
         </div>
@@ -373,18 +378,16 @@ export const ProgressHistory = ({ progressHistory = [], timeEntries = [], loadin
 
   return (
     <div className="space-y-4">
-      <div 
-        className="flex space-x-1 bg-slate-800 rounded-lg p-1" 
+      <div
+        className="flex space-x-1 rounded-lg p-1"
+        style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}
         role="tablist"
         aria-label="Progress history tabs"
       >
         <button
           onClick={() => setActiveTab('progress')}
-          className={`flex-1 py-2 px-3 rounded-md text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 ${
-            activeTab === 'progress' 
-              ? 'bg-purple-500 text-white' 
-              : 'text-gray-400 hover:text-white'
-          }`}
+          className={`flex-1 py-2 px-3 rounded-md text-sm transition-colors focus:outline-none font-medium`}
+          style={activeTab === 'progress' ? { background: 'var(--royal)', color: '#fff' } : { color: 'var(--text-muted)' }}
           role="tab"
           aria-selected={activeTab === 'progress'}
           aria-controls="progress-panel"
@@ -393,11 +396,8 @@ export const ProgressHistory = ({ progressHistory = [], timeEntries = [], loadin
         </button>
         <button
           onClick={() => setActiveTab('time')}
-          className={`flex-1 py-2 px-3 rounded-md text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 ${
-            activeTab === 'time' 
-              ? 'bg-purple-500 text-white' 
-              : 'text-gray-400 hover:text-white'
-          }`}
+          className={`flex-1 py-2 px-3 rounded-md text-sm transition-colors focus:outline-none font-medium`}
+          style={activeTab === 'time' ? { background: 'var(--royal)', color: '#fff' } : { color: 'var(--text-muted)' }}
           role="tab"
           aria-selected={activeTab === 'time'}
           aria-controls="time-panel"
@@ -420,14 +420,14 @@ export const ProgressHistory = ({ progressHistory = [], timeEntries = [], loadin
               const note = safeString(entry?.note, '');
               
               return (
-                <div key={index} className="flex items-center space-x-3 p-3 bg-slate-800/50 rounded-lg">
-                  <div className="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center">
-                    <TrendingUp className="w-5 h-5 text-purple-400" aria-hidden="true" />
+                <div key={index} className="flex items-center space-x-3 p-3 rounded-lg" style={{ background: 'var(--surface-2)' }}>
+                  <div className="w-12 h-12 rounded-lg flex items-center justify-center" style={{ background: 'var(--royal-light)' }}>
+                    <TrendingUp className="w-5 h-5" style={{ color: 'var(--royal)' }} aria-hidden="true" />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
-                      <span className="text-white font-medium">{progress}%</span>
-                      <div className="text-gray-400 text-sm">
+                      <span className="font-medium" style={{ color: 'var(--royal)' }}>{progress}%</span>
+                      <div className="text-sm" style={{ color: 'var(--text-muted)' }}>
                         <span>{safeFormatDate(date)}</span>
                         {safeFormatTime(date) && (
                           <span className="ml-1 text-xs">at {safeFormatTime(date)}</span>
@@ -435,7 +435,7 @@ export const ProgressHistory = ({ progressHistory = [], timeEntries = [], loadin
                       </div>
                     </div>
                     {note && (
-                      <p className="text-gray-300 text-sm mt-1">{note}</p>
+                      <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>{note}</p>
                     )}
                   </div>
                 </div>
@@ -465,14 +465,14 @@ export const ProgressHistory = ({ progressHistory = [], timeEntries = [], loadin
               const description = safeString(entry?.description, '');
               
               return (
-                <div key={index} className="flex items-center space-x-3 p-3 bg-slate-800/50 rounded-lg">
-                  <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                    <Clock className="w-5 h-5 text-blue-400" aria-hidden="true" />
+                <div key={index} className="flex items-center space-x-3 p-3 rounded-lg" style={{ background: 'var(--surface-2)' }}>
+                  <div className="w-12 h-12 rounded-lg flex items-center justify-center" style={{ background: 'var(--gold-light)' }}>
+                    <Clock className="w-5 h-5" style={{ color: 'var(--gold-dark)' }} aria-hidden="true" />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
-                      <span className="text-white font-medium">{hours}h</span>
-                      <div className="text-gray-400 text-sm">
+                      <span className="font-medium" style={{ color: 'var(--gold-dark)' }}>{hours}h</span>
+                      <div className="text-sm" style={{ color: 'var(--text-muted)' }}>
                         <span>{safeFormatDate(date)}</span>
                         {safeFormatTime(date) && (
                           <span className="ml-1 text-xs">at {safeFormatTime(date)}</span>
@@ -480,7 +480,7 @@ export const ProgressHistory = ({ progressHistory = [], timeEntries = [], loadin
                       </div>
                     </div>
                     {description && (
-                      <p className="text-gray-300 text-sm mt-1">{description}</p>
+                      <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>{description}</p>
                     )}
                   </div>
                 </div>
@@ -548,8 +548,8 @@ export const ProgressTracker = ({
       }
     });
 
-  // Safe stats calculation
-  const stats = analytics || (() => {
+  // Safe stats calculation — always produce numeric fields regardless of analytics shape
+  const calculatedStats = (() => {
     try {
       return {
         totalTasks: safeTasks.length,
@@ -559,21 +559,22 @@ export const ProgressTracker = ({
           return progress > 0 && progress < 100;
         }).length,
         totalHours: safeTasks.reduce((sum, task) => sum + safeNumber(task?.totalHours, 0), 0),
-        averageProgress: safeTasks.length > 0 
-          ? safeTasks.reduce((sum, task) => sum + safeNumber(task?.progress, 0), 0) / safeTasks.length 
+        averageProgress: safeTasks.length > 0
+          ? safeTasks.reduce((sum, task) => sum + safeNumber(task?.progress, 0), 0) / safeTasks.length
           : 0
       };
     } catch (e) {
-      safeLog('Error calculating stats:', e.message);
-      return {
-        totalTasks: 0,
-        completedTasks: 0,
-        inProgressTasks: 0,
-        totalHours: 0,
-        averageProgress: 0
-      };
+      return { totalTasks: 0, completedTasks: 0, inProgressTasks: 0, totalHours: 0, averageProgress: 0 };
     }
   })();
+
+  const stats = {
+    ...calculatedStats,
+    ...(analytics || {}),
+    // Always ensure numeric fields even if analytics object has them as undefined
+    totalHours: Number((analytics || {}).totalHours ?? calculatedStats.totalHours) || 0,
+    averageProgress: Number((analytics || {}).averageProgress ?? calculatedStats.averageProgress) || 0,
+  };
 
   const handleRefresh = async () => {
     try {
@@ -587,28 +588,31 @@ export const ProgressTracker = ({
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'transparent' }}>
         <div className="text-center" role="status" aria-label="Loading progress analytics">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-500 mx-auto mb-4"></div>
-          <div className="text-white text-xl">Loading Progress Analytics...</div>
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 mx-auto mb-4" style={{ borderColor: 'var(--royal)' }}></div>
+          <div className="text-xl font-semibold" style={{ color: 'var(--text)' }}>Loading Progress Analytics...</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 p-6">
+    <div className="min-h-screen p-6" style={{ background: 'transparent' }}>
       <div className="max-w-7xl mx-auto">
         <header className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-white mb-2">Progress Analytics</h1>
-              <p className="text-gray-400">Track your daily progress and performance</p>
+              <h1 className="text-3xl font-bold mb-2" style={{ color: 'var(--text)' }}>Progress Analytics</h1>
+              <p style={{ color: 'var(--text-muted)' }}>Track your daily progress and performance</p>
             </div>
             <button
               onClick={handleRefresh}
               disabled={loading || Object.values(actionLoading || {}).some(Boolean)}
-              className="bg-purple-500 hover:bg-purple-600 disabled:bg-purple-700 disabled:cursor-not-allowed text-white py-2 px-4 rounded-lg transition-colors flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-slate-900"
+              className="text-white py-2 px-4 rounded-lg transition-colors flex items-center space-x-2 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ background: 'var(--royal)' }}
+              onMouseEnter={e => !loading && (e.currentTarget.style.background = 'var(--royal-dark)')}
+              onMouseLeave={e => !loading && (e.currentTarget.style.background = 'var(--royal)')}
               aria-describedby="refresh-help"
             >
               <TrendingUp className="w-4 h-4" aria-hidden="true" />
@@ -622,34 +626,35 @@ export const ProgressTracker = ({
 
         {/* Enhanced Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-slate-800/50 backdrop-blur-sm p-4 rounded-lg border border-slate-700/50">
-            <div className="text-3xl font-bold text-white" role="img" aria-label={`${stats.totalTasks} total tasks`}>
+          <div className="p-4 rounded-lg shadow-sm" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+            <div className="text-3xl font-bold" style={{ color: 'var(--royal)' }} role="img" aria-label={`${stats.totalTasks} total tasks`}>
               {stats.totalTasks}
             </div>
-            <div className="text-gray-400 text-sm">{t('dashboard.totalTasks')}</div>
+            <div className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>{t('dashboard.totalTasks')}</div>
           </div>
-          <div className="bg-slate-800/50 backdrop-blur-sm p-4 rounded-lg border border-slate-700/50">
-            <div className="text-3xl font-bold text-green-400" role="img" aria-label={`${stats.completedTasks} completed tasks`}>
+          <div className="p-4 rounded-lg shadow-sm" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+            <div className="text-3xl font-bold text-green-600" role="img" aria-label={`${stats.completedTasks} completed tasks`}>
               {stats.completedTasks}
             </div>
-            <div className="text-gray-400 text-sm">{t('dashboard.completed')}</div>
+            <div className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>{t('dashboard.completed')}</div>
           </div>
-          <div className="bg-slate-800/50 backdrop-blur-sm p-4 rounded-lg border border-slate-700/50">
-            <div className="text-3xl font-bold text-purple-400" role="img" aria-label={`${stats.inProgressTasks} in progress tasks`}>
+          <div className="p-4 rounded-lg shadow-sm" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+            <div className="text-3xl font-bold" style={{ color: 'var(--royal)' }} role="img" aria-label={`${stats.inProgressTasks} in progress tasks`}>
               {stats.inProgressTasks}
             </div>
-            <div className="text-gray-400 text-sm">{t('dashboard.inProgress')}</div>
+            <div className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>{t('dashboard.inProgress')}</div>
           </div>
-          <div className="bg-slate-800/50 backdrop-blur-sm p-4 rounded-lg border border-slate-700/50">
-            <div className="text-3xl font-bold text-blue-400" role="img" aria-label={`${stats.totalHours.toFixed(1)} total hours`}>
+          {/* Gold card for time — premium/achievement metric */}
+          <div className="p-4 rounded-lg shadow-sm" style={{ background: 'var(--gold-light)', border: '2px solid var(--gold)' }}>
+            <div className="text-3xl font-bold" style={{ color: 'var(--gold-dark)' }} role="img" aria-label={`${stats.totalHours.toFixed(1)} total hours`}>
               {stats.totalHours.toFixed(1)}h
             </div>
-            <div className="text-gray-400 text-sm">{t('dashboard.timeTracked')}</div>
+            <div className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>{t('dashboard.timeTracked')}</div>
           </div>
         </div>
 
         {/* Search and Filter Controls */}
-        <div className="bg-slate-800/50 backdrop-blur-sm p-4 rounded-lg border border-slate-700/50 mb-8">
+        <div className="p-4 rounded-lg mb-8 shadow-sm" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
               <label htmlFor="task-search" className="sr-only">Search tasks</label>
@@ -659,10 +664,11 @@ export const ProgressTracker = ({
                 placeholder="Search tasks..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full rounded-lg px-3 py-2 focus:outline-none transition-all"
+                style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--text)' }}
                 aria-describedby="search-help"
               />
-              <p id="search-help" className="text-xs text-gray-500 mt-1">
+              <p id="search-help" className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
                 Search by task title or description
               </p>
             </div>
@@ -672,7 +678,8 @@ export const ProgressTracker = ({
                 id="sort-select"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="rounded-lg px-3 py-2 focus:outline-none"
+                style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--text)' }}
               >
                 <option value="progress">{t('dashboard.sortByProgress')}</option>
                 <option value="title">{t('dashboard.sortByTitle')}</option>
@@ -683,25 +690,25 @@ export const ProgressTracker = ({
         </div>
 
         {/* Average Progress */}
-        <div className="bg-slate-800/50 backdrop-blur-sm p-6 rounded-lg border border-slate-700/50 mb-8">
-          <h2 className="text-lg font-semibold text-white mb-4">{t('dashboard.averageProgress')}</h2>
+        <div className="p-6 rounded-lg mb-8 shadow-sm" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+          <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text)' }}>{t('dashboard.averageProgress')}</h2>
           <div className="flex items-center space-x-4">
             <div className="flex-1">
-              <ProgressBar 
-                progress={stats.averageProgress} 
-                size="large" 
+              <ProgressBar
+                progress={stats.averageProgress}
+                size="large"
                 ariaLabel={`${t('dashboard.averageProgressAcrossAllTasks')}: ${stats.averageProgress.toFixed(1)}%`}
               />
             </div>
-            <div className="text-2xl font-bold text-white">{stats.averageProgress.toFixed(1)}%</div>
+            <div className="text-2xl font-bold" style={{ color: 'var(--royal)' }}>{stats.averageProgress.toFixed(1)}%</div>
           </div>
         </div>
 
         {/* Task Progress List */}
-        <div className="bg-slate-800/50 backdrop-blur-sm p-6 rounded-lg border border-slate-700/50">
+        <div className="p-6 rounded-lg shadow-sm" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-white">{t('dashboard.taskProgress')}</h2>
-            <span className="text-sm text-gray-400">
+            <h2 className="text-lg font-semibold" style={{ color: 'var(--text)' }}>{t('dashboard.taskProgress')}</h2>
+            <span className="text-sm" style={{ color: 'var(--text-muted)' }}>
               {t('dashboard.showing')} {filteredTasks.length} {t('dashboard.of')} {safeTasks.length} {t('dashboard.tasks')}
             </span>
           </div>
@@ -718,9 +725,9 @@ export const ProgressTracker = ({
                 const taskLastWorkedOn = task?.lastWorkedOn;
                 
                 return (
-                  <div key={taskId} className="p-4 bg-slate-700/30 rounded-lg">
+                  <div key={taskId} className="p-4 rounded-lg" style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}>
                     <div className="flex items-center justify-between mb-3">
-                      <h3 className="font-medium text-white">{taskTitle}</h3>
+                      <h3 className="font-medium" style={{ color: 'var(--text)' }}>{taskTitle}</h3>
                       <div className="flex items-center space-x-2">
                         <button
                           onClick={() => {
@@ -733,7 +740,8 @@ export const ProgressTracker = ({
                             }
                           }}
                           disabled={actionLoading?.dailyCheckIn}
-                          className="text-purple-400 hover:text-purple-300 text-sm disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-purple-500 rounded px-2 py-1"
+                          className="text-sm disabled:opacity-50 focus:outline-none rounded px-2 py-1 font-medium"
+                          style={{ color: 'var(--royal)' }}
                           aria-label={`${t('dashboard.openDailyCheckInFor')} ${taskTitle}`}
                         >
                           {t('dashboard.checkIn')}
@@ -744,8 +752,8 @@ export const ProgressTracker = ({
                     <div className="space-y-3">
                       <div>
                         <div className="flex items-center justify-between text-sm mb-2">
-                          <span className="text-gray-400">{t('dashboard.progress')}</span>
-                          <span className="text-white">{taskProgress}%</span>
+                          <span style={{ color: 'var(--text-muted)' }}>{t('dashboard.progress')}</span>
+                          <span className="font-medium" style={{ color: 'var(--royal)' }}>{taskProgress}%</span>
                         </div>
                         <ProgressBar 
                           progress={taskProgress} 
@@ -754,16 +762,16 @@ export const ProgressTracker = ({
                       </div>
                       
                       {taskTotalHours > 0 && (
-                        <div className="flex items-center justify-between text-xs text-gray-400">
+                        <div className="flex items-center justify-between text-xs" style={{ color: 'var(--text-muted)' }}>
                           <span>{t('dashboard.timeLogged')}: {taskTotalHours.toFixed(1)} {t('dashboard.hours')}</span>
                           {taskLastWorkedOn && (
                             <span>{t('dashboard.lastWorked')}: {safeFormatDate(taskLastWorkedOn)}</span>
                           )}
                         </div>
                       )}
-                      
+
                       {taskDescription && (
-                        <p className="text-gray-300 text-sm">{taskDescription}</p>
+                        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>{taskDescription}</p>
                       )}
                     </div>
                   </div>
@@ -823,13 +831,13 @@ export const QuickProgressUpdate = ({ task, onUpdate, loading = false }) => {
   };
 
   return (
-    <div className="space-y-4 p-4 bg-slate-800/30 rounded-lg border border-slate-700/50">
+    <div className="space-y-4 p-4 rounded-lg" style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}>
       <div className="flex items-center justify-between">
-        <h3 className="font-medium text-white">{t('dashboard.quickProgressUpdate')}</h3>
+        <h3 className="font-medium" style={{ color: 'var(--text)' }}>{t('dashboard.quickProgressUpdate')}</h3>
         <div className="flex items-center space-x-2">
-          <span className="text-sm text-gray-400">{t('dashboard.current')}: {safeNumber(task?.progress, 0)}%</span>
+          <span className="text-sm" style={{ color: 'var(--text-muted)' }}>{t('dashboard.current')}: {safeNumber(task?.progress, 0)}%</span>
           {loading && (
-            <div className="animate-spin rounded-full h-3 w-3 border-t border-purple-500"></div>
+            <div className="animate-spin rounded-full h-3 w-3 border-t" style={{ borderColor: 'var(--royal)' }}></div>
           )}
         </div>
       </div>
@@ -847,16 +855,18 @@ export const QuickProgressUpdate = ({ task, onUpdate, loading = false }) => {
         onChange={(e) => setNote(e.target.value)}
         onKeyPress={handleKeyPress}
         placeholder={t('dashboard.addNoteAboutProgress')}
-        className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+        className="w-full rounded-lg px-3 py-2 focus:outline-none transition-all"
+        style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text)' }}
         disabled={loading}
         maxLength={100}
         aria-label={t('dashboard.progressUpdateNote')}
       />
-      
+
       <button
         onClick={handleUpdate}
         disabled={loading || !hasChanges}
-        className="w-full bg-purple-500 hover:bg-purple-600 disabled:bg-slate-600 disabled:cursor-not-allowed text-white py-2 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-slate-800"
+        className="w-full text-white py-2 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+        style={{ background: 'var(--royal)' }}
         aria-describedby="update-help"
       >
         {loading ? (

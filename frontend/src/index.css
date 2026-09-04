@@ -1,3 +1,18 @@
+:root {
+  --bg: #F7F4EE;
+  --surface: #FFFFFF;
+  --surface-2: #EEF3FB;
+  --royal: #2451A3;
+  --royal-dark: #1B3D7A;
+  --royal-light: #D6E4F7;
+  --gold: #C9973C;
+  --gold-light: #F9EDCB;
+  --gold-dark: #9E6E1C;
+  --text: #0F1F3D;
+  --text-muted: #4A5568;
+  --border: #D1D9EC;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

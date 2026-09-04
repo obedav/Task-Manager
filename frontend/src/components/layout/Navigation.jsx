@@ -18,7 +18,7 @@ const Navigation = () => {
 
   return (
     <nav
-      className="bg-slate-800/40 backdrop-blur-sm border-b border-slate-700/50"
+      style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}
       role="navigation"
       aria-label="Main navigation"
     >
@@ -31,14 +31,21 @@ const Navigation = () => {
                 <button
                   key={path}
                   onClick={() => navigate(path)}
-                  className={`py-4 px-3 border-b-2 font-medium text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-slate-800 ${
+                  className={`py-4 px-3 border-b-2 font-medium text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 relative ${
                     active
-                      ? 'border-purple-500 text-purple-300'
-                      : 'border-transparent text-gray-400 hover:text-white hover:border-gray-300'
+                      ? 'border-[#2451A3] text-[#2451A3]'
+                      : 'border-transparent hover:border-[#D1D9EC]'
                   }`}
+                  style={active ? {} : { color: 'var(--text-muted)' }}
                   aria-current={active ? 'page' : undefined}
                 >
                   {t(key)}
+                  {active && (
+                    <span
+                      className="absolute bottom-2 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full"
+                      style={{ background: 'var(--gold)' }}
+                    />
+                  )}
                 </button>
               )
             })}
@@ -47,7 +54,7 @@ const Navigation = () => {
           <div className="flex items-center gap-3">
             <OnlineStatus />
             {!isOnline && hasOfflineTasks && (
-              <span className="text-xs text-yellow-400">Offline tasks pending</span>
+              <span className="text-xs font-medium" style={{ color: 'var(--gold)' }}>Offline tasks pending</span>
             )}
             <InstallAppButton />
             <NotificationButton className="hidden sm:flex" />

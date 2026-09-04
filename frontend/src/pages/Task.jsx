@@ -13,18 +13,18 @@ const TaskCard = ({ task, onEdit, onDelete, onStatusChange, onProgressUpdate, on
 
   const getPriorityColor = (priority) => {
     switch (priority) {
-      case 'high': return 'border-red-500 bg-red-500/10'
-      case 'medium': return 'border-yellow-500 bg-yellow-500/10'
-      case 'low': return 'border-green-500 bg-green-500/10'
-      default: return 'border-slate-600 bg-slate-800/50'
+      case 'high': return 'border-l-4 border-[#C9973C] bg-[#FFF9F0]'
+      case 'medium': return 'border-l-4 border-[#2451A3] bg-white'
+      case 'low': return 'border-l-4 border-green-400 bg-white'
+      default: return 'border-l-4 border-[#D1D9EC] bg-white'
     }
   }
 
   const getStatusBadge = (status) => {
     const badges = {
-      'pending': 'bg-gray-500 text-gray-100',
-      'in-progress': 'bg-blue-500 text-blue-100',
-      'completed': 'bg-green-500 text-green-100'
+      'pending': 'bg-gray-100 text-gray-600',
+      'in-progress': 'bg-[#EEF3FB] text-[#2451A3]',
+      'completed': 'bg-[#F9EDCB] text-[#9E6E1C]'
     }
     return badges[status] || badges.pending
   }
@@ -60,11 +60,11 @@ const TaskCard = ({ task, onEdit, onDelete, onStatusChange, onProgressUpdate, on
   const lastWorked = task.lastWorkedOn ? new Date(task.lastWorkedOn).toLocaleDateString() : t('tasks.never');
 
   return (
-    <div className={`rounded-lg border-2 p-6 transition-all hover:border-purple-500/50 ${getPriorityColor(task.priority)}`}>
+    <div className={`rounded-lg p-6 transition-all shadow-sm hover:shadow-md ${getPriorityColor(task.priority)}`} style={{ border: '1px solid var(--border)' }}>
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-lg font-semibold text-white">{task.title}</h3>
+            <h3 className="text-lg font-semibold" style={{ color: 'var(--text)' }}>{task.title}</h3>
             <div className="flex items-center space-x-2">
               <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadge(task.status)}`}>
                 {t(`tasks.status.${task.status?.replace('-', '') || 'pending'}`)}
@@ -77,35 +77,39 @@ const TaskCard = ({ task, onEdit, onDelete, onStatusChange, onProgressUpdate, on
                   <MoreVertical className="w-4 h-4" />
                 </button>
                 {showActions && (
-                  <div className="absolute right-0 top-8 bg-slate-800 border border-slate-600 rounded-lg shadow-lg z-10 min-w-32">
+                  <div className="absolute right-0 top-8 rounded-lg shadow-lg z-10 min-w-32" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
                     <button
                       onClick={() => handleStatusChange('pending')}
-                      className="w-full text-left px-3 py-2 text-sm text-gray-300 hover:bg-slate-700 first:rounded-t-lg"
+                      className="w-full text-left px-3 py-2 text-sm first:rounded-t-lg hover:bg-[#EEF3FB] transition-colors"
+                      style={{ color: 'var(--text-muted)' }}
                     >
                       {t('tasks.markPending')}
                     </button>
                     <button
                       onClick={() => handleStatusChange('in-progress')}
-                      className="w-full text-left px-3 py-2 text-sm text-gray-300 hover:bg-slate-700"
+                      className="w-full text-left px-3 py-2 text-sm hover:bg-[#EEF3FB] transition-colors"
+                      style={{ color: 'var(--royal)' }}
                     >
                       {t('tasks.markInProgress')}
                     </button>
                     <button
                       onClick={() => handleStatusChange('completed')}
-                      className="w-full text-left px-3 py-2 text-sm text-gray-300 hover:bg-slate-700"
+                      className="w-full text-left px-3 py-2 text-sm hover:bg-[#F9EDCB] transition-colors"
+                      style={{ color: 'var(--gold-dark)' }}
                     >
                       {t('tasks.markCompleted')}
                     </button>
-                    <hr className="border-slate-600" />
+                    <hr style={{ borderColor: 'var(--border)' }} />
                     <button
                       onClick={() => onEdit(task)}
-                      className="w-full text-left px-3 py-2 text-sm text-gray-300 hover:bg-slate-700"
+                      className="w-full text-left px-3 py-2 text-sm hover:bg-[#EEF3FB] transition-colors"
+                      style={{ color: 'var(--text-muted)' }}
                     >
                       {t('tasks.editTask')}
                     </button>
                     <button
                       onClick={() => onDelete(task.id || task._id)}
-                      className="w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-slate-700 last:rounded-b-lg"
+                      className="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-red-50 last:rounded-b-lg transition-colors"
                     >
                       {t('tasks.deleteTask')}
                     </button>
@@ -115,32 +119,32 @@ const TaskCard = ({ task, onEdit, onDelete, onStatusChange, onProgressUpdate, on
             </div>
           </div>
           
-          <p className="text-gray-300 text-sm mb-3">{task.description}</p>
-          
+          <p className="text-sm mb-3" style={{ color: 'var(--text-muted)' }}>{task.description}</p>
+
           <div className="space-y-2 mb-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-400">{t('tasks.progress')}</span>
-              <span className="text-sm font-medium text-white">{task.progress || 0}%</span>
+              <span className="text-sm" style={{ color: 'var(--text-muted)' }}>{t('tasks.progress')}</span>
+              <span className="text-sm font-medium" style={{ color: 'var(--royal)' }}>{task.progress || 0}%</span>
             </div>
             <ProgressBar progress={task.progress || 0} />
           </div>
 
-          <div className="grid grid-cols-2 gap-4 text-sm text-gray-400 mb-4">
+          <div className="grid grid-cols-2 gap-4 text-sm mb-4" style={{ color: 'var(--text-muted)' }}>
             <div>
               <span className="block">{t('tasks.priority')}</span>
-              <span className="text-white capitalize">{t(`tasks.priorityLevels.${task.priority}`)}</span>
+              <span className="font-medium capitalize" style={{ color: 'var(--text)' }}>{t(`tasks.priorityLevels.${task.priority}`)}</span>
             </div>
             <div>
               <span className="block">{t('tasks.timeLogged')}</span>
-              <span className="text-white">{totalHours.toFixed(1)}h</span>
+              <span className="font-medium" style={{ color: 'var(--gold-dark)' }}>{totalHours.toFixed(1)}h</span>
             </div>
             <div>
               <span className="block">{t('tasks.lastWorked')}</span>
-              <span className="text-white">{lastWorked}</span>
+              <span className="font-medium" style={{ color: 'var(--text)' }}>{lastWorked}</span>
             </div>
             <div>
               <span className="block">{t('tasks.dueDate')}</span>
-              <span className="text-white">
+              <span className="font-medium" style={{ color: 'var(--text)' }}>
                 {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : t('tasks.noDueDate')}
               </span>
             </div>
@@ -159,7 +163,10 @@ const TaskCard = ({ task, onEdit, onDelete, onStatusChange, onProgressUpdate, on
         <button
           onClick={() => onDailyCheckIn(task)}
           disabled={progressLoading}
-          className="bg-purple-500 hover:bg-purple-600 disabled:bg-purple-700 text-white py-2 px-3 rounded-lg text-sm transition-colors flex items-center space-x-1"
+          className="text-white py-2 px-3 rounded-lg text-sm transition-colors flex items-center space-x-1 disabled:opacity-50"
+          style={{ background: 'var(--royal)' }}
+          onMouseEnter={e => !progressLoading && (e.currentTarget.style.background = 'var(--royal-dark)')}
+          onMouseLeave={e => !progressLoading && (e.currentTarget.style.background = 'var(--royal)')}
         >
           <Calendar className="w-4 h-4" />
           <span>{t('tasks.dailyCheckIn')}</span>
@@ -167,7 +174,8 @@ const TaskCard = ({ task, onEdit, onDelete, onStatusChange, onProgressUpdate, on
         <button
           onClick={() => setShowTimeEntry(!showTimeEntry)}
           disabled={progressLoading}
-          className="bg-blue-500 hover:bg-blue-600 disabled:bg-blue-700 text-white py-2 px-3 rounded-lg text-sm transition-colors flex items-center space-x-1"
+          className="py-2 px-3 rounded-lg text-sm transition-colors flex items-center space-x-1 disabled:opacity-50 font-medium"
+          style={{ background: 'var(--gold-light)', color: 'var(--gold-dark)', border: '1px solid var(--gold)' }}
         >
           <Timer className="w-4 h-4" />
           <span>{t('tasks.logTime')}</span>
@@ -175,7 +183,8 @@ const TaskCard = ({ task, onEdit, onDelete, onStatusChange, onProgressUpdate, on
         <button
           onClick={() => setShowProgressUpdate(!showProgressUpdate)}
           disabled={progressLoading}
-          className="bg-green-500 hover:bg-green-600 disabled:bg-green-700 text-white py-2 px-3 rounded-lg text-sm transition-colors flex items-center space-x-1"
+          className="py-2 px-3 rounded-lg text-sm transition-colors flex items-center space-x-1 disabled:opacity-50 font-medium"
+          style={{ background: 'var(--surface-2)', color: 'var(--royal)', border: '1px solid var(--border)' }}
         >
           <Target className="w-4 h-4" />
           <span>{t('tasks.updateProgress')}</span>
@@ -183,12 +192,12 @@ const TaskCard = ({ task, onEdit, onDelete, onStatusChange, onProgressUpdate, on
       </div>
 
       {showTimeEntry && (
-        <div className="mb-4 p-4 bg-slate-700/30 rounded-lg border border-slate-600">
+        <div className="mb-4 p-4 rounded-lg" style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}>
           <div className="flex items-center justify-between mb-3">
-            <h4 className="text-sm font-medium text-white">{t('tasks.logTime')}</h4>
+            <h4 className="text-sm font-medium" style={{ color: 'var(--text)' }}>{t('tasks.logTime')}</h4>
             <button
               onClick={() => setShowTimeEntry(false)}
-              className="text-gray-400 hover:text-white"
+              style={{ color: 'var(--text-muted)' }}
             >
               <X className="w-4 h-4" />
             </button>
@@ -198,12 +207,12 @@ const TaskCard = ({ task, onEdit, onDelete, onStatusChange, onProgressUpdate, on
       )}
 
       {showProgressUpdate && (
-        <div className="mb-4 p-4 bg-slate-700/30 rounded-lg border border-slate-600">
+        <div className="mb-4 p-4 rounded-lg" style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}>
           <div className="flex items-center justify-between mb-3">
-            <h4 className="text-sm font-medium text-white">{t('tasks.updateProgress')}</h4>
+            <h4 className="text-sm font-medium" style={{ color: 'var(--text)' }}>{t('tasks.updateProgress')}</h4>
             <button
               onClick={() => setShowProgressUpdate(false)}
-              className="text-gray-400 hover:text-white"
+              style={{ color: 'var(--text-muted)' }}
             >
               <X className="w-4 h-4" />
             </button>
@@ -223,21 +232,21 @@ const TaskCard = ({ task, onEdit, onDelete, onStatusChange, onProgressUpdate, on
           {/* Recent Daily Updates */}
           {task.dailyUpdates && task.dailyUpdates.length > 0 && (
             <div>
-              <h4 className="text-sm font-medium text-gray-300 mb-2">{t('tasks.recentUpdates')}</h4>
+              <h4 className="text-sm font-medium mb-2" style={{ color: 'var(--text-muted)' }}>{t('tasks.recentUpdates')}</h4>
               <div className="space-y-2 max-h-40 overflow-y-auto">
                 {task.dailyUpdates.slice(-3).reverse().map((update, index) => (
-                  <div key={index} className="p-3 bg-slate-800/30 rounded-lg text-sm">
+                  <div key={index} className="p-3 rounded-lg text-sm" style={{ background: 'var(--surface-2)' }}>
                     <div className="flex justify-between items-center mb-1">
-                      <span className="text-purple-400">{t('tasks.progress')}: {update.progress}%</span>
-                      <span className="text-gray-400">{new Date(update.date).toLocaleDateString()}</span>
+                      <span className="font-medium" style={{ color: 'var(--royal)' }}>{t('tasks.progress')}: {update.progress}%</span>
+                      <span style={{ color: 'var(--text-muted)' }}>{new Date(update.date).toLocaleDateString()}</span>
                     </div>
                     {update.accomplishments && update.accomplishments.length > 0 && (
-                      <div className="text-gray-300">
+                      <div style={{ color: 'var(--text-muted)' }}>
                         <strong>{t('tasks.done')}:</strong> {update.accomplishments.join(', ')}
                       </div>
                     )}
                     {update.mood && (
-                      <div className="text-gray-400 text-xs mt-1">
+                      <div className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
                         {t('tasks.mood')}: <span className="capitalize">{t(`tasks.moods.${update.mood}`)}</span>
                       </div>
                     )}
@@ -250,14 +259,14 @@ const TaskCard = ({ task, onEdit, onDelete, onStatusChange, onProgressUpdate, on
           {/* Time Entries */}
           {task.timeEntries && task.timeEntries.length > 0 && (
             <div>
-              <h4 className="text-sm font-medium text-gray-300 mb-2">{t('tasks.recentTimeLogs')}</h4>
+              <h4 className="text-sm font-medium mb-2" style={{ color: 'var(--text-muted)' }}>{t('tasks.recentTimeLogs')}</h4>
               <div className="space-y-1 max-h-32 overflow-y-auto">
                 {task.timeEntries.slice(-5).reverse().map((entry, index) => (
                   <div key={index} className="flex justify-between text-sm">
-                    <span className="text-gray-300">{entry.description || t('tasks.workSession')}</span>
+                    <span style={{ color: 'var(--text-muted)' }}>{entry.description || t('tasks.workSession')}</span>
                     <div className="flex items-center space-x-2">
-                      <span className="text-gray-400">{entry.hours}h</span>
-                      <span className="text-gray-500 text-xs">
+                      <span className="font-medium" style={{ color: 'var(--gold-dark)' }}>{entry.hours}h</span>
+                      <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
                         {new Date(entry.date).toLocaleDateString()}
                       </span>
                     </div>
@@ -328,25 +337,28 @@ const Tasks = ({
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 flex items-center justify-center">
-        <div className="text-white text-xl">{t('tasks.loading')}</div>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'transparent' }}>
+        <div className="text-xl font-semibold" style={{ color: 'var(--text)' }}>{t('tasks.loading')}</div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 p-6">
+    <div className="min-h-screen p-6" style={{ background: 'transparent' }}>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <header className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-white mb-1">{t('tasks.title')}</h1>
-              <p className="text-base text-gray-400">{t('Manage and track your tasks with progress monitoring')}</p>
+              <h1 className="text-3xl font-bold mb-1" style={{ color: 'var(--text)' }}>{t('tasks.title')}</h1>
+              <p style={{ color: 'var(--text-muted)' }}>{t('Manage and track your tasks with progress monitoring')}</p>
             </div>
             <button
               onClick={onAddTask}
-              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white py-2 px-4 rounded-lg transition-all flex items-center space-x-2"
+              className="text-white py-2 px-4 rounded-lg transition-all flex items-center space-x-2 font-semibold"
+              style={{ background: 'var(--royal)' }}
+              onMouseEnter={e => e.currentTarget.style.background = 'var(--royal-dark)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'var(--royal)'}
             >
               <Plus className="w-4 h-4" />
               <span>{t('New Task')}</span>
@@ -355,21 +367,21 @@ const Tasks = ({
 
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div className="bg-slate-800/50 backdrop-blur-sm p-4 rounded-lg border border-slate-700/50">
-              <div className="text-2xl font-bold text-white">{taskStats.total}</div>
-              <div className="text-gray-400 text-sm">{t('Total Tasks')}</div>
+            <div className="p-4 rounded-lg shadow-sm" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+              <div className="text-2xl font-bold" style={{ color: 'var(--royal)' }}>{taskStats.total}</div>
+              <div className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>{t('Total Tasks')}</div>
             </div>
-            <div className="bg-slate-800/50 backdrop-blur-sm p-4 rounded-lg border border-slate-700/50">
-              <div className="text-2xl font-bold text-green-400">{taskStats.completed}</div>
-              <div className="text-gray-400 text-sm">{t('Completed')}</div>
+            <div className="p-4 rounded-lg shadow-sm" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+              <div className="text-2xl font-bold text-green-600">{taskStats.completed}</div>
+              <div className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>{t('Completed')}</div>
             </div>
-            <div className="bg-slate-800/50 backdrop-blur-sm p-4 rounded-lg border border-slate-700/50">
-              <div className="text-2xl font-bold text-blue-400">{taskStats.inProgress}</div>
-              <div className="text-gray-400 text-sm">{t('In Progress')}</div>
+            <div className="p-4 rounded-lg shadow-sm" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+              <div className="text-2xl font-bold" style={{ color: 'var(--royal)' }}>{taskStats.inProgress}</div>
+              <div className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>{t('In Progress')}</div>
             </div>
-            <div className="bg-slate-800/50 backdrop-blur-sm p-4 rounded-lg border border-slate-700/50">
-              <div className="text-2xl font-bold text-gray-400">{taskStats.pending}</div>
-              <div className="text-gray-400 text-sm">{t('Pending')}</div>
+            <div className="p-4 rounded-lg shadow-sm" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+              <div className="text-2xl font-bold" style={{ color: 'var(--text-muted)' }}>{taskStats.pending}</div>
+              <div className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>{t('Pending')}</div>
             </div>
           </div>
 
@@ -377,18 +389,22 @@ const Tasks = ({
           <div className="space-y-4">
             <div className="flex items-center space-x-4">
               <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-muted)' }} />
                 <input
                   type="text"
                   placeholder={t('Search tasks...')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-600 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full rounded-lg pl-10 pr-4 py-3 focus:outline-none transition-all"
+                  style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text)' }}
+                  onFocus={e => e.target.style.borderColor = '#2451A3'}
+                  onBlur={e => e.target.style.borderColor = 'var(--border)'}
                 />
               </div>
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="bg-slate-800 border border-slate-600 text-white py-3 px-4 rounded-lg hover:bg-slate-700 transition-colors flex items-center space-x-2"
+                className="py-3 px-4 rounded-lg transition-colors flex items-center space-x-2 font-medium"
+                style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-muted)' }}
               >
                 <Filter className="w-4 h-4" />
                 <span>{t('Filters')}</span>
@@ -396,14 +412,15 @@ const Tasks = ({
             </div>
 
             {showFilters && (
-              <div className="bg-slate-800/50 backdrop-blur-sm p-4 rounded-lg border border-slate-700/50">
+              <div className="p-4 rounded-lg shadow-sm" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">{t('Status')}</label>
+                    <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-muted)' }}>{t('Status')}</label>
                     <select
                       value={statusFilter}
                       onChange={(e) => setStatusFilter(e.target.value)}
-                      className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full rounded-lg px-3 py-2 focus:outline-none"
+                      style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--text)' }}
                     >
                       <option value="all">{t('All Statuses')}</option>
                       <option value="pending">{t('Pending')}</option>
@@ -412,11 +429,12 @@ const Tasks = ({
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">{t('Priority')}</label>
+                    <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-muted)' }}>{t('Priority')}</label>
                     <select
                       value={priorityFilter}
                       onChange={(e) => setPriorityFilter(e.target.value)}
-                      className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full rounded-lg px-3 py-2 focus:outline-none"
+                      style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--text)' }}
                     >
                       <option value="all">{t('All Priorities')}</option>
                       <option value="high">{t('High')}</option>
@@ -425,11 +443,12 @@ const Tasks = ({
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">{t('Sort By')}</label>
+                    <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-muted)' }}>{t('Sort By')}</label>
                     <select
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value)}
-                      className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full rounded-lg px-3 py-2 focus:outline-none"
+                      style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--text)' }}
                     >
                       <option value="createdAt">{t('Created Date')}</option>
                       <option value="title">{t('Title')}</option>
@@ -463,10 +482,10 @@ const Tasks = ({
           </div>
         ) : (
           <div className="text-center py-16">
-            <div className="text-gray-400 mb-4">
-              <Target className="w-16 h-16 mx-auto mb-4 opacity-50" />
-              <h3 className="text-xl font-semibold mb-2">
-                {searchTerm || statusFilter !== 'all' || priorityFilter !== 'all' 
+            <div className="mb-4" style={{ color: 'var(--text-muted)' }}>
+              <Target className="w-16 h-16 mx-auto mb-4 opacity-40" style={{ color: 'var(--royal)' }} />
+              <h3 className="text-xl font-semibold mb-2" style={{ color: 'var(--text)' }}>
+                {searchTerm || statusFilter !== 'all' || priorityFilter !== 'all'
                   ? t('tasks.noTasksMatchFilters')
                   : t('tasks.noTasksYet')
                 }
@@ -481,7 +500,10 @@ const Tasks = ({
             {!searchTerm && statusFilter === 'all' && priorityFilter === 'all' && (
               <button
                 onClick={onAddTask}
-                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white py-3 px-6 rounded-lg transition-all"
+                className="text-white py-3 px-6 rounded-lg transition-all font-semibold"
+                style={{ background: 'var(--royal)' }}
+                onMouseEnter={e => e.currentTarget.style.background = 'var(--royal-dark)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'var(--royal)'}
               >
                 {t('tasks.createYourFirstTask')}
               </button>

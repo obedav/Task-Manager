@@ -33,9 +33,8 @@
     "deploy:staging": "npm run lint && npm run test:run && npm run build:staging && echo '✅ Ready for staging deployment'",
     "deploy:production": "npm run lint && npm run test:run && npm run build:production && echo '✅ Ready for production deployment'",
     "lighthouse": "lhci autorun",
-    "size-check": "npm run build:production && bundlesize",
+    "size-check": "bundlesize",
     "prebuild": "npm run clean",
-    "postbuild": "npm run size-check",
     "start": "vite preview --host --port 4173"
   },
   "dependencies": {
@@ -54,6 +53,7 @@
     "@vitejs/plugin-react": "^4.4.1",
     "@vitest/ui": "^1.6.0",
     "autoprefixer": "^10.4.21",
+    "bundlesize": "^0.18.2",
     "eslint": "^9.25.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",

@@ -50,6 +50,10 @@ const authenticate = async (req, res, next) => {
     req.tokenDecoded = decoded;
     next();
   } catch (err) {
+    // Mongoose CastError means decoded.id is not a valid ObjectId — stale/corrupt token
+    if (err.name === 'CastError') {
+      return res.status(401).json({ success: false, message: 'Invalid token payload' });
+    }
     next(err);
   }
 };

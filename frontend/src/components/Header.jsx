@@ -115,7 +115,7 @@ const Header = ({ onAddTask, user, onLogout }) => {
   }, [ready, t]);
 
   const UserAvatar = () => (
-    <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center overflow-hidden">
+    <div className="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden" style={{ background: 'linear-gradient(135deg, #2451A3, #C9973C)' }}>
       {photoPreview ? (
         <img 
           src={photoPreview} 
@@ -130,29 +130,32 @@ const Header = ({ onAddTask, user, onLogout }) => {
   );
 
   return (
-    <header className="bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 border-b border-purple-500/20" style={{overflow: 'visible'}}>
+    <header style={{ background: '#2451A3', borderBottom: '3px solid #C9973C', overflow: 'visible' }}>
       <div className="max-w-7xl mx-auto px-6 py-2">
         <div className="flex items-center justify-between">
           {/* Logo and Search */}
           <div className="flex items-center space-x-6">
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-pink-500 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #C9973C, #9E6E1C)' }}>
                 <div className="w-4 h-4 bg-white rounded-sm opacity-90"></div>
               </div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent">
+              <h1 className="text-2xl font-bold text-white">
                 TaskFlow
               </h1>
             </div>
 
             {/* Search Bar - moved closer to logo */}
             <div className="relative hidden md:block">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-muted)' }} />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={handleSearchChange}
                 placeholder={getText('tasks.search', 'Search tasks...')}
-                className="bg-slate-800/50 border border-slate-700 rounded-xl pl-10 pr-4 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                className="rounded-xl pl-10 pr-4 py-2 transition-all"
+                style={{ background: '#FFFFFF', border: '1px solid var(--border)', color: 'var(--text)', outline: 'none' }}
+                onFocus={e => e.target.style.boxShadow = '0 0 0 2px #C9973C'}
+                onBlur={e => e.target.style.boxShadow = 'none'}
               />
             </div>
           </div>
@@ -162,7 +165,10 @@ const Header = ({ onAddTask, user, onLogout }) => {
             {/* New Task Button */}
             <button
               onClick={onAddTask}
-              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-3 sm:px-6 py-2 rounded-xl flex items-center space-x-1 transition-all text-sm sm:text-base min-w-0"
+              className="px-3 sm:px-6 py-2 rounded-xl flex items-center space-x-1 transition-all text-sm sm:text-base min-w-0 font-semibold"
+              style={{ background: '#C9973C', color: '#FFFFFF' }}
+              onMouseEnter={e => e.currentTarget.style.background = '#9E6E1C'}
+              onMouseLeave={e => e.currentTarget.style.background = '#C9973C'}
               aria-label="Add new task"
             >
               <Plus className="w-4 h-4 flex-shrink-0" />
@@ -194,7 +200,7 @@ const Header = ({ onAddTask, user, onLogout }) => {
                     console.error('🚨 Error in handleProfileToggle:', error);
                   }
                 }}
-                className="flex items-center space-x-3 p-2 rounded-xl hover:bg-slate-800/50 transition-colors"
+                className="flex items-center space-x-3 p-2 rounded-xl transition-colors hover:bg-white/10"
                 aria-label="Open profile menu"
                 aria-expanded={isProfileOpen}
               >
@@ -203,11 +209,13 @@ const Header = ({ onAddTask, user, onLogout }) => {
                   {user?.name || 'User'}
                 </span>
               </button>
-              
+
               {isProfileOpen && (
                 <div
-                  className="bg-slate-800 border border-slate-700 rounded-xl shadow-xl py-3 transition-all duration-200 origin-top-right"
+                  className="rounded-xl shadow-xl py-3 transition-all duration-200 origin-top-right"
                   style={{
+                    background: 'var(--surface)',
+                    border: '1px solid var(--border)',
                     position: 'fixed',
                     top: '60px',
                     left: 'calc(100% - 350px)',
@@ -227,7 +235,7 @@ const Header = ({ onAddTask, user, onLogout }) => {
                     }
                   }}
                 >
-                  <label className="w-full text-left px-4 py-3 text-gray-300 hover:text-white hover:bg-slate-700/50 flex items-center space-x-3 cursor-pointer text-sm transition-colors rounded-lg mx-2">
+                  <label className="w-full text-left px-4 py-3 flex items-center space-x-3 cursor-pointer text-sm transition-colors rounded-lg mx-2 hover:bg-[#EEF3FB]" style={{ color: 'var(--text-muted)' }}>
                     <input
                       type="file"
                       accept="image/*"
@@ -238,20 +246,21 @@ const Header = ({ onAddTask, user, onLogout }) => {
                     <User className="w-4 h-4" />
                     <span>{getText('settings.profile.updatePhoto', 'Update Photo')}</span>
                   </label>
-                  
-                  <div className="border-t border-slate-700 my-2 mx-2"></div>
-                  
+
+                  <div className="my-2 mx-2" style={{ borderTop: '1px solid var(--border)' }}></div>
+
                   <div className="flex space-x-2 px-2">
                     <button
-                      className="flex-1 py-2.5 px-3 text-gray-300 hover:text-white hover:bg-slate-700/50 flex items-center justify-center space-x-2 text-sm rounded-lg transition-colors"
+                      className="flex-1 py-2.5 px-3 flex items-center justify-center space-x-2 text-sm rounded-lg transition-colors hover:bg-[#EEF3FB]"
+                      style={{ color: 'var(--royal)' }}
                       onClick={handleSettingsClick}
                     >
                       <Settings className="w-4 h-4" />
                       <span>{getText('navigation.settings', 'Settings')}</span>
                     </button>
-                    
+
                     <button
-                      className="flex-1 py-2.5 px-3 text-red-400 hover:text-red-300 hover:bg-slate-700/50 flex items-center justify-center space-x-2 text-sm rounded-lg transition-colors"
+                      className="flex-1 py-2.5 px-3 text-red-500 hover:text-red-600 flex items-center justify-center space-x-2 text-sm rounded-lg transition-colors hover:bg-red-50"
                       onClick={handleLogoutClick}
                     >
                       <LogOut className="w-4 h-4" />
@@ -266,7 +275,7 @@ const Header = ({ onAddTask, user, onLogout }) => {
           {/* Mobile Menu Button */}
           <button
             onClick={handleMobileMenuToggle}
-            className="md:hidden p-2 text-white hover:bg-slate-800/50 rounded-lg transition-colors"
+            className="md:hidden p-2 text-white hover:bg-white/10 rounded-lg transition-colors"
             aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={isMenuOpen}
           >
@@ -276,25 +285,27 @@ const Header = ({ onAddTask, user, onLogout }) => {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden mt-4 pb-4 border-t border-slate-700/50 pt-4">
+          <div className="md:hidden mt-4 pb-4 pt-4" style={{ borderTop: '1px solid rgba(255,255,255,0.2)' }}>
             <div className="space-y-4">
               {/* Search Bar */}
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-muted)' }} />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={handleSearchChange}
                   placeholder={getText('tasks.search', 'Search tasks...')}
-                  className="w-full bg-slate-800/50 border border-slate-700 rounded-xl pl-10 pr-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full rounded-xl pl-10 pr-4 py-2 focus:outline-none"
+                  style={{ background: '#FFFFFF', border: '1px solid var(--border)', color: 'var(--text)' }}
                 />
               </div>
-              
+
               {/* New Task Button */}
               <div className="flex justify-start">
                 <button
                   onClick={handleAddTaskClick}
-                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-4 py-2 rounded-xl flex items-center space-x-2 transition-all text-sm min-w-0"
+                  className="px-4 py-2 rounded-xl flex items-center space-x-2 transition-all text-sm min-w-0 font-semibold text-white"
+                  style={{ background: '#C9973C' }}
                 >
                   <Plus className="w-4 h-4 flex-shrink-0" />
                   <span className="whitespace-nowrap">{getText('tasks.addTask', 'New Task')}</span>
@@ -325,7 +336,7 @@ const Header = ({ onAddTask, user, onLogout }) => {
                       console.error('🚨 Error in mobile handleProfileToggle:', error);
                     }
                   }}
-                  className="flex flex-col items-center space-y-1 p-3 rounded-xl hover:bg-slate-800/50 transition-colors w-full"
+                  className="flex flex-col items-center space-y-1 p-3 rounded-xl hover:bg-white/10 transition-colors w-full"
                   aria-label="Open profile menu"
                   aria-expanded={isProfileOpen}
                 >
@@ -336,10 +347,11 @@ const Header = ({ onAddTask, user, onLogout }) => {
                 </button>
 
                 {isProfileOpen && (
-                  <div 
-                    className="mobile-profile-dropdown-debug"
-                    className="bg-slate-800 border border-slate-700 rounded-xl shadow-xl py-3 transition-all duration-200 origin-top"
+                  <div
+                    className="rounded-xl shadow-xl py-3 transition-all duration-200 origin-top"
                     style={{
+                      background: 'var(--surface)',
+                      border: '1px solid var(--border)',
                       position: 'fixed',
                       top: '60px',
                       left: '50%',
@@ -359,7 +371,7 @@ const Header = ({ onAddTask, user, onLogout }) => {
                       }
                     }}
                   >
-                    <label className="w-full text-left px-4 py-3 text-gray-300 hover:text-white hover:bg-slate-700/50 flex items-center space-x-3 cursor-pointer text-sm transition-colors rounded-lg mx-2">
+                    <label className="w-full text-left px-4 py-3 flex items-center space-x-3 cursor-pointer text-sm transition-colors rounded-lg mx-2 hover:bg-[#EEF3FB]" style={{ color: 'var(--text-muted)' }}>
                       <input
                         type="file"
                         accept="image/*"
@@ -370,20 +382,21 @@ const Header = ({ onAddTask, user, onLogout }) => {
                       <User className="w-4 h-4" />
                       <span>{getText('settings.profile.updatePhoto', 'Update Photo')}</span>
                     </label>
-                    
-                    <div className="border-t border-slate-700 my-2 mx-2"></div>
-                    
+
+                    <div className="my-2 mx-2" style={{ borderTop: '1px solid var(--border)' }}></div>
+
                     <div className="flex space-x-2 px-2">
                       <button
-                        className="flex-1 py-2.5 px-3 text-gray-300 hover:text-white hover:bg-slate-700/50 flex items-center justify-center space-x-2 text-sm rounded-lg transition-colors"
+                        className="flex-1 py-2.5 px-3 flex items-center justify-center space-x-2 text-sm rounded-lg transition-colors hover:bg-[#EEF3FB]"
+                        style={{ color: 'var(--royal)' }}
                         onClick={handleSettingsClick}
                       >
                         <Settings className="w-4 h-4" />
                         <span>{getText('navigation.settings', 'Settings')}</span>
                       </button>
-                      
+
                       <button
-                        className="flex-1 py-2.5 px-3 text-red-400 hover:text-red-300 hover:bg-slate-700/50 flex items-center justify-center space-x-2 text-sm rounded-lg transition-colors"
+                        className="flex-1 py-2.5 px-3 text-red-500 hover:text-red-600 hover:bg-red-50 flex items-center justify-center space-x-2 text-sm rounded-lg transition-colors"
                         onClick={handleLogoutClick}
                       >
                         <LogOut className="w-4 h-4" />
