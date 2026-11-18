@@ -1,16 +1,82 @@
+/* ── Design tokens ─────────────────────────────────────────────────────────── */
 :root {
-  --bg: #F7F4EE;
-  --surface: #FFFFFF;
-  --surface-2: #EEF3FB;
-  --royal: #2451A3;
-  --royal-dark: #1B3D7A;
-  --royal-light: #D6E4F7;
-  --gold: #C9973C;
-  --gold-light: #F9EDCB;
-  --gold-dark: #9E6E1C;
-  --text: #0F1F3D;
-  --text-muted: #4A5568;
-  --border: #D1D9EC;
+  /* Surfaces */
+  --bg:              #F7F4EE;
+  --surface:         #FFFFFF;
+  --surface-2:       #EEF2FF;
+  --surface-elevated:#FFFFFF;
+
+  /* Brand — primary (royal blue, evolved to deeper indigo-blue) */
+  --royal:           #1E40AF;
+  --royal-dark:      #1E3A8A;
+  --royal-light:     #DBEAFE;
+
+  /* Brand — accent (amber gold, evolved to vibrant amber) */
+  --gold:            #D97706;
+  --gold-light:      #FEF3C7;
+  --gold-dark:       #B45309;
+
+  /* Typography */
+  --text:            #0F172A;
+  --text-muted:      #64748B;
+  --text-subtle:     #94A3B8;
+
+  /* Borders */
+  --border:          #E2E8F0;
+  --border-strong:   #CBD5E1;
+
+  /* Semantic — status */
+  --success:         #16A34A;
+  --success-bg:      #F0FDF4;
+  --warning:         #D97706;
+  --warning-bg:      #FFFBEB;
+  --danger:          #DC2626;
+  --danger-bg:       #FEF2F2;
+  --info:            #0284C7;
+  --info-bg:         #F0F9FF;
+
+  /* Semantic — priority (separate from brand, semantically correct) */
+  --priority-high:   #DC2626;
+  --priority-medium: #D97706;
+  --priority-low:    #16A34A;
+}
+
+/* ── Dark mode ─────────────────────────────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:              #0F172A;
+    --surface:         #1E293B;
+    --surface-2:       #1A2540;
+    --surface-elevated:#253252;
+
+    --royal:           #3B82F6;
+    --royal-dark:      #2563EB;
+    --royal-light:     #1E3A8A;
+
+    --gold:            #F59E0B;
+    --gold-light:      #451A03;
+    --gold-dark:       #FCD34D;
+
+    --text:            #F1F5F9;
+    --text-muted:      #94A3B8;
+    --text-subtle:     #64748B;
+
+    --border:          #334155;
+    --border-strong:   #475569;
+
+    --success:         #22C55E;
+    --success-bg:      #052E16;
+    --warning:         #F59E0B;
+    --warning-bg:      #451A03;
+    --danger:          #EF4444;
+    --danger-bg:       #450A0A;
+    --info:            #38BDF8;
+    --info-bg:         #0C2A3B;
+
+    --priority-high:   #EF4444;
+    --priority-medium: #F59E0B;
+    --priority-low:    #22C55E;
+  }
 }
 
 @tailwind base;

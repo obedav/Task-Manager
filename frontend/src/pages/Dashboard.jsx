@@ -599,8 +599,8 @@ const Dashboard = ({ tasks: propTasks = [], analytics, loading, user, onAddTask,
                     { range: `${t('dashboard.notStarted', 'Not Started (0%)')}`, count: progressDistribution.notStarted, color: 'bg-red-400' },
                     { range: `${t('dashboard.gettingStarted', 'Getting Started (1-25%)')}`, count: progressDistribution.early, color: 'bg-orange-400' },
                     { range: `${t('dashboard.makingProgress', 'Making Progress (26-50%)')}`, count: progressDistribution.quarter, color: 'bg-yellow-400' },
-                    { range: `${t('dashboard.halfwayThere', 'Halfway There (51-75%)')}`, count: progressDistribution.half, color: 'bg-[#2451A3]' },
-                    { range: `${t('dashboard.almostDone', 'Almost Done (76-99%)')}`, count: progressDistribution.mostlyDone, color: 'bg-[#C9973C]' },
+                    { range: `${t('dashboard.halfwayThere', 'Halfway There (51-75%)')}`, count: progressDistribution.half, color: 'bg-primary' },
+                    { range: `${t('dashboard.almostDone', 'Almost Done (76-99%)')}`, count: progressDistribution.mostlyDone, color: 'bg-accent' },
                     { range: `${t('dashboard.completed', 'Completed (100%)')}`, count: progressDistribution.completed, color: 'bg-green-500' }
                   ].map((item, index) => (
                     <div key={index} className="flex items-center space-x-3">

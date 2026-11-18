@@ -19,6 +19,9 @@ import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Tasks from './pages/Task'
 import Settings from './pages/Settings'
+import Pricing from './pages/Pricing'
+import ResetPassword from './pages/ResetPassword'
+import AdminDashboard from './pages/AdminDashboard'
 import { ProgressTracker } from './components/ProgressTracker'
 
 import taskService from './services/taskService'
@@ -251,9 +254,11 @@ const AppContent = () => {
   }
 
   if (!isAuthenticated) {
+    const path = window.location.pathname;
     return (
       <>
-        <Login onLogin={handleLogin} onRegister={handleRegister} loading={loading} />
+        {path === '/reset-password' ? <ResetPassword /> : <Login onLogin={handleLogin} onRegister={handleRegister} loading={loading} />}
+        {path === '/pricing' && <Pricing />}
         <ToastContainer toasts={toasts} removeToast={removeToast} />
       </>
     )
@@ -286,6 +291,10 @@ const AppContent = () => {
           <Route path="/tasks"    element={<Tasks          {...commonProps} />} />
           <Route path="/progress" element={<ProgressTracker {...commonProps} />} />
           <Route path="/settings" element={<Settings       {...commonProps} />} />
+          <Route path="/pricing"  element={<Pricing />} />
+          {user?.role === 'admin' && (
+            <Route path="/admin" element={<AdminDashboard />} />
+          )}
         </Routes>
       </main>
 

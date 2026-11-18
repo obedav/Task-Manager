@@ -3,8 +3,10 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const PasswordResetToken = require('../models/PasswordResetToken');
 const blacklist = require('../utils/tokenBlacklist');
 const { authenticate } = require('../middleware/auth');
+const { sendPasswordReset, sendWelcome } = require('../utils/emailService');
 
 const router = express.Router();
 
@@ -77,6 +79,7 @@ router.post('/register', async (req, res, next) => {
     const refreshToken = signRefresh(user);
     setAuthCookies(res, accessToken, refreshToken);
 
+    sendWelcome(user).catch(() => {}); // fire-and-forget
     res.status(201).json({ success: true, message: 'Account created successfully', user: safeUser(user) });
   } catch (err) {
     next(err);
@@ -114,7 +117,7 @@ router.post('/login', async (req, res, next) => {
 router.post('/logout', authenticate, (req, res) => {
   const { token, tokenDecoded } = req;
   if (token && tokenDecoded?.exp) {
-    blacklist.add(token, tokenDecoded.exp);
+    await blacklist.add(token, tokenDecoded.exp);
   }
   clearAuthCookies(res);
   res.json({ success: true, message: 'Logged out successfully' });
@@ -128,7 +131,7 @@ router.post('/refresh', async (req, res, next) => {
       return res.status(401).json({ success: false, message: 'Refresh token required' });
     }
 
-    if (blacklist.has(refreshToken)) {
+    if (await blacklist.has(refreshToken)) {
       return res.status(401).json({ success: false, message: 'Refresh token has been revoked' });
     }
 
@@ -151,7 +154,7 @@ router.post('/refresh', async (req, res, next) => {
     }
 
     // Rotate tokens
-    blacklist.add(refreshToken, decoded.exp);
+    await blacklist.add(refreshToken, decoded.exp);
     const newAccess = signAccess(user);
     const newRefresh = signRefresh(user);
     setAuthCookies(res, newAccess, newRefresh);
@@ -210,7 +213,7 @@ router.put('/password', authenticate, async (req, res, next) => {
 
     // Revoke current session so they must re-login with new password
     if (req.token && req.tokenDecoded?.exp) {
-      blacklist.add(req.token, req.tokenDecoded.exp);
+      await blacklist.add(req.token, req.tokenDecoded.exp);
     }
     clearAuthCookies(res);
 
@@ -259,6 +262,58 @@ router.post('/export', authenticate, async (req, res, next) => {
     }
 
     res.json({ success: true, data: JSON.stringify(payload, null, 2) });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /api/v1/auth/forgot-password
+router.post('/forgot-password', async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ success: false, message: 'Email is required' });
+
+    const user = await User.findOne({ email: email.toLowerCase() });
+    // Always respond 200 to prevent email enumeration
+    if (!user) return res.json({ success: true, message: 'If that email exists, a reset link has been sent.' });
+
+    // Invalidate any existing tokens for this user
+    await PasswordResetToken.deleteMany({ user: user._id });
+
+    const { raw, doc } = PasswordResetToken.generate(user._id);
+    await PasswordResetToken.create(doc);
+    await sendPasswordReset(user, raw);
+
+    res.json({ success: true, message: 'If that email exists, a reset link has been sent.' });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /api/v1/auth/reset-password
+router.post('/reset-password', async (req, res, next) => {
+  try {
+    const { token, newPassword } = req.body;
+    if (!token || !newPassword) {
+      return res.status(400).json({ success: false, message: 'Token and new password are required' });
+    }
+
+    const passwordError = User.validatePasswordStrength(newPassword);
+    if (passwordError) return res.status(400).json({ success: false, message: passwordError });
+
+    const resetDoc = await PasswordResetToken.verify(token);
+    if (!resetDoc) {
+      return res.status(400).json({ success: false, message: 'Invalid or expired reset token' });
+    }
+
+    const user = await User.findById(resetDoc.user);
+    if (!user) return res.status(400).json({ success: false, message: 'User not found' });
+
+    user.password = newPassword;
+    await user.save();
+    await PasswordResetToken.deleteMany({ user: user._id });
+
+    res.json({ success: true, message: 'Password reset successfully. Please log in.' });
   } catch (err) {
     next(err);
   }

@@ -177,7 +177,7 @@ export const ProgressSlider = ({ progress, onChange, disabled = false, loading =
           disabled={disabled || loading}
           className="w-full h-2 rounded-lg appearance-none cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-offset-2"
           style={{
-            background: `linear-gradient(to right, #2451A3 0%, #2451A3 ${localProgress}%, #D6E4F7 ${localProgress}%, #D6E4F7 100%)`
+            background: `linear-gradient(to right, var(--royal) 0%, var(--royal) ${localProgress}%, var(--royal-light) ${localProgress}%, var(--royal-light) 100%)`
           }}
           aria-describedby="progress-help"
         />

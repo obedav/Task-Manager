@@ -4,6 +4,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const Task = require('../models/Task');
 const { authenticate } = require('../middleware/auth');
+const { emitToUser } = require('../utils/socketManager');
 
 const router = express.Router();
 
@@ -136,6 +137,7 @@ router.post('/', authenticate, async (req, res, next) => {
       user: req.user._id
     });
 
+    emitToUser(req.user._id, 'task:created', task);
     res.status(201).json({ success: true, task, message: 'Task created' });
   } catch (err) {
     next(err);
@@ -170,6 +172,7 @@ router.put('/:id', authenticate, async (req, res, next) => {
     const task = await Task.findOneAndUpdate({ _id: id, user: req.user._id }, updates, { new: true, runValidators: true });
     if (!task) return res.status(404).json({ success: false, message: 'Task not found' });
 
+    emitToUser(req.user._id, 'task:updated', task);
     res.json({ success: true, task, message: 'Task updated' });
   } catch (err) {
     next(err);
@@ -185,6 +188,7 @@ router.patch('/:id', authenticate, async (req, res, next) => {
     const task = await Task.findOneAndUpdate({ _id: id, user: req.user._id }, req.body, { new: true, runValidators: true });
     if (!task) return res.status(404).json({ success: false, message: 'Task not found' });
 
+    emitToUser(req.user._id, 'task:updated', task);
     res.json({ success: true, task, message: 'Task updated' });
   } catch (err) {
     next(err);
@@ -200,6 +204,7 @@ router.delete('/:id', authenticate, async (req, res, next) => {
     const task = await Task.findOneAndDelete({ _id: id, user: req.user._id });
     if (!task) return res.status(404).json({ success: false, message: 'Task not found' });
 
+    emitToUser(req.user._id, 'task:deleted', { id: task._id });
     res.json({ success: true, message: 'Task deleted', task });
   } catch (err) {
     next(err);

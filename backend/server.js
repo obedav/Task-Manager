@@ -1,5 +1,6 @@
 'use strict';
 
+const Sentry = require('@sentry/node');
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
@@ -10,6 +11,14 @@ const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 
 dotenv.config();
+
+if (process.env.SENTRY_DSN) {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    environment: process.env.NODE_ENV || 'development',
+    tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.2 : 1.0
+  });
+}
 
 // ── Startup guard ──────────────────────────────────────────────────────────
 if (!process.env.JWT_SECRET) {
@@ -98,11 +107,15 @@ app.use(cookieParser());
 
 // ── Database ───────────────────────────────────────────────────────────────
 const connectDB = require('./config/db');
+const { initSocket } = require('./utils/socketManager');
 
 // ── Routes ─────────────────────────────────────────────────────────────────
-const authRoutes = require('./routes/authRoutes');
-const taskRoutes = require('./routes/taskRoutes');
-const userRoutes = require('./routes/userRoutes');
+const authRoutes    = require('./routes/authRoutes');
+const taskRoutes    = require('./routes/taskRoutes');
+const userRoutes    = require('./routes/userRoutes');
+const billingRoutes = require('./routes/billingRoutes');
+const aiRoutes      = require('./routes/aiRoutes');
+const adminRoutes   = require('./routes/adminRoutes');
 
 app.get('/api/health', (req, res) => {
   res.json({
@@ -116,9 +129,14 @@ app.get('/api/health', (req, res) => {
 });
 
 // All API routes under /api/v1/
-app.use('/api/v1/auth',  authRoutes);
-app.use('/api/v1/tasks', taskRoutes);
-app.use('/api/v1/user',  userRoutes);
+// Stripe webhook must be registered BEFORE express.json() body parser middleware
+// (it needs the raw Buffer). billingRoutes handles this internally per-route.
+app.use('/api/v1/auth',    authRoutes);
+app.use('/api/v1/tasks',   taskRoutes);
+app.use('/api/v1/user',    userRoutes);
+app.use('/api/v1/billing', billingRoutes);
+app.use('/api/v1/ai',      aiRoutes);
+app.use('/api/v1/admin',   adminRoutes);
 
 app.get('/', (req, res) => {
   res.json({
@@ -172,6 +190,8 @@ const start = async () => {
     console.log(`TaskFlow API running on http://localhost:${PORT} [${process.env.NODE_ENV || 'development'}]`);
     console.log(`API base: http://localhost:${PORT}/api/v1`);
   });
+
+  initSocket(server);
 
   const shutdown = (signal) => {
     console.log(`${signal} received – shutting down…`);

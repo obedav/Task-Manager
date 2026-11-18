@@ -82,7 +82,16 @@ class AuthService {
     const res = await api.post<{ success: boolean; data: string }>('/auth/export', { format });
     return res.data;
   }
+
+  async deleteAllTasks(): Promise<void> {
+    await api.delete('/user/tasks');
+  }
+
+  async deleteAccount(): Promise<void> {
+    await api.delete('/user/account');
+  }
 }
 
 const authService = new AuthService();
+export default authService;
 export default authService;

@@ -1,47 +1,65 @@
 'use strict';
 
 /**
- * In-memory token blacklist for logout revocation.
- * Stores { token: expiresAt } pairs and prunes expired entries periodically.
- * For multi-instance deployments, swap this for a Redis SET with TTL.
+ * Token blacklist backed by MongoDB with an in-memory cache layer.
+ * - In-memory cache: O(1) lookup for tokens revoked in the current process
+ * - MongoDB: persistence across restarts and multi-instance deployments
+ * - TTL index on RevokedToken.expiresAt: MongoDB auto-purges expired docs
  */
-const blacklist = new Map();
+const RevokedToken = require('../models/RevokedToken');
 
-const PRUNE_INTERVAL_MS = 15 * 60 * 1000; // prune every 15 min
+const cache = new Map();
 
-const pruneExpired = () => {
+const pruneCache = () => {
   const now = Date.now();
-  for (const [token, expiresAt] of blacklist) {
-    if (expiresAt <= now) blacklist.delete(token);
+  for (const [token, expiresAt] of cache) {
+    if (expiresAt <= now) cache.delete(token);
   }
 };
 
-// Run pruner on a recurring interval (won't block shutdown – it's non-ref'd)
-const pruneTimer = setInterval(pruneExpired, PRUNE_INTERVAL_MS);
+const pruneTimer = setInterval(pruneCache, 15 * 60 * 1000);
 pruneTimer.unref?.();
 
 /**
- * Add a token to the blacklist until its natural expiry.
- * @param {string} token  - JWT string
- * @param {number} expSec - Token `exp` claim (seconds since epoch)
+ * Revoke a token until its natural expiry.
+ * @param {string} token  - Raw JWT string
+ * @param {number} expSec - Token `exp` claim (seconds since Unix epoch)
  */
-const add = (token, expSec) => {
-  blacklist.set(token, expSec * 1000);
+const add = async (token, expSec) => {
+  const expiresAtMs = expSec * 1000;
+  cache.set(token, expiresAtMs);
+  try {
+    await RevokedToken.create({ token, expiresAt: new Date(expiresAtMs) });
+  } catch (err) {
+    // Duplicate key (token already revoked) — safe to ignore
+    if (err.code !== 11000) console.error('tokenBlacklist.add error:', err.message);
+  }
 };
 
 /**
- * Return true if the token has been revoked.
+ * Check if a token has been revoked.
  * @param {string} token
- * @returns {boolean}
+ * @returns {Promise<boolean>}
  */
-const has = (token) => {
-  const expiresAt = blacklist.get(token);
-  if (expiresAt === undefined) return false;
-  if (expiresAt <= Date.now()) {
-    blacklist.delete(token);
+const has = async (token) => {
+  // Fast path: in-memory cache
+  const cached = cache.get(token);
+  if (cached !== undefined) {
+    if (cached > Date.now()) return true;
+    cache.delete(token);
     return false;
   }
-  return true;
+  // Slow path: DB (covers tokens revoked by other instances or before restart)
+  try {
+    const doc = await RevokedToken.findOne({ token }).lean();
+    if (doc) {
+      cache.set(token, doc.expiresAt.getTime()); // warm the cache
+      return true;
+    }
+  } catch (err) {
+    console.error('tokenBlacklist.has error:', err.message);
+  }
+  return false;
 };
 
 module.exports = { add, has };

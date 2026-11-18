@@ -115,7 +115,7 @@ const Header = ({ onAddTask, user, onLogout }) => {
   }, [ready, t]);
 
   const UserAvatar = () => (
-    <div className="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden" style={{ background: 'linear-gradient(135deg, #2451A3, #C9973C)' }}>
+    <div className="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden" style={{ background: 'linear-gradient(135deg, var(--royal), var(--gold))' }}>
       {photoPreview ? (
         <img 
           src={photoPreview} 
@@ -130,13 +130,13 @@ const Header = ({ onAddTask, user, onLogout }) => {
   );
 
   return (
-    <header style={{ background: '#2451A3', borderBottom: '3px solid #C9973C', overflow: 'visible' }}>
+    <header style={{ background: 'linear-gradient(135deg, var(--royal) 0%, var(--royal-dark) 100%)', borderBottom: '2px solid var(--gold)', overflow: 'visible' }}>
       <div className="max-w-7xl mx-auto px-6 py-2">
         <div className="flex items-center justify-between">
           {/* Logo and Search */}
           <div className="flex items-center space-x-6">
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #C9973C, #9E6E1C)' }}>
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, var(--gold), var(--gold-dark))' }}>
                 <div className="w-4 h-4 bg-white rounded-sm opacity-90"></div>
               </div>
               <h1 className="text-2xl font-bold text-white">
@@ -154,7 +154,7 @@ const Header = ({ onAddTask, user, onLogout }) => {
                 placeholder={getText('tasks.search', 'Search tasks...')}
                 className="rounded-xl pl-10 pr-4 py-2 transition-all"
                 style={{ background: '#FFFFFF', border: '1px solid var(--border)', color: 'var(--text)', outline: 'none' }}
-                onFocus={e => e.target.style.boxShadow = '0 0 0 2px #C9973C'}
+                onFocus={e => e.target.style.boxShadow = '0 0 0 2px var(--gold)'}
                 onBlur={e => e.target.style.boxShadow = 'none'}
               />
             </div>
@@ -166,9 +166,9 @@ const Header = ({ onAddTask, user, onLogout }) => {
             <button
               onClick={onAddTask}
               className="px-3 sm:px-6 py-2 rounded-xl flex items-center space-x-1 transition-all text-sm sm:text-base min-w-0 font-semibold"
-              style={{ background: '#C9973C', color: '#FFFFFF' }}
-              onMouseEnter={e => e.currentTarget.style.background = '#9E6E1C'}
-              onMouseLeave={e => e.currentTarget.style.background = '#C9973C'}
+              style={{ background: 'var(--gold)', color: '#FFFFFF' }}
+              onMouseEnter={e => e.currentTarget.style.background = 'var(--gold-dark)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'var(--gold)'}
               aria-label="Add new task"
             >
               <Plus className="w-4 h-4 flex-shrink-0" />
@@ -235,7 +235,7 @@ const Header = ({ onAddTask, user, onLogout }) => {
                     }
                   }}
                 >
-                  <label className="w-full text-left px-4 py-3 flex items-center space-x-3 cursor-pointer text-sm transition-colors rounded-lg mx-2 hover:bg-[#EEF3FB]" style={{ color: 'var(--text-muted)' }}>
+                  <label className="w-full text-left px-4 py-3 flex items-center space-x-3 cursor-pointer text-sm transition-colors rounded-lg mx-2 hover:bg-surface-2" style={{ color: 'var(--text-muted)' }}>
                     <input
                       type="file"
                       accept="image/*"
@@ -251,7 +251,7 @@ const Header = ({ onAddTask, user, onLogout }) => {
 
                   <div className="flex space-x-2 px-2">
                     <button
-                      className="flex-1 py-2.5 px-3 flex items-center justify-center space-x-2 text-sm rounded-lg transition-colors hover:bg-[#EEF3FB]"
+                      className="flex-1 py-2.5 px-3 flex items-center justify-center space-x-2 text-sm rounded-lg transition-colors hover:bg-surface-2"
                       style={{ color: 'var(--royal)' }}
                       onClick={handleSettingsClick}
                     >
@@ -305,7 +305,7 @@ const Header = ({ onAddTask, user, onLogout }) => {
                 <button
                   onClick={handleAddTaskClick}
                   className="px-4 py-2 rounded-xl flex items-center space-x-2 transition-all text-sm min-w-0 font-semibold text-white"
-                  style={{ background: '#C9973C' }}
+                  style={{ background: 'var(--gold)' }}
                 >
                   <Plus className="w-4 h-4 flex-shrink-0" />
                   <span className="whitespace-nowrap">{getText('tasks.addTask', 'New Task')}</span>
@@ -371,7 +371,7 @@ const Header = ({ onAddTask, user, onLogout }) => {
                       }
                     }}
                   >
-                    <label className="w-full text-left px-4 py-3 flex items-center space-x-3 cursor-pointer text-sm transition-colors rounded-lg mx-2 hover:bg-[#EEF3FB]" style={{ color: 'var(--text-muted)' }}>
+                    <label className="w-full text-left px-4 py-3 flex items-center space-x-3 cursor-pointer text-sm transition-colors rounded-lg mx-2 hover:bg-surface-2" style={{ color: 'var(--text-muted)' }}>
                       <input
                         type="file"
                         accept="image/*"
@@ -387,7 +387,7 @@ const Header = ({ onAddTask, user, onLogout }) => {
 
                     <div className="flex space-x-2 px-2">
                       <button
-                        className="flex-1 py-2.5 px-3 flex items-center justify-center space-x-2 text-sm rounded-lg transition-colors hover:bg-[#EEF3FB]"
+                        className="flex-1 py-2.5 px-3 flex items-center justify-center space-x-2 text-sm rounded-lg transition-colors hover:bg-surface-2"
                         style={{ color: 'var(--royal)' }}
                         onClick={handleSettingsClick}
                       >

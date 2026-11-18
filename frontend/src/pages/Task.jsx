@@ -13,18 +13,18 @@ const TaskCard = ({ task, onEdit, onDelete, onStatusChange, onProgressUpdate, on
 
   const getPriorityColor = (priority) => {
     switch (priority) {
-      case 'high': return 'border-l-4 border-[#C9973C] bg-[#FFF9F0]'
-      case 'medium': return 'border-l-4 border-[#2451A3] bg-white'
-      case 'low': return 'border-l-4 border-green-400 bg-white'
-      default: return 'border-l-4 border-[#D1D9EC] bg-white'
+      case 'high':   return 'border-l-4 border-priority-high   bg-danger-bg'
+      case 'medium': return 'border-l-4 border-priority-medium bg-warning-bg'
+      case 'low':    return 'border-l-4 border-priority-low    bg-success-bg'
+      default:       return 'border-l-4 border-line            bg-surface'
     }
   }
 
   const getStatusBadge = (status) => {
     const badges = {
-      'pending': 'bg-gray-100 text-gray-600',
-      'in-progress': 'bg-[#EEF3FB] text-[#2451A3]',
-      'completed': 'bg-[#F9EDCB] text-[#9E6E1C]'
+      'pending':     'bg-surface-2  text-content-muted',
+      'in-progress': 'bg-primary-light text-primary',
+      'completed':   'bg-success-bg text-success'
     }
     return badges[status] || badges.pending
   }
@@ -80,36 +80,37 @@ const TaskCard = ({ task, onEdit, onDelete, onStatusChange, onProgressUpdate, on
                   <div className="absolute right-0 top-8 rounded-lg shadow-lg z-10 min-w-32" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
                     <button
                       onClick={() => handleStatusChange('pending')}
-                      className="w-full text-left px-3 py-2 text-sm first:rounded-t-lg hover:bg-[#EEF3FB] transition-colors"
+                      className="w-full text-left px-3 py-2 text-sm first:rounded-t-lg hover:bg-surface-2 transition-colors"
                       style={{ color: 'var(--text-muted)' }}
                     >
                       {t('tasks.markPending')}
                     </button>
                     <button
                       onClick={() => handleStatusChange('in-progress')}
-                      className="w-full text-left px-3 py-2 text-sm hover:bg-[#EEF3FB] transition-colors"
+                      className="w-full text-left px-3 py-2 text-sm hover:bg-surface-2 transition-colors"
                       style={{ color: 'var(--royal)' }}
                     >
                       {t('tasks.markInProgress')}
                     </button>
                     <button
                       onClick={() => handleStatusChange('completed')}
-                      className="w-full text-left px-3 py-2 text-sm hover:bg-[#F9EDCB] transition-colors"
-                      style={{ color: 'var(--gold-dark)' }}
+                      className="w-full text-left px-3 py-2 text-sm hover:bg-success-bg transition-colors"
+                      style={{ color: 'var(--success)' }}
                     >
                       {t('tasks.markCompleted')}
                     </button>
                     <hr style={{ borderColor: 'var(--border)' }} />
                     <button
                       onClick={() => onEdit(task)}
-                      className="w-full text-left px-3 py-2 text-sm hover:bg-[#EEF3FB] transition-colors"
+                      className="w-full text-left px-3 py-2 text-sm hover:bg-surface-2 transition-colors"
                       style={{ color: 'var(--text-muted)' }}
                     >
                       {t('tasks.editTask')}
                     </button>
                     <button
                       onClick={() => onDelete(task.id || task._id)}
-                      className="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-red-50 last:rounded-b-lg transition-colors"
+                      className="w-full text-left px-3 py-2 text-sm last:rounded-b-lg transition-colors hover:bg-danger-bg"
+                      style={{ color: 'var(--danger)' }}
                     >
                       {t('tasks.deleteTask')}
                     </button>
@@ -397,7 +398,7 @@ const Tasks = ({
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full rounded-lg pl-10 pr-4 py-3 focus:outline-none transition-all"
                   style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text)' }}
-                  onFocus={e => e.target.style.borderColor = '#2451A3'}
+                  onFocus={e => e.target.style.borderColor = 'var(--royal)'}
                   onBlur={e => e.target.style.borderColor = 'var(--border)'}
                 />
               </div>

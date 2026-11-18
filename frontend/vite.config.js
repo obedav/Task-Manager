@@ -129,7 +129,19 @@ export default defineConfig(({ mode }) => {
     
     // Enhanced error handling
     logLevel: isDev ? 'info' : 'warn',
-    clearScreen: false
+    clearScreen: false,
+
+    // Vitest configuration
+    test: {
+      globals: true,
+      environment: 'jsdom',
+      setupFiles: ['./src/test/setup.js'],
+      css: false,
+      coverage: {
+        provider: 'v8',
+        reporter: ['text', 'html'],
+        exclude: ['node_modules/', 'src/test/', '*.config.*']
+      }
+    }
   }
 })
-// TODO: Integrate error reporting (e.g., Sentry) before production deployment

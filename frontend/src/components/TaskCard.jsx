@@ -11,18 +11,18 @@ const TaskCard = ({ task, onEdit, onDelete, onStatusChange }) => {
 
   const getPriorityStyle = (priority) => {
     switch (priority) {
-      case 'high': return { borderLeft: '4px solid #C9973C', background: '#FFFFFF' }
-      case 'medium': return { borderLeft: '4px solid #2451A3', background: '#FFFFFF' }
-      case 'low': return { borderLeft: '4px solid #4ade80', background: '#FFFFFF' }
-      default: return { borderLeft: '4px solid #D1D9EC', background: '#FFFFFF' }
+      case 'high':   return { borderLeft: '4px solid var(--priority-high)',   background: 'var(--surface)' }
+      case 'medium': return { borderLeft: '4px solid var(--priority-medium)', background: 'var(--surface)' }
+      case 'low':    return { borderLeft: '4px solid var(--priority-low)',    background: 'var(--surface)' }
+      default:       return { borderLeft: '4px solid var(--border)',          background: 'var(--surface)' }
     }
   }
 
   const getStatusIcon = (status) => {
     switch (status) {
-      case 'completed': return <CheckCircle2 className="w-5 h-5 text-green-500" />
-      case 'in-progress': return <Clock className="w-5 h-5" style={{ color: '#2451A3' }} />
-      default: return <Circle className="w-5 h-5" style={{ color: '#4A5568' }} />
+      case 'completed':  return <CheckCircle2 className="w-5 h-5" style={{ color: 'var(--success)' }} />
+      case 'in-progress': return <Clock className="w-5 h-5" style={{ color: 'var(--royal)' }} />
+      default:           return <Circle className="w-5 h-5" style={{ color: 'var(--text-muted)' }} />
     }
   }
 
@@ -71,7 +71,7 @@ const TaskCard = ({ task, onEdit, onDelete, onStatusChange }) => {
         <div className="relative">
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="p-2 opacity-0 group-hover:opacity-100 transition-all rounded-lg hover:bg-[#EEF3FB]"
+            className="p-2 opacity-0 group-hover:opacity-100 transition-all rounded-lg hover:bg-surface-2"
             style={{ color: 'var(--text-muted)' }}
           >
             <MoreHorizontal className="w-4 h-4" />
@@ -84,7 +84,7 @@ const TaskCard = ({ task, onEdit, onDelete, onStatusChange }) => {
                   onEdit(task)
                   setIsMenuOpen(false)
                 }}
-                className="w-full text-left px-3 py-2 flex items-center space-x-2 hover:bg-[#EEF3FB] transition-colors"
+                className="w-full text-left px-3 py-2 flex items-center space-x-2 hover:bg-surface-2 transition-colors"
                 style={{ color: 'var(--royal)' }}
               >
                 <Edit3 className="w-3 h-3" />
@@ -95,7 +95,8 @@ const TaskCard = ({ task, onEdit, onDelete, onStatusChange }) => {
                   onDelete(getTaskId())
                   setIsMenuOpen(false)
                 }}
-                className="w-full text-left px-3 py-2 text-red-500 hover:bg-red-50 flex items-center space-x-2 transition-colors"
+                className="w-full text-left px-3 py-2 flex items-center space-x-2 transition-colors hover:bg-danger-bg"
+                style={{ color: 'var(--danger)' }}
               >
                 <Trash2 className="w-3 h-3" />
                 <span className="text-sm">Delete</span>
@@ -113,26 +114,24 @@ const TaskCard = ({ task, onEdit, onDelete, onStatusChange }) => {
 
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          {/* Priority badge: gold for high, royal blue tint for medium, green for low */}
           <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
             style={
               task.priority === 'high'
-                ? { background: 'var(--gold-light)', color: 'var(--gold-dark)' }
+                ? { background: 'var(--danger-bg)',  color: 'var(--priority-high)'   }
                 : task.priority === 'medium'
-                ? { background: 'var(--royal-light)', color: 'var(--royal)' }
-                : { background: '#dcfce7', color: '#166534' }
+                ? { background: 'var(--warning-bg)', color: 'var(--priority-medium)' }
+                : { background: 'var(--success-bg)', color: 'var(--priority-low)'    }
             }>
             {task.priority}
           </span>
 
-          {/* Status badge: royal blue for in-progress, gold for completed */}
           <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
             style={
               task.status === 'completed'
-                ? { background: 'var(--gold-light)', color: 'var(--gold-dark)' }
+                ? { background: 'var(--success-bg)', color: 'var(--success)'  }
                 : task.status === 'in-progress'
-                ? { background: 'var(--royal-light)', color: 'var(--royal)' }
-                : { background: '#f3f4f6', color: '#6b7280' }
+                ? { background: 'var(--royal-light)', color: 'var(--royal)'   }
+                : { background: 'var(--surface-2)',   color: 'var(--text-muted)' }
             }>
             {t(`taskCard.${task.status}`)}
           </span>

@@ -169,7 +169,7 @@ const DailyCheckInModal = ({
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg transition-colors hover:bg-[#EEF3FB]"
+            className="p-2 rounded-lg transition-colors hover:bg-surface-2"
             style={{ color: 'var(--text-muted, #4A5568)' }}
             aria-label="Close modal"
           >
@@ -192,7 +192,7 @@ const DailyCheckInModal = ({
                 onChange={(e) => setProgress(Number(e.target.value))}
                 className="w-full h-2 rounded-lg appearance-none cursor-pointer"
                 style={{
-                  background: `linear-gradient(to right, #2451A3 0%, #2451A3 ${progress}%, #D6E4F7 ${progress}%, #D6E4F7 100%)`
+                  background: `linear-gradient(to right, var(--royal) 0%, var(--royal) ${progress}%, var(--royal-light) ${progress}%, var(--royal-light) 100%)`
                 }}
               />
               <div className="flex justify-between text-sm">

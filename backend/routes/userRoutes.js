@@ -121,4 +121,43 @@ router.put('/password', authenticate, async (req, res, next) => {
   }
 });
 
+// DELETE /api/v1/user/tasks — delete all tasks for this user
+router.delete('/tasks', authenticate, async (req, res, next) => {
+  try {
+    const Task = require('../models/Task');
+    const { deletedCount } = await Task.deleteMany({ user: req.user._id });
+    res.json({ success: true, message: `${deletedCount} tasks deleted` });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// DELETE /api/v1/user/account — permanently delete the user account and all their data
+router.delete('/account', authenticate, async (req, res, next) => {
+  try {
+    const Task = require('../models/Task');
+    const blacklist = require('../utils/tokenBlacklist');
+
+    // Delete all user tasks
+    await Task.deleteMany({ user: req.user._id });
+
+    // Blacklist current access token
+    if (req.token && req.tokenDecoded?.exp) {
+      await blacklist.add(req.token, req.tokenDecoded.exp);
+    }
+
+    // Delete the user
+    await User.findByIdAndDelete(req.user._id);
+
+    // Clear auth cookies
+    const COOKIE_OPTIONS = { httpOnly: true, sameSite: 'strict', secure: process.env.NODE_ENV === 'production', path: '/' };
+    res.clearCookie('access_token', COOKIE_OPTIONS);
+    res.clearCookie('refresh_token', COOKIE_OPTIONS);
+
+    res.json({ success: true, message: 'Account permanently deleted' });
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;

@@ -26,7 +26,7 @@ const authenticate = async (req, res, next) => {
     return res.status(401).json({ success: false, message: 'Authentication required' });
   }
 
-  if (blacklist.has(token)) {
+  if (await blacklist.has(token)) {
     return res.status(401).json({ success: false, message: 'Token has been revoked' });
   }
 

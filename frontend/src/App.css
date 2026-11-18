@@ -1,7 +1,7 @@
 /* App-specific styles for TaskFlow */
 body {
   background-color: var(--bg, #F7F4EE);
-  color: var(--text, #0F1F3D);
+  color: var(--text, #0F172A);
 }
 
 .App {
@@ -16,23 +16,23 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--surface-2, #EEF3FB);
+  background: var(--surface-2, #EEF2FF);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--royal-light, #D6E4F7);
+  background: var(--border-strong, #CBD5E1);
   border-radius: 4px;
   transition: background 0.3s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--royal, #2451A3);
+  background: var(--royal, #1E40AF);
 }
 
 /* Custom focus styles */
 .focus-visible {
-  outline: 2px solid var(--royal, #2451A3);
+  outline: 2px solid var(--royal, #1E40AF);
   outline-offset: 2px;
 }
 
@@ -43,12 +43,8 @@ body {
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 /* Modal content animation */
@@ -67,18 +63,14 @@ body {
   }
 }
 
-/* Loading spinner enhancement */
+/* Loading spinner */
 .loading-spinner {
   animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
 
 /* Pulse animation for notifications */
@@ -87,17 +79,13 @@ body {
 }
 
 @keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.7; }
 }
 
-/* Gradient text animation — updated to brand palette */
+/* Gradient text — brand palette, oklch-aware fallback */
 .gradient-text {
-  background: linear-gradient(-45deg, #2451A3, #C9973C, #1B3D7A, #9E6E1C);
+  background: linear-gradient(-45deg, var(--royal), var(--gold), var(--royal-dark), var(--gold-dark));
   background-size: 400% 400%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -106,15 +94,9 @@ body {
 }
 
 @keyframes gradientShift {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 /* Card hover effects */
@@ -136,11 +118,17 @@ body {
   transform: scale(0.98);
 }
 
-/* Glassmorphism effect — light glass for off-white theme */
+/* Glassmorphism — light and dark aware */
 .glass-effect {
   background: rgba(247, 244, 238, 0.85);
   backdrop-filter: blur(12px);
-  border: 1px solid var(--border, #D1D9EC);
+  border: 1px solid var(--border, #E2E8F0);
+}
+
+@media (prefers-color-scheme: dark) {
+  .glass-effect {
+    background: rgba(30, 41, 59, 0.85);
+  }
 }
 
 /* Status indicator animations */
@@ -164,17 +152,17 @@ body {
   left: 100%;
 }
 
-/* Priority badge glow effect */
+/* Priority badge glow effects — using semantic priority vars */
 .priority-high {
-  box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+  box-shadow: 0 0 10px rgba(220, 38, 38, 0.3);
 }
 
 .priority-medium {
-  box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+  box-shadow: 0 0 10px rgba(217, 119, 6, 0.3);
 }
 
 .priority-low {
-  box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+  box-shadow: 0 0 10px rgba(22, 163, 74, 0.3);
 }
 
 /* Form input enhancements */
@@ -184,7 +172,7 @@ body {
 
 .form-input:focus {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(36, 81, 163, 0.15);
+  box-shadow: 0 4px 12px rgba(30, 64, 175, 0.15);
 }
 
 /* Navigation tab indicator */
@@ -200,7 +188,7 @@ body {
   left: 0;
   right: 0;
   height: 2px;
-  background: var(--royal, #2451A3);
+  background: var(--royal, #1E40AF);
   border-radius: 1px;
 }
 
@@ -215,7 +203,7 @@ body {
   bottom: 125%;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--royal-dark, #1B3D7A);
+  background: var(--royal-dark, #1E3A8A);
   color: white;
   padding: 8px 12px;
   border-radius: 6px;
@@ -233,9 +221,9 @@ body {
   visibility: visible;
 }
 
-/* Comprehensive Modal Responsiveness */
+/* ── Modal responsiveness ──────────────────────────────────────────────────── */
 
-/* Extra small devices (320px - 480px) */
+/* Extra small (320px–480px) */
 @media (max-width: 480px) {
   .task-modal {
     max-width: 100vw !important;
@@ -244,68 +232,65 @@ body {
     border-radius: 0 !important;
     border: none !important;
   }
-  
+
   .task-modal .grid {
     grid-template-columns: 1fr !important;
     gap: 1rem !important;
   }
-  
+
   .task-modal input,
   .task-modal select,
   .task-modal textarea,
   .task-modal button {
     min-height: 48px !important;
-    font-size: 16px !important; /* Prevents zoom on iOS */
+    font-size: 16px !important;
   }
-  
+
   .task-modal label {
     font-size: 14px !important;
   }
 }
 
-/* Small devices (481px - 767px) */
+/* Small (481px–767px) */
 @media (min-width: 481px) and (max-width: 767px) {
   .task-modal {
     max-width: 95vw !important;
     margin: 0.5rem !important;
   }
-  
+
   .task-modal .grid {
     grid-template-columns: 1fr !important;
     gap: 1.25rem !important;
   }
 }
 
-/* Medium devices - Tablets portrait (768px - 1023px) */
+/* Medium — tablets portrait (768px–1023px) */
 @media (min-width: 768px) and (max-width: 1023px) {
   .task-modal {
-    max-width: 85vw !important;
     max-width: min(85vw, 600px) !important;
   }
-  
+
   .task-modal .grid {
     grid-template-columns: 1fr 1fr !important;
     gap: 1.5rem !important;
   }
 }
 
-/* Large devices - Tablets landscape (1024px - 1199px) */
+/* Large — tablets landscape (1024px–1199px) */
 @media (min-width: 1024px) and (max-width: 1199px) {
   .task-modal {
-    max-width: 70vw !important;
     max-width: min(70vw, 700px) !important;
   }
 }
 
-/* Extra large devices - Desktop (1200px+) */
+/* XL — desktop (1200px+) */
 @media (min-width: 1200px) {
   .task-modal {
-    max-width: 60vw !important;
     max-width: min(60vw, 800px) !important;
   }
 }
 
-/* Touch device optimizations */
+/* Touch devices */
 @media (pointer: coarse) {
   .task-modal input,
   .task-modal select,
@@ -313,20 +298,20 @@ body {
   .task-modal button {
     min-height: 44px !important;
   }
-  
+
   .task-modal button {
     padding: 12px 16px !important;
   }
 }
 
-/* High DPI displays */
+/* High DPI */
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
   .task-modal {
     border-width: 0.5px !important;
   }
 }
 
-/* Landscape orientation on mobile */
+/* Landscape on mobile */
 @media (max-width: 767px) and (orientation: landscape) {
   .task-modal {
     max-height: 95vh !important;
@@ -334,23 +319,23 @@ body {
   }
 }
 
-/* Legacy mobile support */
+/* Legacy mobile */
 @media (max-width: 768px) {
   .modal-content {
     margin: 1rem;
     max-height: 90vh;
     overflow-y: auto;
   }
-  
+
   .glass-effect {
     backdrop-filter: blur(8px);
   }
 }
 
-/* Login Screen Mobile Centering */
+/* ── Login layout ──────────────────────────────────────────────────────────── */
 .login-container {
   min-height: 100vh;
-  min-height: 100dvh; /* Dynamic viewport height for mobile */
+  min-height: 100dvh;
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
@@ -360,7 +345,7 @@ body {
 
 .login-card {
   width: 100% !important;
-  max-width: 28rem !important; /* max-w-md equivalent */
+  max-width: 28rem !important;
   margin: 0 auto !important;
   position: relative;
   z-index: 10;
@@ -372,37 +357,29 @@ body {
   margin-top: 1.5rem !important;
 }
 
-/* Mobile-specific login adjustments */
 @media (max-width: 640px) {
   .login-container {
     padding: 1rem !important;
     min-height: 100vh !important;
     justify-content: center !important;
   }
-  
+
   .login-card {
     max-width: 100% !important;
     padding: 1.5rem !important;
     margin: 0 auto !important;
   }
-  
+
   .login-footer {
     margin-top: 1rem !important;
   }
 }
 
-/* Extra small screens */
 @media (max-width: 375px) {
-  .login-container {
-    padding: 0.75rem !important;
-  }
-  
-  .login-card {
-    padding: 1.25rem !important;
-  }
+  .login-container { padding: 0.75rem !important; }
+  .login-card      { padding: 1.25rem !important; }
 }
 
-/* Landscape orientation on mobile */
 @media (max-height: 600px) and (orientation: landscape) {
   .login-container {
     justify-content: flex-start !important;
@@ -411,37 +388,32 @@ body {
   }
 }
 
-/* Dashboard Mobile Centering */
+/* ── Dashboard layout ─────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .dashboard-container {
     padding-left: 1rem !important;
     padding-right: 1rem !important;
   }
-  
+
   .dashboard-stats-grid {
     justify-content: center !important;
     gap: 1rem !important;
   }
-  
+
   .dashboard-stats-card {
     width: 100% !important;
     max-width: 200px !important;
     margin: 0 auto !important;
   }
-  
+
   .dashboard-tabs {
     width: 100% !important;
     max-width: 400px !important;
     margin: 0 auto !important;
   }
-  
-  .dashboard-content {
-    text-align: center !important;
-  }
-  
-  .dashboard-grid {
-    justify-items: center !important;
-  }
+
+  .dashboard-content  { text-align: center !important; }
+  .dashboard-grid     { justify-items: center !important; }
 }
 
 @media (max-width: 480px) {
@@ -449,22 +421,17 @@ body {
     padding-left: 0.75rem !important;
     padding-right: 0.75rem !important;
   }
-  
+
   .dashboard-header {
     padding-left: 1rem !important;
     padding-right: 1rem !important;
   }
-  
-  .dashboard-stats-grid {
-    gap: 0.75rem !important;
-  }
-  
-  .dashboard-stats-card {
-    max-width: 160px !important;
-  }
+
+  .dashboard-stats-grid { gap: 0.75rem !important; }
+  .dashboard-stats-card { max-width: 160px !important; }
 }
 
-/* Reduce motion for accessibility */
+/* ── Accessibility ─────────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -475,10 +442,9 @@ body {
   }
 }
 
-/* High contrast mode support */
 @media (prefers-contrast: high) {
   .glass-effect {
-    background: #FFFFFF;
+    background: var(--surface);
     border: 2px solid var(--royal);
   }
 
@@ -488,13 +454,13 @@ body {
   }
 }
 
-/* Print styles */
+/* ── Print ─────────────────────────────────────────────────────────────────── */
 @media print {
   .App {
     background: #FFFFFF !important;
-    color: var(--text, #0F1F3D) !important;
+    color: var(--text, #0F172A) !important;
   }
-  
+
   .modal-backdrop,
   .loading-spinner,
   button {
